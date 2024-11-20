@@ -4,14 +4,8 @@ sail-up:
 sail-down:
 	./vendor/bin/sail down
 
-npm-clear:
-	./vendor/bin/sail npm cache clean --force
+pnpm-run-dev:
+	./vendor/bin/sail pnpm run dev
 
-npm-install:
-	#./vendor/bin/sail npm cache clean --force --no-progress --verbose
-	#./vendor/bin/sail npm install --no-progress --verbose
-	./vendor/bin/sail npm install tailwindcss postcss autoprefixer flowbite --no-progress --verbose
-	#./vendor/bin/sail npm install --verbose
-
-npm-run-dev:
-	./vendor/bin/sail npm run dev
+pnpm-install:
+	./vendor/bin/sail pnpm install flowbite --verbose
