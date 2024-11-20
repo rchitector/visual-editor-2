@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.setAttribute('id', 'theme-toggle');
-    button.setAttribute('class', 'z-10 absolute top-5 right-5 flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group');
+    button.setAttribute('class', 'z-10 absolute top-5 right-5 flex items-center p-2 text-gray-900 rounded-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-800 group');
     button.appendChild(darkIcon)
     button.appendChild(lightIcon)
 
