@@ -24,14 +24,16 @@ document.addEventListener('DOMContentLoaded', function() {
     lightIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
     lightIcon.appendChild(lightIconPath);
 
-    const button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.setAttribute('id', 'theme-toggle');
-    button.setAttribute('class', 'z-40 absolute bottom-5 left-5 flex items-center p-2 text-gray-900 rounded-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-800 group');
+    let button = document.getElementById('theme-toggle')
+    if (!button) {
+        button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('id', 'theme-toggle');
+        button.setAttribute('class', 'border z-40 absolute top-5 right-5 flex items-center p-2 text-gray-900 rounded-full dark:text-white bg-gray-100 dark:bg-gray-800 group');
+        document.body.appendChild(button)
+    }
     button.appendChild(darkIcon)
     button.appendChild(lightIcon)
-
-    document.body.appendChild(button)
 
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
