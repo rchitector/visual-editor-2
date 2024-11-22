@@ -2,9 +2,17 @@ import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from "uuid";
 import { getRandomIntInclusive } from "../helper.js";
 
-interface Ports {
-    in: any[];
-    out: any[];
+const PortTypes = {
+    INPUT_PORT: "input",
+    OUTPUT_PORT: "output",
+};
+
+interface InputPort {
+    type: typeof PortTypes.INPUT_PORT,
+}
+
+interface OutputPort {
+    type: typeof PortTypes.OUTPUT_PORT,
 }
 
 interface Item {
@@ -13,7 +21,10 @@ interface Item {
     x: number;
     y: number;
     color: string;
-    ports: Ports;
+    ports: {
+        in: InputPort[];
+        out: OutputPort[];
+    },
 }
 
 interface CanvasState {
