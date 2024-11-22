@@ -81,7 +81,7 @@
         }
     };
 
-    const onMouseUp = (event: MouseEvent) => {
+    const onMouseUp = () => {
         canvasStore.isDraggingCanvas = false;
         canvasStore.draggingElement = null;
         canvasStore.lastMouseX = null;
