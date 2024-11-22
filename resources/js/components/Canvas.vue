@@ -104,7 +104,7 @@
          class="border relative overflow-hidden box-border bg-gray-50 dark:bg-gray-800 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px]"
     >
         <div id="canvas" :style="canvasStyle" class="absolute select-none inset-0 w-0 h-0">
-            <div class="absolute select-none max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-[200px]"
+            <div class="absolute select-none rounded-lg border-2 p-2 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700 w-[200px]"
                 v-for="item in canvasStore.items"
                 :key="item.id"
                 :style="{
@@ -112,10 +112,11 @@
                 }"
                 @mousedown="onMouseDown($event, item.id)"
             >
-                <div class="p-2 cursor-grab rounded-t-lg" data-is-draggable="true">
+                <div class="cursor-grab hover:bg-gray-200 hover:dark:bg-gray-600"
+                     data-is-draggable="true">
                     <div>id:{{item.id}}</div>
                 </div>
-                <div class="p-2 border-t rounded-b-lg border-gray-200 dark:border-gray-700"
+                <div class="border-gray-200 dark:border-gray-700"
                      :style="{
                         backgroundColor: item.color,
                      }"
