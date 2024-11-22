@@ -76,7 +76,7 @@ import CanvasLeftPanel from "./CanvasLeftPanel.vue";
             </ul>
             <ul class="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
                 <li>
-                    <CanvasLeftPanel class="h-full w-10" />
+                    <CanvasLeftPanel class="" />
                 </li>
             </ul>
         </div>

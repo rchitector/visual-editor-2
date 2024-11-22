@@ -1,47 +1,7 @@
 import { defineStore } from 'pinia';
 import { v4 as uuidv4 } from "uuid";
 import { getRandomIntInclusive } from "../helper.js";
-
-const PortTypes = {
-    INPUT_PORT: "input",
-    OUTPUT_PORT: "output",
-};
-
-interface InputPort {
-    type: typeof PortTypes.INPUT_PORT,
-}
-
-interface OutputPort {
-    type: typeof PortTypes.OUTPUT_PORT,
-}
-
-interface Item {
-    id: string;
-    onTop: boolean;
-    x: number;
-    y: number;
-    color: string;
-    ports: {
-        in: InputPort[];
-        out: OutputPort[];
-    },
-}
-
-interface CanvasState {
-    baseCellSize: number;
-    defaultScale: number;
-    scaleStep: number;
-    minScale: number;
-    maxScale: number;
-    isDraggingCanvas: boolean;
-    draggingElement: Item | null;
-    lastMouseX: number | null;
-    lastMouseY: number | null;
-    canvasTranslateX: number;
-    canvasTranslateY: number;
-    canvasScale: number;
-    items: Item[];
-}
+import {CanvasState, Item} from '../interfaces'
 
 export const useCanvasStore = defineStore('canvas', {
     state: (): CanvasState => ({
@@ -81,7 +41,6 @@ export const useCanvasStore = defineStore('canvas', {
                     onTop: false,
                     x: getRandomIntInclusive(-300, 300),
                     y: getRandomIntInclusive(-300, 300),
-                    color: `hsl(${Math.random() * 360}, 50%, 50%)`,
                     ports: {
                         in: [],
                         out: [],

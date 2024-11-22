@@ -11,7 +11,7 @@ sail-down:
 
 pnpm-install:
 	#./vendor/bin/sail pnpm install --verbose
-	./vendor/bin/sail pnpm install @typescript-eslint/parser @typescript-eslint/eslint-plugin --save-dev
+	./vendor/bin/sail pnpm add -D vite-plugin-vue-devtools
 
 vue-tsc:
 	./vendor/bin/sail npx vue-tsc --noEmit
