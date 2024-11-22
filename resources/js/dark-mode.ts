@@ -37,15 +37,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
-        document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
+        document.getElementById('theme-toggle-light-icon')?.classList.remove('hidden');
     } else {
         document.documentElement.classList.remove('dark')
-        document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
+        document.getElementById('theme-toggle-dark-icon')?.classList.remove('hidden');
     }
 
-    document.getElementById('theme-toggle').addEventListener('click', function () {
-        document.getElementById('theme-toggle-dark-icon').classList.toggle('hidden');
-        document.getElementById('theme-toggle-light-icon').classList.toggle('hidden');
+    document.getElementById('theme-toggle')?.addEventListener('click', function () {
+        document.getElementById('theme-toggle-dark-icon')?.classList.toggle('hidden');
+        document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden');
 
         if (localStorage.getItem('color-theme')) {
             if (localStorage.getItem('color-theme') === 'light') {

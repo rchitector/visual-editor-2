@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
     import { computed, onMounted, onUnmounted, ref } from 'vue';
-    import { useCanvasStore } from '../stores/canvasStore';
+    import { useCanvasStore } from '../stores/canvasStore.js';
 
     const canvasStore = useCanvasStore();
 
-    const canvasBoxRef = ref(null);
+    const canvasBoxRef = ref<HTMLDivElement | null>(null);
 
     onMounted(() => {
         if (canvasBoxRef.value) {
@@ -39,48 +39,56 @@
         };
     });
 
-    const onContextMenu = (event) => {
+    const onContextMenu = (event: MouseEvent) => {
         event.preventDefault();
     };
 
-    const onMouseDown = (event, itemId = null) => {
+    const onMouseDown = (event: MouseEvent, itemId: string | null = null) => {
         if (event.target === canvasBoxRef.value) {
             canvasStore.isDraggingCanvas = true;
             canvasStore.lastMouseX = event.clientX;
             canvasStore.lastMouseY = event.clientY;
         } else if (itemId) {
             canvasStore.setOnTop(itemId);
-            if (event.target.closest('[data-is-draggable]')) {
-                canvasStore.draggingElement = canvasStore.items.find(item => item.id === itemId);
+            if (event.target && (event.target as HTMLElement).closest('[data-is-draggable]')) {
+                canvasStore.draggingElement = canvasStore.items.find(item => item.id === itemId) || null;
                 canvasStore.lastMouseX = event.clientX;
                 canvasStore.lastMouseY = event.clientY;
             }
         }
     };
 
-    const onMouseMove = (event) => {
+    const onMouseMove = (event: MouseEvent) => {
         if (canvasStore.isDraggingCanvas) {
-            canvasStore.canvasTranslateX += (event.clientX - canvasStore.lastMouseX);
-            canvasStore.canvasTranslateY += (event.clientY - canvasStore.lastMouseY);
+            if (canvasStore.lastMouseX !== null) {
+                canvasStore.canvasTranslateX += (event.clientX - canvasStore.lastMouseX);
+            }
+            if (canvasStore.lastMouseY !== null) {
+                canvasStore.canvasTranslateY += (event.clientY - canvasStore.lastMouseY);
+            }
             canvasStore.lastMouseX = event.clientX;
             canvasStore.lastMouseY = event.clientY;
         }
         if (canvasStore.draggingElement !== null) {
-            canvasStore.draggingElement.x = (canvasStore.draggingElement.x + (event.clientX - canvasStore.lastMouseX) / canvasStore.canvasScale);
-            canvasStore.draggingElement.y = (canvasStore.draggingElement.y + (event.clientY - canvasStore.lastMouseY) / canvasStore.canvasScale);
+            if (canvasStore.lastMouseX !== null) {
+                canvasStore.draggingElement.x = (canvasStore.draggingElement.x + (event.clientX - canvasStore.lastMouseX) / canvasStore.canvasScale);
+            }
+            if (canvasStore.lastMouseY !== null) {
+                canvasStore.draggingElement.y = (canvasStore.draggingElement.y + (event.clientY - canvasStore.lastMouseY) / canvasStore.canvasScale);
+            }
             canvasStore.lastMouseX = event.clientX;
             canvasStore.lastMouseY = event.clientY;
         }
     };
 
-    const onMouseUp = (event) => {
+    const onMouseUp = (event: MouseEvent) => {
         canvasStore.isDraggingCanvas = false;
         canvasStore.draggingElement = null;
         canvasStore.lastMouseX = null;
         canvasStore.lastMouseY = null;
     };
 
-    const onWheel = (event) => {
+    const onWheel = (event: WheelEvent) => {
         if (canvasBoxRef.value) {
             event.preventDefault();
             const rect = canvasBoxRef.value.getBoundingClientRect();

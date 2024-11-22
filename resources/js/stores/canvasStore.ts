@@ -1,9 +1,39 @@
 import { defineStore } from 'pinia';
-import {v4 as uuidv4} from "uuid";
-import {getRandomIntInclusive} from "../helper";
+import { v4 as uuidv4 } from "uuid";
+import { getRandomIntInclusive } from "../helper.js";
+
+interface Ports {
+    in: any[];
+    out: any[];
+}
+
+interface Item {
+    id: string;
+    onTop: boolean;
+    x: number;
+    y: number;
+    color: string;
+    ports: Ports;
+}
+
+interface CanvasState {
+    baseCellSize: number;
+    defaultScale: number;
+    scaleStep: number;
+    minScale: number;
+    maxScale: number;
+    isDraggingCanvas: boolean;
+    draggingElement: Item | null;
+    lastMouseX: number | null;
+    lastMouseY: number | null;
+    canvasTranslateX: number;
+    canvasTranslateY: number;
+    canvasScale: number;
+    items: Item[];
+}
 
 export const useCanvasStore = defineStore('canvas', {
-    state: () => ({
+    state: (): CanvasState => ({
         baseCellSize: 20,
         defaultScale: 1,
         scaleStep: -0.001,
@@ -18,18 +48,21 @@ export const useCanvasStore = defineStore('canvas', {
         canvasScale: 1,
         items: [],
     }),
+
     actions: {
-        setOnTop(id) {
-            this.items.forEach(function (item) {
+        setOnTop(id: string): void {
+            this.items.forEach((item: Item) => {
                 item.onTop = item.id === id;
-            })
+            });
+
             this.items.sort((a, b) => {
                 if (a.onTop && !b.onTop) return 1;
                 if (!a.onTop && b.onTop) return -1;
                 return 0;
             });
         },
-        initRandomElements() {
+
+        initRandomElements(): void {
             this.items = [];
             for (let i = 1; i <= 10; i++) {
                 this.items.push({

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import DarkModeButton from "./DarkModeButton.vue";
 import CanvasLeftPanel from "./CanvasLeftPanel.vue";
 </script>
