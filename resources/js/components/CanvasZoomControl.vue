@@ -29,14 +29,14 @@ const onFitZoom = () => {
 
 <template>
     <div class="absolute gap-1 right-5 bottom-5 flex items-center rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
-        <button v-for="level in canvasStore.visibleZoomLevels" :key="`${level}-temp`" @click="()=>canvasStore.setZoomLevel(level)" type="button"
+        <button v-if="canvasStore.debug" v-for="level in canvasStore.visibleZoomLevels" :key="`${level}-temp`" @click="()=>canvasStore.setZoomLevel(level)" type="button"
                 class="flex items-center gap-2 p-2 text-gray-900 rounded-lg dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
             </svg>
             <span>{{ level }}%</span>
         </button>
-        <button type="button" class="flex items-center gap-2 p-2 text-gray-900 rounded-lg dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
+        <button v-if="canvasStore.debug" type="button" class="flex items-center gap-2 p-2 text-gray-900 rounded-lg dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 @click="canvasStore.zoomFit">
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" class="size-5">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="var(--svg-stroke-width)"

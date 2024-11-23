@@ -106,22 +106,21 @@ const onWheel = (event: WheelEvent) => {
              @mousedown="onMouseDown($event)"
              @touchstart="onMouseDown($event)"
              :style="canvasBoxStyle"
-
              class="w-full h-full relative overflow-hidden bg-gray-50 dark:bg-gray-800 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px]"
         >
             <div id="canvas" :style="canvasStyle" class="absolute select-none inset-0 w-0 h-0">
                 <CanvasItem :data="item" :key="item.id" v-for="item in canvasStore.items"/>
-                <div
-                        class="z-[999999] absolute select-none rounded-full bg-red-500 dark:bg-red-500 w-2 h-2 -ml-1 -mt-1"
-                        :style="{ transform: `matrix(1, 0, 0, 1, ${canvasBoxRef?.value?.getBoundingClientRect().width / 2}, ${canvasBoxRef?.value?.getBoundingClientRect().height / 2})`, }"
+                <div v-if="canvasStore.debug"
+                     class="z-[999999] absolute select-none rounded-full bg-red-500 dark:bg-red-500 w-2 h-2 -ml-1 -mt-1"
+                     :style="{ transform: `matrix(1, 0, 0, 1, ${canvasBoxRef?.value?.getBoundingClientRect().width / 2}, ${canvasBoxRef?.value?.getBoundingClientRect().height / 2})`, }"
                 ></div>
             </div>
-            <div
-                    class="z-[999999] absolute select-none rounded-full bg-blue-500 dark:bg-blue-500 w-2 h-2 -ml-1 -mt-1"
-                    :style="{ transform: `matrix(1, 0, 0, 1, ${canvasStore.scaleRelatedX}, ${canvasStore.scaleRelatedY})`, }"
+            <div v-if="canvasStore.debug"
+                 class="z-[999999] absolute select-none rounded-full bg-blue-500 dark:bg-blue-500 w-2 h-2 -ml-1 -mt-1"
+                 :style="{ transform: `matrix(1, 0, 0, 1, ${canvasStore.scaleRelatedX}, ${canvasStore.scaleRelatedY})`, }"
             ></div>
             <div class="top-0 left-0 absolute w-full h-full z-[9999] shadow-inner-black"></div>
         </div>
-        <CanvasZoomControl />
+        <CanvasZoomControl/>
     </div>
 </template>

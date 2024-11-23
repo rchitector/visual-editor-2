@@ -46,4 +46,5 @@ export interface CanvasState {
     zoomLevelMax: 400,
     zoomLevels: number[],
     visibleZoomLevels: number[],
+    debug: boolean,
 }
