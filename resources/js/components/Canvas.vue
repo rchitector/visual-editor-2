@@ -44,7 +44,7 @@
         event.preventDefault();
     };
 
-    const onMouseDown = (event: MouseEvent, itemId: string | null = null) => {
+    const onMouseDown = (event: MouseEvent) => {
         if (event.target === canvasBoxRef.value) {
             canvasStore.isDraggingCanvas = true;
             canvasStore.lastMouseX = event.clientX;
