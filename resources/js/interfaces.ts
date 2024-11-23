@@ -36,6 +36,14 @@ export interface CanvasState {
     lastMouseY: number | null;
     canvasTranslateX: number;
     canvasTranslateY: number;
+    scaleRelatedX: number;
+    scaleRelatedY: number;
     canvasScale: number;
+    canvasPreviousScale: number;
     items: Item[];
+    zoomLevel: number,
+    zoomLevelMin: 1,
+    zoomLevelMax: 400,
+    zoomLevels: number[],
+    visibleZoomLevels: number[],
 }
