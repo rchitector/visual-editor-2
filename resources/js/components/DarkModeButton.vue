@@ -1,17 +1,23 @@
 <script setup lang="ts">
-document.addEventListener('DOMContentLoaded', function() {
+
+import {onMounted, ref} from "vue";
+
+const lightIcon = ref<HTMLDivElement | null>(null);
+const darkIcon = ref<HTMLDivElement | null>(null);
+
+onMounted(() => {
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
-        document.getElementById('theme-toggle-light-icon')?.classList.remove('hidden');
+        lightIcon.value?.classList.remove('hidden');
     } else {
         document.documentElement.classList.remove('dark')
-        document.getElementById('theme-toggle-dark-icon')?.classList.remove('hidden');
+        darkIcon.value?.classList.remove('hidden');
     }
 });
 
 const toggleDarkMode = () => {
-    document.getElementById('theme-toggle-dark-icon')?.classList.toggle('hidden');
-    document.getElementById('theme-toggle-light-icon')?.classList.toggle('hidden');
+    darkIcon.value?.classList.toggle('hidden');
+    lightIcon.value?.classList.toggle('hidden');
 
     if (localStorage.getItem('color-theme')) {
         if (localStorage.getItem('color-theme') === 'light') {
@@ -37,9 +43,9 @@ const toggleDarkMode = () => {
     <button @click="toggleDarkMode"
             id="theme-toggle"
             type="button"
-            class="w-full"
+            class="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
     >
-        <div id="theme-toggle-light-icon" class="hidden flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+        <div id="theme-toggle-light-icon" ref="lightIcon" class="hidden flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
@@ -53,7 +59,7 @@ const toggleDarkMode = () => {
             </svg>
             <span class="ms-3">Light</span>
         </div>
-        <div id="theme-toggle-dark-icon" class="hidden flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+        <div id="theme-toggle-dark-icon" ref="darkIcon" class="hidden flex items-center text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
