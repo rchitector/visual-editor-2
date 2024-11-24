@@ -1,5 +1,6 @@
 sail-restart:
-	./vendor/bin/sail stop
+	#./vendor/bin/sail stop
+	./vendor/bin/sail down
 	./vendor/bin/sail up
 
 pnpm-run-dev:
@@ -11,7 +12,7 @@ sail-down:
 
 pnpm-install:
 	#./vendor/bin/sail pnpm install --verbose
-	./vendor/bin/sail pnpm add -D vite-plugin-vue-devtools
+	./vendor/bin/sail pnpm install --save-dev prettier
 
 vue-tsc:
 	./vendor/bin/sail npx vue-tsc --noEmit

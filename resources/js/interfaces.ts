@@ -26,10 +26,6 @@ export interface Item {
 
 export interface CanvasState {
     baseCellSize: number;
-    defaultScale: number;
-    scaleStep: number;
-    minScale: number;
-    maxScale: number;
     isDraggingCanvas: boolean;
     draggingElement: Item | null;
     lastMouseX: number | null;
@@ -38,13 +34,15 @@ export interface CanvasState {
     canvasTranslateY: number;
     scaleRelatedX: number;
     scaleRelatedY: number;
-    canvasScale: number;
-    canvasPreviousScale: number;
     items: Item[];
+    zoomLevelPrevious: number,
+    zoomLevelDefault: number,
     zoomLevel: number,
     zoomLevelMin: 1,
     zoomLevelMax: 400,
     zoomLevels: number[],
-    visibleZoomLevels: number[],
+    zoomLevelsVisible: number[],
     debug: boolean,
+    rectCenterX: number,
+    rectCenterY: number,
 }

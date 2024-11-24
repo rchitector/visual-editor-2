@@ -6,10 +6,6 @@ import {CanvasState, Item} from '../interfaces'
 export const useCanvasStore = defineStore('canvas', {
     state: (): CanvasState => ({
         baseCellSize: 20,
-        defaultScale: 1,
-        scaleStep: 0.05,
-        minScale: 0.05,
-        maxScale: 10,
         isDraggingCanvas: false,
         draggingElement: null,
         lastMouseX: null,
@@ -18,78 +14,82 @@ export const useCanvasStore = defineStore('canvas', {
         canvasTranslateY: 0,
         scaleRelatedX: 0,
         scaleRelatedY: 0,
-        canvasScale: 1,
-        canvasPreviousScale: 1,
         items: [],
+        zoomLevelDefault: 100,
+        zoomLevelPrevious: 100,
         zoomLevel: 100,
         zoomLevelMin: 1,
         zoomLevelMax: 400,
-        zoomLevels: [1, 2, 3, 5, 10, 15, 20, 33, 50, 75, 100, 125, 150, 200, 250, 300, 400,],
-        visibleZoomLevels: [50, 70, 100, 150, 200],
-        debug: false,
+        zoomLevels: [1, 2, 3, 5, 10, 15, 20, 33, 50, 75, 100, 125, 150, 200, 250, 300, 400],
+        zoomLevelsVisible: [50, 70, 100, 150, 200],
+        debug: true,
+        rectCenterX: 0,
+        rectCenterY: 0,
     }),
-
     actions: {
+        updateZoomLevel(value: number) {
+            this.zoomLevelPrevious = this.zoomLevel;
+            this.zoomLevel = value;
+        },
         setOnTop(id: string): void {
             this.items.forEach((item: Item) => {
                 item.onTop = item.id === id;
             });
-
             this.items.sort((a, b) => {
                 if (a.onTop && !b.onTop) return 1;
                 if (!a.onTop && b.onTop) return -1;
                 return 0;
             });
         },
-        setZoomLevel(level: number): void {
-            this.zoomLevel = Math.min(this.zoomLevelMax, Math.max(this.zoomLevelMin, level));
-            console.log('setZoomLevel:', this.zoomLevel);
+        updateWindowSize(rect: DOMRect): void {
+            this.rectCenterX = rect.width / 2;
+            this.rectCenterY = rect.height / 2;
 
-            const coefficient = (this.canvasScale / this.canvasPreviousScale - this.defaultScale);
-            console.log('coefficient:', coefficient)
-            if (level === 100) {
-                this.canvasPreviousScale = this.canvasScale;
-                this.canvasScale = 1
-            }
+            this.scaleRelatedX = this.rectCenterX;
+            this.scaleRelatedY = this.rectCenterY;
+        },
+        updateCanvasTranslate(scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
+            this.scaleRelatedX = scaleRelatedX ?? this.rectCenterX;
+            this.scaleRelatedY = scaleRelatedY ?? this.rectCenterY;
+            const coefficient = ((this.zoomLevel / 100) / (this.zoomLevelPrevious / 100) - (this.zoomLevelDefault / 100));
+            this.canvasTranslateX = this.canvasTranslateX - (this.scaleRelatedX - this.canvasTranslateX) * coefficient + (this.rectCenterX * coefficient);
+            this.canvasTranslateY = this.canvasTranslateY - (this.scaleRelatedY - this.canvasTranslateY) * coefficient + (this.rectCenterY * coefficient);
+        },
+        setZoom(level: number): void {
+            this.updateZoomLevel(Math.min(this.zoomLevelMax, Math.max(this.zoomLevelMin, level)));
+            this.updateCanvasTranslate();
         },
         zoomIn(): void {
             if (this.zoomLevel < this.zoomLevelMax) {
-                this.zoomLevel = this.zoomLevels[this.zoomLevels.indexOf(this.zoomLevel) + 1];
+                this.updateZoomLevel(this.zoomLevels[this.zoomLevels.indexOf(this.zoomLevel) + 1]);
+                this.updateCanvasTranslate();
             }
-            console.log('zoomIn:', this.zoomLevel);
         },
         zoomOut(): void {
             if (this.zoomLevel > this.zoomLevelMin) {
-                this.zoomLevel = this.zoomLevels[this.zoomLevels.indexOf(this.zoomLevel) - 1];
+                this.updateZoomLevel(this.zoomLevels[this.zoomLevels.indexOf(this.zoomLevel) - 1]);
+                this.updateCanvasTranslate();
             }
-            console.log('zoomOut:', this.zoomLevel);
+        },
+        zoom(vector: number, scaleRelatedX: number | null, scaleRelatedY: number | null): void {
+            if ((vector > 0 && this.zoomLevel > this.zoomLevelMin) || (vector < 0 && this.zoomLevel < this.zoomLevelMax)) {
+                this.updateZoomLevel(this.zoomLevels[this.zoomLevels.indexOf(this.zoomLevel) - vector]);
+                this.updateCanvasTranslate(scaleRelatedX, scaleRelatedY);
+            }
         },
         zoomFit(): void {
             console.log('zoomFit:', this.zoomLevel);
         },
-        zoom(vector, scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
-            this.scaleRelatedX = scaleRelatedX;
-            this.scaleRelatedY = scaleRelatedY;
-            this.canvasPreviousScale = this.canvasScale;
-
-            const newScale = this.canvasScale - vector * this.scaleStep;
-            this.canvasScale = Math.min(this.maxScale, Math.max(this.minScale, newScale));
-            console.log('newScale:', newScale);
-
-            const coefficient = (this.canvasScale / this.canvasPreviousScale - this.defaultScale);
-            console.log('coefficient:', coefficient)
-            this.canvasTranslateX = this.canvasTranslateX - (scaleRelatedX - this.canvasTranslateX) * coefficient;
-            this.canvasTranslateY = this.canvasTranslateY - (scaleRelatedY - this.canvasTranslateY) * coefficient;
-        },
-
         initRandomElements(): void {
             this.items = [];
             for (let i = 1; i <= 10; i++) {
                 this.items.push({
                     id: uuidv4(),
                     onTop: false,
-                    x: getRandomIntInclusive(-300, 300),
-                    y: getRandomIntInclusive(-300, 300),
+                    x: getRandomIntInclusive(20, 100),
+                    y: getRandomIntInclusive(20, 100),
+                    w: 200,
+                    h: 200,
                     ports: {
                         in: [],
                         out: [],
