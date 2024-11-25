@@ -146,10 +146,8 @@ export const useCanvasStore = defineStore('canvas', {
                     }
                 });
             }
-            // this.renderAllItemsRect();
-            // this.zoomFit();
-            // this.canvasTranslateX = this.rectCenterX;
-            // this.canvasTranslateY = this.rectCenterY;
+            this.renderAllItemsRect();
+            this.zoomFit();
         },
     },
 });
