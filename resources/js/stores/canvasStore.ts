@@ -130,7 +130,7 @@ export const useCanvasStore = defineStore('canvas', {
         },
         initRandomElements(): void {
             const maxItems = 10;
-            const diff = 1000;
+            const diff = 300;
             this.items = [];
             for (let i = 1; i <= maxItems; i++) {
                 this.items.push({
@@ -138,16 +138,18 @@ export const useCanvasStore = defineStore('canvas', {
                     onTop: false,
                     x: getRandomIntInclusive(-diff, diff),
                     y: getRandomIntInclusive(-diff, diff),
-                    w: 150,
-                    h: 150,
+                    w: 0,
+                    h: 0,
                     ports: {
                         in: [],
                         out: [],
                     }
                 });
             }
-            this.renderAllItemsRect();
-            this.zoomFit();
+            // this.renderAllItemsRect();
+            // this.zoomFit();
+            // this.canvasTranslateX = this.rectCenterX;
+            // this.canvasTranslateY = this.rectCenterY;
         },
     },
 });

@@ -27,7 +27,9 @@ const centerMe = (itemId: string) => {
     }
 };
 
-const onResize = ({ width, height }: { width: number, height: number }) => canvasStore.setItemSize(props.item.id, width, height);
+const onResize = ({ width, height }: { width: number, height: number }) => {
+    canvasStore.setItemSize(props.item.id, width, height)
+};
 </script>
 <template>
     <div class="absolute box-border top-0 left-0 select-none"
