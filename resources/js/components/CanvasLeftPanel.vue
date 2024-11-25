@@ -20,4 +20,15 @@ const canvasStore = useCanvasStore();
         <div>rectCenterX: {{ canvasStore.rectCenterX.toFixed(3) }}</div>
         <div>rectCenterY: {{ canvasStore.rectCenterY.toFixed(3) }}</div>
     </div>
+    <div class="flex flex-col gap-4 p-4">
+        <div>clientX: {{ canvasStore.clientX.toFixed(3) }}</div>
+        <div>clientY: {{ canvasStore.clientY.toFixed(3) }}</div>
+    </div>
+    <div class="flex flex-col gap-4 p-4">
+        <div>clientZoomedX: {{ canvasStore.clientZoomedX.toFixed(3) }}</div>
+        <div>clientZoomedY: {{ canvasStore.clientZoomedY.toFixed(3) }}</div>
+    </div>
+    <div class="flex flex-col gap-4 p-4">
+        <div>nextZoomManualLevel: {{ canvasStore.nextZoomManualLevel }}</div>
+    </div>
 </template>

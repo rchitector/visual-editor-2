@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import {Item} from '../interfaces'
 import {useCanvasStore} from '../stores/canvasStore.js';
+import DebugDot from "@/js/components/Debug/DebugDot.vue";
+import {DebugColor} from "@/js/components/Debug/DebugEnums";
+import { vElementSize } from '@vueuse/components'
 
 const canvasStore = useCanvasStore();
 
-defineProps<{ data: Item; }>();
+const props = defineProps<{ item: Item; }>();
 
 const onMouseDown = (event: MouseEvent | TouchEvent, itemId: string) => {
     canvasStore.setOnTop(itemId);
@@ -23,24 +26,26 @@ const centerMe = (itemId: string) => {
         me.y = 0;
     }
 };
-</script>
 
+const onResize = ({ width, height }: { width: number, height: number }) => canvasStore.setItemSize(props.item.id, width, height);
+</script>
 <template>
     <div class="absolute box-border top-0 left-0 select-none"
-         :key="data.id"
-         :style="{ transform: `matrix(1, 0, 0, 1, ${data.x}, ${data.y})`, width: `${data.w}px`, height: `${data.h}px`, minHeight: `${data.h}px`, maxHeight: `${data.h}px`, }"
-         @mousedown="onMouseDown($event, data.id)"
-         @touchstart="onMouseDown($event, data.id)"
+         v-element-size="onResize"
+         :key="props.item.id"
+         :style="{ transform: `matrix(1, 0, 0, 1, ${props.item.x}, ${props.item.y})` }"
+         @mousedown="onMouseDown($event, props.item.id)"
+         @touchstart="onMouseDown($event, props.item.id)"
     >
-        <div v-if="canvasStore.debug"  class="z-[99999] w-1 h-1 -ml-0.5 -mt-0.5 absolute top-0 left-0 select-none rounded-full bg-green-500 dark:bg-green-500"></div>
-        <div class="w-full h-full p-2 border-4 rounded-lg bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-            <div class="cursor-grab hover:bg-gray-200 hover:dark:bg-gray-600" data-is-draggable="true">
-                <div>id:{{ data.id }}</div>
-            </div>
+        <DebugDot :color="DebugColor.Green" :size="1" />
+        <div class="w-full h-full p-2 border rounded-lg bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <div class="cursor-grab hover:bg-gray-200 hover:dark:bg-gray-600 whitespace-nowrap" data-is-draggable="true" >id:{{ props.item.id }}</div>
             <div class="border-gray-200 dark:border-gray-700">
-                <div>x:{{ data.x.toFixed(3) }}</div>
-                <div>y:{{ data.y.toFixed(3) }}</div>
-                <button @click="()=>centerMe(data.id)">Center</button>
+                <div>x:{{ props.item.x.toFixed(3) }}</div>
+                <div>y:{{ props.item.y.toFixed(3) }}</div>
+                <div>w:{{ props.item.w.toFixed(3) }}</div>
+                <div>h:{{ props.item.h.toFixed(3) }}</div>
+                <button class="border p-2 rounded" @click="()=>centerMe(props.item.id)">Center</button>
             </div>
         </div>
     </div>

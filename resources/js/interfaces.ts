@@ -17,6 +17,8 @@ export interface Item {
     id: string;
     x: number;
     y: number;
+    w: number;
+    h: number;
     onTop: boolean;
     ports: {
         in: InputPort[];
@@ -40,9 +42,17 @@ export interface CanvasState {
     zoomLevel: number,
     zoomLevelMin: 1,
     zoomLevelMax: 400,
-    zoomLevels: number[],
+    zoomManualLevels: number[],
     zoomLevelsVisible: number[],
     debug: boolean,
     rectCenterX: number,
     rectCenterY: number,
+    clientX: number,
+    clientY: number,
+    clientZoomedX: number,
+    clientZoomedY: number,
+    minX: number,
+    minY: number,
+    maxX: number,
+    maxY: number,
 }
