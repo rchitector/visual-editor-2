@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import SideBar from "./SideBar.vue";
-import Canvas from "./Canvas.vue";
+import SideBar from "./Panels/SideBar.vue";
+import Canvas from "./Canvas/Canvas.vue";
 </script>
 
 <template>

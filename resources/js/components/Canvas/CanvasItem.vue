@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {Item} from '../interfaces'
-import {useCanvasStore} from '../stores/canvasStore.js';
+import {Item} from '@/js/interfaces'
+import {useCanvasStore} from '@/js/stores/canvasStore.js';
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
 import { vElementSize } from '@vueuse/components'
@@ -27,6 +27,10 @@ const centerMe = (itemId: string) => {
     }
 };
 
+const deleteMe = (itemId: string) => {
+    canvasStore.items = canvasStore.items.filter(item => item.id !== itemId);
+};
+
 const onResize = ({ width, height }: { width: number, height: number }) => {
     canvasStore.setItemSize(props.item.id, width, height)
 };
@@ -48,6 +52,7 @@ const onResize = ({ width, height }: { width: number, height: number }) => {
                 <div>w:{{ props.item.w.toFixed(3) }}</div>
                 <div>h:{{ props.item.h.toFixed(3) }}</div>
                 <button class="border p-2 rounded" @click="()=>centerMe(props.item.id)">Center</button>
+                <button class="border p-2 rounded bg-red-700" @click="()=>deleteMe(props.item.id)">Delete</button>
             </div>
         </div>
     </div>

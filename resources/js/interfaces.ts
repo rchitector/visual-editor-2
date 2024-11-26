@@ -55,4 +55,5 @@ export interface CanvasState {
     minY: number,
     maxX: number,
     maxY: number,
+    newItemActive: string | null,
 }

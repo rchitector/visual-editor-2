@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useCanvasStore} from '../stores/canvasStore.js';
+import {useCanvasStore} from '@/js/stores/canvasStore.js';
 
 const canvasStore = useCanvasStore();
 </script>

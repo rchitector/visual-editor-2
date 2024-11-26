@@ -1,15 +1,17 @@
 <script lang="ts" setup>
 import {computed, onBeforeUnmount, onMounted, onUnmounted, ref} from 'vue';
-import {useCanvasStore} from '../stores/canvasStore.js';
-import CanvasItem from "@/js/components/CanvasItem.vue";
-import CanvasZoomControl from "@/js/components/CanvasZoomControl.vue";
+import {useCanvasStore} from '@/js/stores/canvasStore.js';
+import CanvasItem from "@/js/components/Canvas/CanvasItem.vue";
+import ZoomControl from "@/js/components/Controls/ZoomControl.vue";
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import DebugRect from "@/js/components/Debug/DebugRect.vue";
+import NewItemsControl from "@/js/components/Controls/NewItemsControl.vue";
 
 const canvasStore = useCanvasStore();
 
 const canvasBoxRef = ref<HTMLDivElement | null>(null);
+const canvasRef = ref<HTMLDivElement | null>(null);
 
 const onUpdateWindowSize = () => {
     if (canvasBoxRef.value) {
@@ -124,29 +126,33 @@ const onWheel = (event: WheelEvent) => {
 };
 </script>
 <template>
+    <div class="relative w-full h-full">
         <div id="canvas-box"
              ref="canvasBoxRef"
              :style="canvasBoxStyle"
-             class="overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px]"
+             class="z-1 overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:20px_20px]"
              @contextmenu="onContextMenu"
              @mousedown="onMouseDown($event)"
              @touchstart="onMouseDown($event)"
              @wheel="onWheel"
         >
             <div id="canvas"
+                 ref="canvasRef"
                  :style="{ transform: `matrix(${canvasStore.zoomLevel / 100}, 0, 0, ${canvasStore.zoomLevel / 100}, ${canvasStore.canvasTranslateX}, ${canvasStore.canvasTranslateY})` }"
-                 class="relative top-0 left-0 select-none inset-0 w-0 h-0">
+                 class="z-2 relative top-0 left-0 select-none inset-0 w-0 h-0">
                 <CanvasItem v-for="item in canvasStore.items" :key="item.id" :item="item"/>
                 <DebugRect :text="`Canvas matrix(${canvasStore.zoomLevel / 100}, 0, 0, ${canvasStore.zoomLevel / 100}, ${canvasStore.canvasTranslateX.toFixed(3)}, ${canvasStore.canvasTranslateY.toFixed(3)})`" />
-                <DebugRect :color="DebugColor.Green"
-                           :x="canvasStore.minX"
-                           :y="canvasStore.minY"
-                           :width="canvasStore.maxX - canvasStore.minX"
-                           :height="canvasStore.maxY - canvasStore.minY"
-                           text="Items" />
+<!--                <DebugRect :color="DebugColor.Green"-->
+<!--                           :x="canvasStore.minX"-->
+<!--                           :y="canvasStore.minY"-->
+<!--                           :width="canvasStore.maxX - canvasStore.minX"-->
+<!--                           :height="canvasStore.maxY - canvasStore.minY"-->
+<!--                           text="Items" />-->
             </div>
-            <DebugRect :color="DebugColor.Orange" :x="Number(canvasStore.rectCenterX)" :y="Number(canvasStore.rectCenterY)" text="Rect Center"/>
-            <DebugDot :color="DebugColor.Blue" :x="Number(canvasStore.scaleRelatedX)" :y="Number(canvasStore.scaleRelatedY)" text="Scale Related"/>
-            <CanvasZoomControl/>
+<!--            <DebugRect :color="DebugColor.Orange" :x="Number(canvasStore.rectCenterX)" :y="Number(canvasStore.rectCenterY)" text="Rect Center"/>-->
+<!--            <DebugDot :color="DebugColor.Blue" :x="Number(canvasStore.scaleRelatedX)" :y="Number(canvasStore.scaleRelatedY)" text="Scale Related"/>-->
         </div>
+        <ZoomControl/>
+        <NewItemsControl :canvas-box-ref="canvasBoxRef" :canvas-ref="canvasRef"/>
+    </div>
 </template>

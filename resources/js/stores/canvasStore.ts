@@ -34,6 +34,7 @@ export const useCanvasStore = defineStore('canvas', {
         minY: 0,
         maxX: 0,
         maxY: 0,
+        newItemActive: null,
     }),
     getters: {
         nextZoomManualLevel: (state) => {
@@ -43,10 +44,12 @@ export const useCanvasStore = defineStore('canvas', {
             return Math.max(...state.zoomManualLevels.filter(num => num < state.zoomLevel));
         },
         itemsRectCenterX: (state) => {
-            return state.minX + (state.maxX - state.minX) / 2;
+            console.log('state.itemsRectWidth:', state.itemsRectWidth);
+            return state.minX + state.itemsRectWidth / 2;
         },
         itemsRectCenterY: (state) => {
-            return state.minY + (state.maxY - state.minY) / 2;
+            console.log('state.itemsRectHeight:', state.itemsRectHeight);
+            return state.minY + state.itemsRectHeight / 2;
         },
         itemsRectWidth: (state) => {
             return state.maxX - state.minX;
@@ -107,15 +110,24 @@ export const useCanvasStore = defineStore('canvas', {
         zoomFit():void{
             const scaleX = this.canvasWidth / this.itemsRectWidth;
             const scaleY = this.canvasHeight / this.itemsRectHeight;
-            this.zoomLevel = Math.min(Math.min(scaleX, scaleY) * 100, this.zoomLevelDefault);
+            const scale = Math.min(scaleX, scaleY) * 100;
+            if (scale == 0) {
+                this.zoomLevel = this.zoomLevelDefault;
+            } else {
+                this.zoomLevel = Math.min(scale, this.zoomLevelDefault);
+            }
             this.canvasTranslateX = 0 - this.itemsRectCenterX * this.zoomLevel / 100 + this.rectCenterX;
             this.canvasTranslateY = 0 - this.itemsRectCenterY * this.zoomLevel / 100 + this.rectCenterY;
         },
         renderAllItemsRect():void {
-            let minX = Infinity;
-            let maxX = -Infinity;
-            let minY = Infinity;
-            let maxY = -Infinity;
+            // let minX = Infinity;
+            // let maxX = -Infinity;
+            // let minY = Infinity;
+            // let maxY = -Infinity;
+            let minX = 0;
+            let maxX = 0;
+            let minY = 0;
+            let maxY = 0;
             this.items.forEach(item => {
                 minX = Math.min(minX, item.x);
                 minY = Math.min(minY, item.y);
@@ -127,9 +139,10 @@ export const useCanvasStore = defineStore('canvas', {
             this.minY = Math.min(minY, maxY) - padding;
             this.maxX = Math.max(minX, maxX) + padding;
             this.maxY = Math.max(minY, maxY) + padding;
+            console.log('this.minX , this.minY , this.maxX , this.maxY :', this.minX , this.minY , this.maxX , this.maxY );
         },
         initRandomElements(): void {
-            const maxItems = 10;
+            const maxItems = 2;
             const diff = 300;
             this.items = [];
             for (let i = 1; i <= maxItems; i++) {
@@ -148,6 +161,9 @@ export const useCanvasStore = defineStore('canvas', {
             }
             this.renderAllItemsRect();
             this.zoomFit();
+        },
+        setNewItemActive(newItemId): void {
+            this.newItemActive = newItemId;
         },
     },
 });
