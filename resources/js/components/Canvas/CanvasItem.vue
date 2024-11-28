@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {Item} from '../interfaces'
-import {useCanvasStore} from '../stores/canvasStore.js';
+import {Item} from '../../interfaces'
+import {useCanvasStore} from '../../stores/canvasStore';
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
-import { vElementSize } from '@vueuse/components'
+import {vElementSize} from '@vueuse/components'
 
 const canvasStore = useCanvasStore();
 
@@ -27,7 +27,11 @@ const centerMe = (itemId: string) => {
     }
 };
 
-const onResize = ({ width, height }: { width: number, height: number }) => {
+const deleteMe = (itemId: string) => {
+    canvasStore.items = canvasStore.items.filter(item => item.id !== itemId);
+};
+
+const onResize = ({width, height}: { width: number, height: number }) => {
     canvasStore.setItemSize(props.item.id, width, height)
 };
 </script>
@@ -39,15 +43,16 @@ const onResize = ({ width, height }: { width: number, height: number }) => {
          @mousedown="onMouseDown($event, props.item.id)"
          @touchstart="onMouseDown($event, props.item.id)"
     >
-        <DebugDot :color="DebugColor.Green" :size="1" />
+        <DebugDot :color="DebugColor.Green" :size="1"/>
         <div class="w-full h-full p-2 border rounded-lg bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-            <div class="cursor-grab hover:bg-gray-200 hover:dark:bg-gray-600 whitespace-nowrap" data-is-draggable="true" >id:{{ props.item.id }}</div>
+            <div class="cursor-grab hover:bg-gray-200 hover:dark:bg-gray-600 whitespace-nowrap" data-is-draggable="true">id:{{ props.item.id }}</div>
             <div class="border-gray-200 dark:border-gray-700">
                 <div>x:{{ props.item.x.toFixed(3) }}</div>
                 <div>y:{{ props.item.y.toFixed(3) }}</div>
                 <div>w:{{ props.item.w.toFixed(3) }}</div>
                 <div>h:{{ props.item.h.toFixed(3) }}</div>
                 <button class="border p-2 rounded" @click="()=>centerMe(props.item.id)">Center</button>
+                <button class="border p-2 rounded bg-red-800" @click="()=>deleteMe(props.item.id)">Delete</button>
             </div>
         </div>
     </div>

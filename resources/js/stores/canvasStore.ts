@@ -12,7 +12,7 @@ export const useCanvasStore = defineStore('canvas', {
         zoomManualLevels: [1, 2, 3, 5, 10, 15, 20, 33, 50, 75, 100, 125, 150, 200, 250, 300, 400],
         zoomLevelsVisible: [50, 70, 100, 150, 200],
 
-        debug: false,
+        debug: true,
         isDraggingCanvas: false,
         draggingElement: null,
         lastMouseX: null,
@@ -60,6 +60,22 @@ export const useCanvasStore = defineStore('canvas', {
         canvasHeight: (state) => {
             return state.rectCenterY * 2;
         },
+        canvasBoxStyle: (state) => {
+            const scaledCellSize = state.baseCellSize * (state.zoomLevel / 100);
+            const translateCellSizeX = state.canvasTranslateX % scaledCellSize;
+            const translateCellSizeY = state.canvasTranslateY % scaledCellSize;
+            return {
+                backgroundSize: `${scaledCellSize}px ${scaledCellSize}px`,
+                backgroundPosition: `${translateCellSizeX}px ${translateCellSizeY}px`,
+            };
+        },
+        matrix: (state) => {
+            return {
+                x: state.canvasTranslateX,
+                y: state.canvasTranslateY,
+                scale: state.zoomLevel / 100,
+            };
+        },
     },
     actions: {
         setItemSize(itemId: string, width: number, height: number) {
@@ -104,33 +120,40 @@ export const useCanvasStore = defineStore('canvas', {
         zoomOut(scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
             this.setZoom(this.previousZoomManualLevel, scaleRelatedX, scaleRelatedY);
         },
-        zoomFit():void{
+        zoomFit(): void {
+            this.renderAllItemsRect();
             const scaleX = this.canvasWidth / this.itemsRectWidth;
             const scaleY = this.canvasHeight / this.itemsRectHeight;
             this.zoomLevel = Math.min(Math.min(scaleX, scaleY) * 100, this.zoomLevelDefault);
             this.canvasTranslateX = 0 - this.itemsRectCenterX * this.zoomLevel / 100 + this.rectCenterX;
             this.canvasTranslateY = 0 - this.itemsRectCenterY * this.zoomLevel / 100 + this.rectCenterY;
         },
-        renderAllItemsRect():void {
-            let minX = Infinity;
-            let maxX = -Infinity;
-            let minY = Infinity;
-            let maxY = -Infinity;
-            this.items.forEach(item => {
-                minX = Math.min(minX, item.x);
-                minY = Math.min(minY, item.y);
-                maxX = Math.max(maxX, item.x + item.w);
-                maxY = Math.max(maxY, item.y + item.h);
-            });
-            const padding = 20;
-            this.minX = Math.min(minX, maxX) - padding;
-            this.minY = Math.min(minY, maxY) - padding;
-            this.maxX = Math.max(minX, maxX) + padding;
-            this.maxY = Math.max(minY, maxY) + padding;
+        renderAllItemsRect(): void {
+            this.minX = 0;
+            this.minY = 0;
+            this.maxX = 0;
+            this.maxY = 0;
+            if (this.items.length) {
+                let minX = Infinity;
+                let maxX = -Infinity;
+                let minY = Infinity;
+                let maxY = -Infinity;
+                this.items.forEach(item => {
+                    minX = Math.min(minX, item.x);
+                    minY = Math.min(minY, item.y);
+                    maxX = Math.max(maxX, item.x + item.w);
+                    maxY = Math.max(maxY, item.y + item.h);
+                });
+                const padding = 20;
+                this.minX = Math.min(minX, maxX) - padding;
+                this.minY = Math.min(minY, maxY) - padding;
+                this.maxX = Math.max(minX, maxX) + padding;
+                this.maxY = Math.max(minY, maxY) + padding;
+            }
         },
         initRandomElements(): void {
-            const maxItems = 10;
-            const diff = 300;
+            const maxItems = 1;
+            const diff = 0;
             this.items = [];
             for (let i = 1; i <= maxItems; i++) {
                 this.items.push({
@@ -146,7 +169,6 @@ export const useCanvasStore = defineStore('canvas', {
                     }
                 });
             }
-            this.renderAllItemsRect();
             this.zoomFit();
         },
     },

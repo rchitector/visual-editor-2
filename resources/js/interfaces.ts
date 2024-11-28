@@ -32,6 +32,8 @@ export interface CanvasState {
     draggingElement: Item | null;
     lastMouseX: number | null;
     lastMouseY: number | null;
+    startMouseX: number | null;
+    startMouseY: number | null;
     canvasTranslateX: number;
     canvasTranslateY: number;
     scaleRelatedX: number;
