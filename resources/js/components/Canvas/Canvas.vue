@@ -60,9 +60,6 @@ const onPointMove = (event: MouseEvent | TouchEvent) => {
     if (globalBoxRef.value) {
         store.clientX = point.clientX - globalBoxRef.value.getBoundingClientRect().left;
         store.clientY = point.clientY - globalBoxRef.value.getBoundingClientRect().top;
-        // const coeff = 100 * 100 / store.zoom.value;
-        // store.clientZoomedX = store.clientX * coeff / 100;
-        // store.clientZoomedY = store.clientY * coeff / 100;
     }
 
     if (store.dragging.is) {

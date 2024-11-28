@@ -20,8 +20,6 @@ const baseClass = 'select-none absolute gap-1 rounded-lg border border-red-300 d
         <div>rectCenterY: {{ store.rectCenterY.toFixed(0) }}</div>
         <div>clientX: {{ store.clientX.toFixed(0) }}</div>
         <div>clientY: {{ store.clientY.toFixed(0) }}</div>
-        <!--        <div>clientZoomedX: {{ store.clientZoomedX.toFixed(0) }}</div>-->
-        <!--        <div>clientZoomedY: {{ store.clientZoomedY.toFixed(0) }}</div>-->
         <div>nextZoomManualLevel: {{ store.nextZoomManualLevel }}</div>
     </div>
 

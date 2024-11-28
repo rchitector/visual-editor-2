@@ -28,8 +28,6 @@ export const useStore = defineStore('canvas', {
         rectCenterY: 0,
         clientX: 0,
         clientY: 0,
-        // clientZoomedX: 0,
-        // clientZoomedY: 0,
         minX: 0,
         minY: 0,
         maxX: 0,

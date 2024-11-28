@@ -50,8 +50,6 @@ export interface GlobalState {
     rectCenterY: number,
     clientX: number,
     clientY: number,
-    // clientZoomedX: number,
-    // clientZoomedY: number,
     minX: number,
     minY: number,
     maxX: number,
