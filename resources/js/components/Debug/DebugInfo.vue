@@ -10,16 +10,10 @@ const baseClass = 'select-none absolute gap-1 rounded-lg border border-red-300 d
 
 <template>
     <div v-if="store.debug" :class="baseClass" class="left-5 bottom-5 flex flex-col">
-        <div>matrix.scale: {{ store.matrix.scale.toFixed(2) }}</div>
-        <div>matrix.x: {{ store.matrix.x.toFixed(0) }}</div>
-        <div>matrix.y: {{ store.matrix.y.toFixed(0) }}</div>
-        <div>rectCenterX: {{ store.rectCenterX.toFixed(0) }}</div>
-        <div>rectCenterY: {{ store.rectCenterY.toFixed(0) }}</div>
-        <div>clientX: {{ store.clientX.toFixed(0) }}</div>
-        <div>clientY: {{ store.clientY.toFixed(0) }}</div>
-        <div>previousZoomManualLevel: {{ store.previousZoomManualLevel }}</div>
-        <div>zoomLevel: {{ store.zoom.value }}</div>
-        <div>nextZoomManualLevel: {{ store.nextZoomManualLevel }}</div>
+        <div>globalBoxRectCenter: {{ store.globalBoxRectCenter.x.toFixed(0) }}:{{ store.globalBoxRectCenter.y.toFixed(0) }}</div>
+        <div>canvasPointMatrix: {{ store.canvasPointMatrix.scale.toFixed(2) }}:{{ store.canvasPointMatrix.x.toFixed(0) }}:{{ store.canvasPointMatrix.y.toFixed(0) }}</div>
+        <div>canvasMatrix: {{ store.canvasMatrix.scale.toFixed(2) }}:{{ store.canvasMatrix.x.toFixed(0) }}:{{ store.canvasMatrix.y.toFixed(0) }}</div>
+        <div>documentPoint: {{ store.documentPoint.x }}:{{ store.documentPoint.y }}</div>
     </div>
 
     <!--    <div v-if="store.debug" :class="baseClass" class="left-5 top-5 flex flex-col">-->

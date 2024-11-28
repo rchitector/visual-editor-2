@@ -14,8 +14,7 @@ const onMouseDown = (event: MouseEvent | TouchEvent, itemId: string) => {
     const point = 'touches' in event ? event.touches[0] : event;
     if (point.target && (point.target as HTMLElement).closest('[data-is-draggable]')) {
         store.dragging.element = store.items.find(item => item.id === itemId) || null;
-        store.lastMouseX = point.clientX;
-        store.lastMouseY = point.clientY;
+        store.documentLastPoint = {x: point.clientX, y: point.clientY};
     }
 };
 

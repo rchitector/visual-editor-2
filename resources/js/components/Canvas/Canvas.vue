@@ -13,7 +13,7 @@ const globalBoxRef = ref<HTMLDivElement | null>(null);
 const onUpdateWindowSize = () => {
     if (globalBoxRef.value) {
         const rect = globalBoxRef.value.getBoundingClientRect();
-        store.updateCanvasBoxRect(rect);
+        store.updateGlobalBoxRect(rect);
     }
 };
 
@@ -60,15 +60,13 @@ const onPointUp = (event: MouseEvent | TouchEvent) => {
 const onWheel = (event: WheelEvent) => {
     event.preventDefault();
     if (globalBoxRef.value) {
-        const point = 'touches' in event ? event.touches[0] : event;
-        store.onWheel(point.deltaY, point.clientX, point.clientY);
+        store.onWheel(event.deltaY, event.clientX, event.clientY);
     }
 };
 </script>
 <template>
     <div ref="globalBoxRef"
          class="overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800"
-         :style="store.canvasBoxStyle"
          @contextmenu="onContextMenu"
          @mousedown="onPointDown($event)"
          @touchstart="onPointDown($event)"

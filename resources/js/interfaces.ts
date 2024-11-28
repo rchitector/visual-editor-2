@@ -13,11 +13,17 @@ export interface Point {
 }
 
 export interface GlobalState {
+    debug: boolean,
+    items: Item[],
+    zoom: {
+        previous: number,
+        value: number,
+    },
     dragging: {
         is: boolean,
-        element: HTMLElement | null,
+        element: Item | null,
     },
-    canvasBoxRect: {
+    globalBoxRect: {
         exists: boolean,
         width: number,
         height: number,
@@ -26,26 +32,9 @@ export interface GlobalState {
         x: number,
         y: number,
     },
-    element: Item | null,
-    lastMouseX: number | null,
-    lastMouseY: number | null,
-    // startPoint: Point,
+    documentPoint: Point,
+    documentLastPoint: Point,
     canvasTranslateX: number,
     canvasTranslateY: number,
-    scaleRelatedX: number,
-    scaleRelatedY: number,
-    items: Item[],
-    zoom: {
-        previous: number,
-        value: number,
-    },
-    debug: boolean,
-    rectCenterX: number,
-    rectCenterY: number,
-    clientX: number,
-    clientY: number,
-    minX: number,
-    minY: number,
-    maxX: number,
-    maxY: number,
+    itemsRect: { x: number, y: number, width: number, height: number, center: Point }
 }

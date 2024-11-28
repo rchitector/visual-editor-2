@@ -2,7 +2,7 @@ import {defineStore} from 'pinia';
 // import {v4 as uuidv4} from "uuid";
 // import {getRandomIntInclusive} from '@/js/stores/helper';
 import {GlobalState, Item} from '@/js/interfaces'
-import {BG_CELL_SIZE, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_MIN, ZOOM_MANUAL_LEVELS} from '@/js/stores/constants';
+import {BG_CELL_SIZE, ITEMS_RECTANGLE_PADDING, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_MIN, ZOOM_MANUAL_LEVELS} from '@/js/stores/constants';
 
 export const useStore = defineStore('canvas', {
     state: (): GlobalState => ({
@@ -16,23 +16,15 @@ export const useStore = defineStore('canvas', {
             is: false,
             element: null
         },
-        canvasBoxRect: {exists: false, width: 0, height: 0, top: 0, left: 0, x: 0, y: 0},
+        globalBoxRect: {exists: false, width: 0, height: 0, top: 0, left: 0, x: 0, y: 0},
         // startPoint: {x: 0, y: 0},
-        currentPoint: {x: 0, y: 0},
-        lastMouseX: null,
-        lastMouseY: null,
+        documentPoint: {x: 0, y: 0},
+        documentLastPoint: {x: 0, y: 0},
         canvasTranslateX: 0,
         canvasTranslateY: 0,
-        scaleRelatedX: 0,
-        scaleRelatedY: 0,
-        rectCenterX: 0,
-        rectCenterY: 0,
-        clientX: 0,
-        clientY: 0,
-        minX: 0,
-        minY: 0,
-        maxX: 0,
-        maxY: 0,
+        // relatedPointX: 0,
+        // relatedPointY: 0,
+        itemsRect: {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}}
     }),
     getters: {
         nextZoomManualLevel: (state) => {
@@ -43,45 +35,31 @@ export const useStore = defineStore('canvas', {
             const filtered = ZOOM_MANUAL_LEVELS.filter(num => num < state.zoom.value)
             return filtered.length ? Math.max(...filtered) : ZOOM_LEVEL_MIN;
         },
-        itemsRectCenterX: (state) => {
-            return state.minX + (state.maxX - state.minX) / 2;
-        },
-        itemsRectCenterY: (state) => {
-            return state.minY + (state.maxY - state.minY) / 2;
-        },
-        itemsRectWidth: (state) => {
-            return state.maxX - state.minX;
-        },
-        itemsRectHeight: (state) => {
-            return state.maxY - state.minY;
-        },
-        canvasBoxStyle: (state) => {
-            const scaledCellSize = BG_CELL_SIZE * (state.zoom.value / 100);
-            const translateCellSizeX = state.canvasTranslateX % scaledCellSize;
-            const translateCellSizeY = state.canvasTranslateY % scaledCellSize;
+        canvasMatrix: (state) => {
             return {
-                backgroundSize: `${scaledCellSize}px ${scaledCellSize}px`,
-                backgroundPosition: `${translateCellSizeX}px ${translateCellSizeY}px`,
-            };
-        },
-        matrix: (state) => {
-            return {
+                scale: state.zoom.value / 100,
                 x: state.canvasTranslateX,
                 y: state.canvasTranslateY,
-                scale: state.zoom.value / 100,
             };
         },
-        rectCenterX: (state) => {
-            return state.canvasBoxRect.width / 2;
+        canvasPointMatrix: (state) => {
+            return {
+                scale: state.zoom.value / 100,
+                x: state.documentPoint.x - state.globalBoxRect.left,
+                y: state.documentPoint.y - state.globalBoxRect.top,
+            };
         },
-        rectCenterY: (state) => {
-            return state.canvasBoxRect.height / 2;
+        globalBoxRectCenter: (state) => {
+            return {
+                x: state.globalBoxRect.width / 2,
+                y: state.globalBoxRect.height / 2,
+            };
         },
     },
     actions: {
         onWheel(deltaY: number, pointX: number, pointY: number) {
-            const scaleRelatedX = pointX - this.canvasBoxRect.left;
-            const scaleRelatedY = pointY - this.canvasBoxRect.top;
+            const scaleRelatedX = pointX - this.globalBoxRect.left;
+            const scaleRelatedY = pointY - this.globalBoxRect.top;
             const vector = Math.sign(deltaY);
             if (vector > 0) {
                 this.zoomOut(scaleRelatedX, scaleRelatedY);
@@ -90,11 +68,11 @@ export const useStore = defineStore('canvas', {
             }
         },
         onPointUp(pointX: number, pointY: number) {
-            // if (this.canvasBoxRect.exists) {
+            // if (this.globalBoxRect.exists) {
             //     console.log('this.dragging.is:', this.dragging.is);
             //     if ((this.startPoint.x === pointX && this.startPoint.y === pointY)) {
-            //         const relatedX = pointX - this.canvasBoxRect.left - this.canvasTranslateX;
-            //         const relatedY = pointY - this.canvasBoxRect.top - this.canvasTranslateY;
+            //         const relatedX = pointX - this.globalBoxRect.left - this.canvasTranslateX;
+            //         const relatedY = pointY - this.globalBoxRect.top - this.canvasTranslateY;
             //         this.items.push({
             //             id: uuidv4(),
             //             x: relatedX / (this.zoom.value / 100),
@@ -107,42 +85,31 @@ export const useStore = defineStore('canvas', {
             // }
             this.dragging.is = false;
             this.dragging.element = null;
-            this.lastMouseX = null;
-            this.lastMouseY = null;
+            this.documentLastPoint = {x: 0, y: 0};
             // this.startPoint.x = null;
             // this.startPoint.y = null;
         },
         onPointDown(pointX: number, pointY: number) {
             this.dragging.is = true;
-            this.lastMouseX = pointX;
-            this.lastMouseY = pointY;
+            this.documentLastPoint = {x: pointX, y: pointY};
             // this.startPoint.x = pointX;
             // this.startPoint.y = pointY;
         },
         onPointMove(pointX: number, pointY: number) {
-            if (this.canvasBoxRect.exists) {
-                this.clientX = pointX - this.canvasBoxRect.left;
-                this.clientY = pointY - this.canvasBoxRect.top;
-            }
+            this.documentPoint = {x: pointX, y: pointY};
+            // if (this.globalBoxRect.exists) {
+            //     this.relatedPointX = pointX - this.globalBoxRect.left;
+            //     this.relatedPointY = pointY - this.globalBoxRect.top;
+            // }
             if (this.dragging.is) {
-                if (this.lastMouseX !== null) {
-                    this.canvasTranslateX += (pointX - this.lastMouseX);
-                }
-                if (this.lastMouseY !== null) {
-                    this.canvasTranslateY += (pointY - this.lastMouseY);
-                }
-                this.lastMouseX = pointX;
-                this.lastMouseY = pointY;
+                this.canvasTranslateX += (pointX - this.documentLastPoint.x);
+                this.canvasTranslateY += (pointY - this.documentLastPoint.y);
+                this.documentLastPoint = {x: pointX, y: pointY};
             }
             if (this.dragging.element !== null) {
-                if (this.lastMouseX !== null) {
-                    this.dragging.element.x = (this.dragging.element.x + (pointX - this.lastMouseX) / (this.zoom.value / 100));
-                }
-                if (this.lastMouseY !== null) {
-                    this.dragging.element.y = (this.dragging.element.y + (pointY - this.lastMouseY) / (this.zoom.value / 100));
-                }
-                this.lastMouseX = pointX;
-                this.lastMouseY = pointY;
+                this.dragging.element.x = (this.dragging.element.x + (pointX - this.documentLastPoint.x) / (this.zoom.value / 100));
+                this.dragging.element.y = (this.dragging.element.y + (pointY - this.documentLastPoint.y) / (this.zoom.value / 100));
+                this.documentLastPoint = {x: pointX, y: pointY};
             }
         },
         setItemSize(itemId: string, width: number, height: number) {
@@ -162,8 +129,8 @@ export const useStore = defineStore('canvas', {
                 return 0;
             });
         },
-        updateCanvasBoxRect(rect: DOMRect): void {
-            this.canvasBoxRect = {
+        updateGlobalBoxRect(rect: DOMRect): void {
+            this.globalBoxRect = {
                 exists: true,
                 width: rect.width,
                 height: rect.height,
@@ -178,8 +145,8 @@ export const useStore = defineStore('canvas', {
             this.zoom.value = Math.min(ZOOM_LEVEL_MAX, Math.max(ZOOM_LEVEL_MIN, newZoomLevel));
 
             const coefficient = ((this.zoom.value / 100) / (this.zoom.previous / 100) - (ZOOM_LEVEL_DEFAULT / 100));
-            this.canvasTranslateX = this.canvasTranslateX - ((scaleRelatedX ?? this.rectCenterX) - this.canvasTranslateX) * coefficient;
-            this.canvasTranslateY = this.canvasTranslateY - ((scaleRelatedY ?? this.rectCenterY) - this.canvasTranslateY) * coefficient;
+            this.canvasTranslateX = this.canvasTranslateX - ((scaleRelatedX ?? this.globalBoxRectCenter.x) - this.canvasTranslateX) * coefficient;
+            this.canvasTranslateY = this.canvasTranslateY - ((scaleRelatedY ?? this.globalBoxRectCenter.y) - this.canvasTranslateY) * coefficient;
         },
         zoomIn(scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
             this.setZoom(this.nextZoomManualLevel, scaleRelatedX, scaleRelatedY);
@@ -189,17 +156,18 @@ export const useStore = defineStore('canvas', {
         },
         zoomFit(): void {
             this.renderAllItemsRect();
-            const scaleX = this.canvasBoxRect.width / this.itemsRectWidth;
-            const scaleY = this.canvasBoxRect.height / this.itemsRectHeight;
+            const scaleX = this.globalBoxRect.width / this.itemsRect.width;
+            const scaleY = this.globalBoxRect.height / this.itemsRect.height;
             this.zoom.value = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);
-            this.canvasTranslateX = 0 - this.itemsRectCenterX * this.zoom.value / 100 + this.rectCenterX;
-            this.canvasTranslateY = 0 - this.itemsRectCenterY * this.zoom.value / 100 + this.rectCenterY;
+            this.canvasTranslateX = 0 - this.itemsRect.center.x * this.zoom.value / 100 + this.globalBoxRectCenter.x;
+            this.canvasTranslateY = 0 - this.itemsRect.center.y * this.zoom.value / 100 + this.globalBoxRectCenter.y;
         },
         renderAllItemsRect(): void {
-            this.minX = 0;
-            this.minY = 0;
-            this.maxX = 0;
-            this.maxY = 0;
+            this.itemsRect = {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}}
+            let _minX = 0;
+            let _minY = 0;
+            let _maxX = 0;
+            let _maxY = 0;
             if (this.items.length) {
                 let minX = Infinity;
                 let maxX = -Infinity;
@@ -211,11 +179,22 @@ export const useStore = defineStore('canvas', {
                     maxX = Math.max(maxX, item.x + item.w);
                     maxY = Math.max(maxY, item.y + item.h);
                 });
-                const padding = 20;
-                this.minX = Math.min(minX, maxX) - padding;
-                this.minY = Math.min(minY, maxY) - padding;
-                this.maxX = Math.max(minX, maxX) + padding;
-                this.maxY = Math.max(minY, maxY) + padding;
+                _minX = Math.min(minX, maxX) - ITEMS_RECTANGLE_PADDING;
+                _minY = Math.min(minY, maxY) - ITEMS_RECTANGLE_PADDING;
+                _maxX = Math.max(minX, maxX) + ITEMS_RECTANGLE_PADDING;
+                _maxY = Math.max(minY, maxY) + ITEMS_RECTANGLE_PADDING;
+                const w = _maxX - _minX;
+                const h = _maxY - _minY;
+                this.itemsRect = {
+                    x: _minX,
+                    y: _minY,
+                    width: w,
+                    height: h,
+                    center: {
+                        x: minX + w / 2,
+                        y: minY + h / 2,
+                    }
+                };
             }
         },
         // initRandomElements(): void {
