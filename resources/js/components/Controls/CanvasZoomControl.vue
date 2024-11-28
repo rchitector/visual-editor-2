@@ -19,7 +19,7 @@ const store = useStore();
             <button id="dropdownTopButton" data-dropdown-toggle="dropdownTop" data-dropdown-placement="top"
                     class="text-gray-900 dark:text-white px-3 py-2.5 ps-1 text-center inline-flex items-center rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
                     type="button">
-                <div class="w-16 ">{{ store.zoomLevel.toFixed(0) }}%</div>
+                <div class="w-16 ">{{ store.zoom.value.toFixed(0) }}%</div>
             </button>
             <div id="dropdownTop" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
                 <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownTopButton">

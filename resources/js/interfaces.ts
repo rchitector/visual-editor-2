@@ -1,19 +1,17 @@
-import {ZOOM_LEVEL_DEFAULT} from "@/js/stores/constants";
-
-export const PortTypes = {
-    INPUT_PORT: "input",
-    OUTPUT_PORT: "output",
-};
-
-export interface InputPort {
-    type: typeof PortTypes.INPUT_PORT,
-    color: 'red',
-}
-
-export interface OutputPort {
-    type: typeof PortTypes.OUTPUT_PORT,
-    color: 'green',
-}
+// export const PortTypes = {
+//     INPUT_PORT: "input",
+//     OUTPUT_PORT: "output",
+// };
+//
+// export interface InputPort {
+//     type: typeof PortTypes.INPUT_PORT,
+//     color: 'red',
+// }
+//
+// export interface OutputPort {
+//     type: typeof PortTypes.OUTPUT_PORT,
+//     color: 'green',
+// }
 
 export interface Item {
     id: string;
@@ -22,37 +20,40 @@ export interface Item {
     w: number;
     h: number;
     onTop: boolean;
-    ports: {
-        in: InputPort[];
-        out: OutputPort[];
-    },
+}
+
+export interface Point {
+    x: number;
+    y: number;
 }
 
 export interface GlobalState {
-    isDraggingCanvas: boolean;
-    draggingElement: Item | null;
-    lastMouseX: number | null;
-    lastMouseY: number | null;
-    startMouseX: number | null;
-    startMouseY: number | null;
-    canvasTranslateX: number;
-    canvasTranslateY: number;
-    scaleRelatedX: number;
-    scaleRelatedY: number;
-    items: Item[];
-    zoomLevelPrevious: number,
-    zoomLevel: number,
+    dragging: {
+        is: boolean,
+        element: HTMLElement | null,
+    },
+    element: Item | null,
+    lastMouseX: number | null,
+    lastMouseY: number | null,
+    startPoint: Point,
+    canvasTranslateX: number,
+    canvasTranslateY: number,
+    scaleRelatedX: number,
+    scaleRelatedY: number,
+    items: Item[],
+    zoom: {
+        previous: number,
+        value: number,
+    },
     debug: boolean,
     rectCenterX: number,
     rectCenterY: number,
     clientX: number,
     clientY: number,
-    clientZoomedX: number,
-    clientZoomedY: number,
+    // clientZoomedX: number,
+    // clientZoomedY: number,
     minX: number,
     minY: number,
     maxX: number,
     maxY: number,
-    // zoomLevelPrevious: ZOOM_LEVEL_DEFAULT,
-    // zoomLevel: ZOOM_LEVEL_DEFAULT,
 }
