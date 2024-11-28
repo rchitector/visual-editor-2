@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
-import {v4 as uuidv4} from "uuid";
-import {getRandomIntInclusive} from '@/js/stores/helper';
+// import {v4 as uuidv4} from "uuid";
+// import {getRandomIntInclusive} from '@/js/stores/helper';
 import {GlobalState, Item} from '@/js/interfaces'
 import {BG_CELL_SIZE, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_MIN, ZOOM_MANUAL_LEVELS} from '@/js/stores/constants';
 
@@ -17,7 +17,7 @@ export const useStore = defineStore('canvas', {
             element: null
         },
         canvasBoxRect: {exists: false, width: 0, height: 0, top: 0, left: 0, x: 0, y: 0},
-        startPoint: {x: 0, y: 0},
+        // startPoint: {x: 0, y: 0},
         currentPoint: {x: 0, y: 0},
         lastMouseX: null,
         lastMouseY: null,
@@ -36,10 +36,12 @@ export const useStore = defineStore('canvas', {
     }),
     getters: {
         nextZoomManualLevel: (state) => {
-            return Math.min(...ZOOM_MANUAL_LEVELS.filter(num => num > state.zoom.value));
+            const filtered = ZOOM_MANUAL_LEVELS.filter(num => num > state.zoom.value)
+            return filtered.length ? Math.min(...filtered) : ZOOM_LEVEL_MAX;
         },
         previousZoomManualLevel: (state) => {
-            return Math.max(...ZOOM_MANUAL_LEVELS.filter(num => num < state.zoom.value));
+            const filtered = ZOOM_MANUAL_LEVELS.filter(num => num < state.zoom.value)
+            return filtered.length ? Math.max(...filtered) : ZOOM_LEVEL_MIN;
         },
         itemsRectCenterX: (state) => {
             return state.minX + (state.maxX - state.minX) / 2;
@@ -52,12 +54,6 @@ export const useStore = defineStore('canvas', {
         },
         itemsRectHeight: (state) => {
             return state.maxY - state.minY;
-        },
-        canvasWidth: (state) => {
-            return state.rectCenterX * 2;
-        },
-        canvasHeight: (state) => {
-            return state.rectCenterY * 2;
         },
         canvasBoxStyle: (state) => {
             const scaledCellSize = BG_CELL_SIZE * (state.zoom.value / 100);
@@ -113,15 +109,15 @@ export const useStore = defineStore('canvas', {
             this.dragging.element = null;
             this.lastMouseX = null;
             this.lastMouseY = null;
-            this.startPoint.x = null;
-            this.startPoint.y = null;
+            // this.startPoint.x = null;
+            // this.startPoint.y = null;
         },
         onPointDown(pointX: number, pointY: number) {
             this.dragging.is = true;
             this.lastMouseX = pointX;
             this.lastMouseY = pointY;
-            this.startPoint.x = pointX;
-            this.startPoint.y = pointY;
+            // this.startPoint.x = pointX;
+            // this.startPoint.y = pointY;
         },
         onPointMove(pointX: number, pointY: number) {
             if (this.canvasBoxRect.exists) {
@@ -156,10 +152,6 @@ export const useStore = defineStore('canvas', {
                 me.h = height;
             }
         },
-        updateZoomLevel(value: number) {
-            this.zoom.previous = this.zoom.value;
-            this.zoom.value = Math.min(ZOOM_LEVEL_MAX, Math.max(ZOOM_LEVEL_MIN, value));
-        },
         setOnTop(id: string): void {
             this.items.forEach((item: Item) => {
                 item.onTop = item.id === id;
@@ -180,18 +172,14 @@ export const useStore = defineStore('canvas', {
                 x: rect.x,
                 y: rect.y,
             };
-
-            this.scaleRelatedX = this.rectCenterX;
-            this.scaleRelatedY = this.rectCenterY;
         },
         setZoom(newZoomLevel: number, scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
-            this.updateZoomLevel(newZoomLevel);
-            this.scaleRelatedX = scaleRelatedX ?? this.rectCenterX;
-            this.scaleRelatedY = scaleRelatedY ?? this.rectCenterY;
-            const coefficient = ((this.zoom.value / 100) / (this.zoom.previous / 100) - (ZOOM_LEVEL_DEFAULT / 100));
-            this.canvasTranslateX = this.canvasTranslateX - (this.scaleRelatedX - this.canvasTranslateX) * coefficient;
-            this.canvasTranslateY = this.canvasTranslateY - (this.scaleRelatedY - this.canvasTranslateY) * coefficient;
+            this.zoom.previous = this.zoom.value;
+            this.zoom.value = Math.min(ZOOM_LEVEL_MAX, Math.max(ZOOM_LEVEL_MIN, newZoomLevel));
 
+            const coefficient = ((this.zoom.value / 100) / (this.zoom.previous / 100) - (ZOOM_LEVEL_DEFAULT / 100));
+            this.canvasTranslateX = this.canvasTranslateX - ((scaleRelatedX ?? this.rectCenterX) - this.canvasTranslateX) * coefficient;
+            this.canvasTranslateY = this.canvasTranslateY - ((scaleRelatedY ?? this.rectCenterY) - this.canvasTranslateY) * coefficient;
         },
         zoomIn(scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
             this.setZoom(this.nextZoomManualLevel, scaleRelatedX, scaleRelatedY);
@@ -201,8 +189,8 @@ export const useStore = defineStore('canvas', {
         },
         zoomFit(): void {
             this.renderAllItemsRect();
-            const scaleX = this.canvasWidth / this.itemsRectWidth;
-            const scaleY = this.canvasHeight / this.itemsRectHeight;
+            const scaleX = this.canvasBoxRect.width / this.itemsRectWidth;
+            const scaleY = this.canvasBoxRect.height / this.itemsRectHeight;
             this.zoom.value = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);
             this.canvasTranslateX = 0 - this.itemsRectCenterX * this.zoom.value / 100 + this.rectCenterX;
             this.canvasTranslateY = 0 - this.itemsRectCenterY * this.zoom.value / 100 + this.rectCenterY;
@@ -230,25 +218,25 @@ export const useStore = defineStore('canvas', {
                 this.maxY = Math.max(minY, maxY) + padding;
             }
         },
-        initRandomElements(): void {
-            const maxItems = 1;
-            const diff = 0;
-            this.items = [];
-            for (let i = 1; i <= maxItems; i++) {
-                this.items.push({
-                    id: uuidv4(),
-                    onTop: false,
-                    x: getRandomIntInclusive(-diff, diff),
-                    y: getRandomIntInclusive(-diff, diff),
-                    w: 0,
-                    h: 0,
-                    ports: {
-                        in: [],
-                        out: [],
-                    }
-                });
-            }
-            this.zoomFit();
-        },
+        // initRandomElements(): void {
+        //     const maxItems = 1;
+        //     const diff = 0;
+        //     this.items = [];
+        //     for (let i = 1; i <= maxItems; i++) {
+        //         this.items.push({
+        //             id: uuidv4(),
+        //             onTop: false,
+        //             x: getRandomIntInclusive(-diff, diff),
+        //             y: getRandomIntInclusive(-diff, diff),
+        //             w: 0,
+        //             h: 0,
+        //             ports: {
+        //                 in: [],
+        //                 out: [],
+        //             }
+        //         });
+        //     }
+        //     this.zoomFit();
+        // },
     },
 });

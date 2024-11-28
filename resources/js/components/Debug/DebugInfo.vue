@@ -10,23 +10,23 @@ const baseClass = 'select-none absolute gap-1 rounded-lg border border-red-300 d
 
 <template>
     <div v-if="store.debug" :class="baseClass" class="left-5 bottom-5 flex flex-col">
-        <div>zoom.value: {{ store.zoom.value.toFixed(0) }}</div>
-        <div>canvasTranslateX: {{ store.canvasTranslateX.toFixed(0) }}</div>
-        <div>canvasTranslateY: {{ store.canvasTranslateY.toFixed(0) }}</div>
-        <div>scaleRelatedX: {{ store.scaleRelatedX.toFixed(0) }}</div>
-        <div>scaleRelatedY: {{ store.scaleRelatedY.toFixed(0) }}</div>
+        <div>matrix.scale: {{ store.matrix.scale.toFixed(2) }}</div>
+        <div>matrix.x: {{ store.matrix.x.toFixed(0) }}</div>
+        <div>matrix.y: {{ store.matrix.y.toFixed(0) }}</div>
         <div>rectCenterX: {{ store.rectCenterX.toFixed(0) }}</div>
         <div>rectCenterY: {{ store.rectCenterY.toFixed(0) }}</div>
         <div>clientX: {{ store.clientX.toFixed(0) }}</div>
         <div>clientY: {{ store.clientY.toFixed(0) }}</div>
+        <div>previousZoomManualLevel: {{ store.previousZoomManualLevel }}</div>
+        <div>zoomLevel: {{ store.zoom.value }}</div>
         <div>nextZoomManualLevel: {{ store.nextZoomManualLevel }}</div>
     </div>
 
-    <div v-if="store.debug" :class="baseClass" class="left-5 top-5 flex flex-col">
-        <div @click="store.initRandomElements"
-             class="p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Regenerate Elements
-        </div>
-    </div>
+    <!--    <div v-if="store.debug" :class="baseClass" class="left-5 top-5 flex flex-col">-->
+    <!--        <div @click="store.initRandomElements"-->
+    <!--             class="p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Regenerate Elements-->
+    <!--        </div>-->
+    <!--    </div>-->
 
     <div v-if="store.debug"
          :class="baseClass" class="top-1/2 transform -translate-y-1/2 right-5 flex flex-col">
