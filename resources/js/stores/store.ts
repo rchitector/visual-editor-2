@@ -93,11 +93,12 @@ export const useStore = defineStore('canvas', {
                 this.zoomIn(scaleRelatedX, scaleRelatedY);
             }
         },
-        onPointUp() {
+        onPointUp(pointX: number, pointY: number) {
             // if (this.canvasBoxRect.exists) {
-            //     if ((this.startPoint.x === this.lastMouseX && this.startPoint.y === this.lastMouseY)) {
-            //         const relatedX = this.lastMouseX - this.canvasBoxRect.left - this.canvasTranslateX;
-            //         const relatedY = this.lastMouseY - this.canvasBoxRect.top - this.canvasTranslateY;
+            //     console.log('this.dragging.is:', this.dragging.is);
+            //     if ((this.startPoint.x === pointX && this.startPoint.y === pointY)) {
+            //         const relatedX = pointX - this.canvasBoxRect.left - this.canvasTranslateX;
+            //         const relatedY = pointY - this.canvasBoxRect.top - this.canvasTranslateY;
             //         this.items.push({
             //             id: uuidv4(),
             //             x: relatedX / (this.zoom.value / 100),

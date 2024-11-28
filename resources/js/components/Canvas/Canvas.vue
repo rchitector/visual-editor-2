@@ -6,7 +6,6 @@ import CanvasItems from "@/js/components/Canvas/CanvasItems.vue";
 import DebugInfo from "@/js/components/Debug/DebugInfo.vue";
 import {useStore} from "@/js/stores/store";
 
-
 const store = useStore();
 
 const globalBoxRef = ref<HTMLDivElement | null>(null);
@@ -53,8 +52,9 @@ const onPointMove = (event: MouseEvent | TouchEvent) => {
 };
 
 const onPointUp = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
     // store.renderAllItemsRect();
-    store.onPointUp();
+    store.onPointUp(point.clientX, point.clientY);
 };
 
 const onWheel = (event: WheelEvent) => {
