@@ -1,26 +1,26 @@
 <script setup lang="ts">
 import {Item} from '../../interfaces'
-import {useCanvasStore} from '../../stores/canvasStore';
+import {useStore} from '../../stores/store';
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
 import {vElementSize} from '@vueuse/components'
 
-const canvasStore = useCanvasStore();
+const store = useStore();
 
 const props = defineProps<{ item: Item; }>();
 
 const onMouseDown = (event: MouseEvent | TouchEvent, itemId: string) => {
-    canvasStore.setOnTop(itemId);
+    store.setOnTop(itemId);
     const point = 'touches' in event ? event.touches[0] : event;
     if (point.target && (point.target as HTMLElement).closest('[data-is-draggable]')) {
-        canvasStore.draggingElement = canvasStore.items.find(item => item.id === itemId) || null;
-        canvasStore.lastMouseX = point.clientX;
-        canvasStore.lastMouseY = point.clientY;
+        store.draggingElement = store.items.find(item => item.id === itemId) || null;
+        store.lastMouseX = point.clientX;
+        store.lastMouseY = point.clientY;
     }
 };
 
 const centerMe = (itemId: string) => {
-    const me = canvasStore.items.find(item => item.id === itemId);
+    const me = store.items.find(item => item.id === itemId);
     if (me) {
         me.x = 0;
         me.y = 0;
@@ -28,11 +28,11 @@ const centerMe = (itemId: string) => {
 };
 
 const deleteMe = (itemId: string) => {
-    canvasStore.items = canvasStore.items.filter(item => item.id !== itemId);
+    store.items = store.items.filter(item => item.id !== itemId);
 };
 
 const onResize = ({width, height}: { width: number, height: number }) => {
-    canvasStore.setItemSize(props.item.id, width, height)
+    store.setItemSize(props.item.id, width, height)
 };
 </script>
 <template>

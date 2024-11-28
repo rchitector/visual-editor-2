@@ -1,29 +1,25 @@
 import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
-import {getRandomIntInclusive} from "../helper.js";
-import {CanvasState, Item} from '../interfaces'
+import {getRandomIntInclusive} from '@/js/helper.js';
+import {GlobalState, Item} from '../interfaces'
+import {BG_CELL_SIZE, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_MIN, ZOOM_MANUAL_LEVELS} from '@/js/stores/constants';
 
-export const useCanvasStore = defineStore('canvas', {
-    state: (): CanvasState => ({
-        baseCellSize: 20,
-        zoomLevelMin: 1,
-        zoomLevelMax: 400,
-        zoomLevelDefault: 100,
-        zoomManualLevels: [1, 2, 3, 5, 10, 15, 20, 33, 50, 75, 100, 125, 150, 200, 250, 300, 400],
-        zoomLevelsVisible: [50, 70, 100, 150, 200],
-
+export const useStore = defineStore('canvas', {
+    state: (): GlobalState => ({
         debug: true,
+        items: [],
+        zoomLevelPrevious: ZOOM_LEVEL_DEFAULT,
+        zoomLevel: ZOOM_LEVEL_DEFAULT,
         isDraggingCanvas: false,
         draggingElement: null,
+        startMouseX: null,
+        startMouseY: null,
         lastMouseX: null,
         lastMouseY: null,
         canvasTranslateX: 0,
         canvasTranslateY: 0,
         scaleRelatedX: 0,
         scaleRelatedY: 0,
-        items: [],
-        zoomLevelPrevious: 100,
-        zoomLevel: 100,
         rectCenterX: 0,
         rectCenterY: 0,
         clientX: 0,
@@ -37,10 +33,10 @@ export const useCanvasStore = defineStore('canvas', {
     }),
     getters: {
         nextZoomManualLevel: (state) => {
-            return Math.min(...state.zoomManualLevels.filter(num => num > state.zoomLevel));
+            return Math.min(...ZOOM_MANUAL_LEVELS.filter(num => num > state.zoomLevel));
         },
         previousZoomManualLevel: (state) => {
-            return Math.max(...state.zoomManualLevels.filter(num => num < state.zoomLevel));
+            return Math.max(...ZOOM_MANUAL_LEVELS.filter(num => num < state.zoomLevel));
         },
         itemsRectCenterX: (state) => {
             return state.minX + (state.maxX - state.minX) / 2;
@@ -61,7 +57,7 @@ export const useCanvasStore = defineStore('canvas', {
             return state.rectCenterY * 2;
         },
         canvasBoxStyle: (state) => {
-            const scaledCellSize = state.baseCellSize * (state.zoomLevel / 100);
+            const scaledCellSize = BG_CELL_SIZE * (state.zoomLevel / 100);
             const translateCellSizeX = state.canvasTranslateX % scaledCellSize;
             const translateCellSizeY = state.canvasTranslateY % scaledCellSize;
             return {
@@ -87,7 +83,7 @@ export const useCanvasStore = defineStore('canvas', {
         },
         updateZoomLevel(value: number) {
             this.zoomLevelPrevious = this.zoomLevel;
-            this.zoomLevel = Math.min(this.zoomLevelMax, Math.max(this.zoomLevelMin, value));
+            this.zoomLevel = Math.min(ZOOM_LEVEL_MAX, Math.max(ZOOM_LEVEL_MIN, value));
         },
         setOnTop(id: string): void {
             this.items.forEach((item: Item) => {
@@ -109,7 +105,7 @@ export const useCanvasStore = defineStore('canvas', {
             this.updateZoomLevel(newZoomLevel);
             this.scaleRelatedX = scaleRelatedX ?? this.rectCenterX;
             this.scaleRelatedY = scaleRelatedY ?? this.rectCenterY;
-            const coefficient = ((this.zoomLevel / 100) / (this.zoomLevelPrevious / 100) - (this.zoomLevelDefault / 100));
+            const coefficient = ((this.zoomLevel / 100) / (this.zoomLevelPrevious / 100) - (ZOOM_LEVEL_DEFAULT / 100));
             this.canvasTranslateX = this.canvasTranslateX - (this.scaleRelatedX - this.canvasTranslateX) * coefficient;
             this.canvasTranslateY = this.canvasTranslateY - (this.scaleRelatedY - this.canvasTranslateY) * coefficient;
 
@@ -124,7 +120,7 @@ export const useCanvasStore = defineStore('canvas', {
             this.renderAllItemsRect();
             const scaleX = this.canvasWidth / this.itemsRectWidth;
             const scaleY = this.canvasHeight / this.itemsRectHeight;
-            this.zoomLevel = Math.min(Math.min(scaleX, scaleY) * 100, this.zoomLevelDefault);
+            this.zoomLevel = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);
             this.canvasTranslateX = 0 - this.itemsRectCenterX * this.zoomLevel / 100 + this.rectCenterX;
             this.canvasTranslateY = 0 - this.itemsRectCenterY * this.zoomLevel / 100 + this.rectCenterY;
         },

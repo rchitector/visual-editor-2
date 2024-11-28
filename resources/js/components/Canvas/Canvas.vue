@@ -5,17 +5,17 @@ import {v4 as uuidv4} from "uuid";
 import CanvasBackground from "@/js/components/Canvas/CanvasBackground.vue";
 import CanvasItems from "@/js/components/Canvas/CanvasItems.vue";
 import DebugInfo from "@/js/components/Debug/DebugInfo.vue";
-import {useCanvasStore} from "@/js/stores/canvasStore";
+import {useStore} from "@/js/stores/store";
 
 
-const canvasStore = useCanvasStore();
+const store = useStore();
 
 const canvasBoxRef = ref<HTMLDivElement | null>(null);
 
 const onUpdateWindowSize = () => {
     if (canvasBoxRef.value) {
         const rect = canvasBoxRef.value.getBoundingClientRect();
-        canvasStore.updateWindowSize(rect);
+        store.updateWindowSize(rect);
     }
 };
 
@@ -26,8 +26,8 @@ onMounted(() => {
     document.addEventListener('touchmove', onPointMove);
     document.addEventListener('mouseup', onPointUp);
     document.addEventListener('touchend', onPointUp);
-    // canvasStore.initRandomElements();
-    canvasStore.zoomFit();
+    // store.initRandomElements();
+    store.zoomFit();
 });
 
 onUnmounted(() => {
@@ -46,11 +46,11 @@ const onContextMenu = (event: MouseEvent) => {
 const onPointDown = (event: MouseEvent | TouchEvent) => {
     if (event.target === canvasBoxRef.value) {
         const point = 'touches' in event ? event.touches[0] : event;
-        canvasStore.isDraggingCanvas = true;
-        canvasStore.lastMouseX = point.clientX;
-        canvasStore.lastMouseY = point.clientY;
-        canvasStore.startMouseX = point.clientX;
-        canvasStore.startMouseY = point.clientY;
+        store.isDraggingCanvas = true;
+        store.lastMouseX = point.clientX;
+        store.lastMouseY = point.clientY;
+        store.startMouseX = point.clientX;
+        store.startMouseY = point.clientY;
     }
 };
 
@@ -58,49 +58,49 @@ const onPointMove = (event: MouseEvent | TouchEvent) => {
     const point = 'touches' in event ? event.touches[0] : event;
 
     if (canvasBoxRef.value) {
-        canvasStore.clientX = point.clientX - canvasBoxRef.value.getBoundingClientRect().left;
-        canvasStore.clientY = point.clientY - canvasBoxRef.value.getBoundingClientRect().top;
-        const coeff = 100 * 100 / canvasStore.zoomLevel;
+        store.clientX = point.clientX - canvasBoxRef.value.getBoundingClientRect().left;
+        store.clientY = point.clientY - canvasBoxRef.value.getBoundingClientRect().top;
+        const coeff = 100 * 100 / store.zoomLevel;
         // console.log('coeff:', coeff)
-        canvasStore.clientZoomedX = canvasStore.clientX * coeff / 100;
-        canvasStore.clientZoomedY = canvasStore.clientY * coeff / 100;
+        store.clientZoomedX = store.clientX * coeff / 100;
+        store.clientZoomedY = store.clientY * coeff / 100;
     }
 
-    if (canvasStore.isDraggingCanvas) {
-        if (canvasStore.lastMouseX !== null) {
-            canvasStore.canvasTranslateX += (point.clientX - canvasStore.lastMouseX);
+    if (store.isDraggingCanvas) {
+        if (store.lastMouseX !== null) {
+            store.canvasTranslateX += (point.clientX - store.lastMouseX);
         }
-        if (canvasStore.lastMouseY !== null) {
-            canvasStore.canvasTranslateY += (point.clientY - canvasStore.lastMouseY);
+        if (store.lastMouseY !== null) {
+            store.canvasTranslateY += (point.clientY - store.lastMouseY);
         }
-        canvasStore.lastMouseX = point.clientX;
-        canvasStore.lastMouseY = point.clientY;
+        store.lastMouseX = point.clientX;
+        store.lastMouseY = point.clientY;
     }
-    if (canvasStore.draggingElement !== null) {
-        if (canvasStore.lastMouseX !== null) {
-            canvasStore.draggingElement.x = (canvasStore.draggingElement.x + (point.clientX - canvasStore.lastMouseX) / (canvasStore.zoomLevel / 100));
+    if (store.draggingElement !== null) {
+        if (store.lastMouseX !== null) {
+            store.draggingElement.x = (store.draggingElement.x + (point.clientX - store.lastMouseX) / (store.zoomLevel / 100));
         }
-        if (canvasStore.lastMouseY !== null) {
-            canvasStore.draggingElement.y = (canvasStore.draggingElement.y + (point.clientY - canvasStore.lastMouseY) / (canvasStore.zoomLevel / 100));
+        if (store.lastMouseY !== null) {
+            store.draggingElement.y = (store.draggingElement.y + (point.clientY - store.lastMouseY) / (store.zoomLevel / 100));
         }
-        canvasStore.lastMouseX = point.clientX;
-        canvasStore.lastMouseY = point.clientY;
+        store.lastMouseX = point.clientX;
+        store.lastMouseY = point.clientY;
     }
 };
 
-const onPointUp = (event: MouseEvent) => {
-    // canvasStore.renderAllItemsRect();
+const onPointUp = (event: MouseEvent | TouchEvent) => {
+    // store.renderAllItemsRect();
     if (canvasBoxRef.value) {
         const point = 'touches' in event ? event.touches[0] : event;
         const rect = canvasBoxRef.value.getBoundingClientRect();
-        const relatedX = point.clientX - rect.left - canvasStore.canvasTranslateX;
-        const relatedY = point.clientY - rect.top - canvasStore.canvasTranslateY;
-        if ((canvasStore.startMouseX === event.clientX && canvasStore.startMouseY === event.clientY)) {
-            canvasStore.items.push({
+        const relatedX = point.clientX - rect.left - store.canvasTranslateX;
+        const relatedY = point.clientY - rect.top - store.canvasTranslateY;
+        if ((store.startMouseX === point.clientX && store.startMouseY === point.clientY)) {
+            store.items.push({
                 id: uuidv4(),
                 onTop: false,
-                x: relatedX / (canvasStore.zoomLevel / 100),
-                y: relatedY / (canvasStore.zoomLevel / 100),
+                x: relatedX / (store.zoomLevel / 100),
+                y: relatedY / (store.zoomLevel / 100),
                 w: 0,
                 h: 0,
                 ports: {
@@ -110,12 +110,12 @@ const onPointUp = (event: MouseEvent) => {
             });
         }
     }
-    canvasStore.isDraggingCanvas = false;
-    canvasStore.draggingElement = null;
-    canvasStore.lastMouseX = null;
-    canvasStore.lastMouseY = null;
-    canvasStore.startMouseX = null;
-    canvasStore.startMouseY = null;
+    store.isDraggingCanvas = false;
+    store.draggingElement = null;
+    store.lastMouseX = null;
+    store.lastMouseY = null;
+    store.startMouseX = null;
+    store.startMouseY = null;
 };
 
 const onWheel = (event: WheelEvent) => {
@@ -126,9 +126,9 @@ const onWheel = (event: WheelEvent) => {
         const scaleRelatedY = event.clientY - rect.top;
         const vector = Math.sign(event.deltaY);
         if (vector > 0) {
-            canvasStore.zoomOut(scaleRelatedX, scaleRelatedY);
+            store.zoomOut(scaleRelatedX, scaleRelatedY);
         } else if (vector < 0) {
-            canvasStore.zoomIn(scaleRelatedX, scaleRelatedY);
+            store.zoomIn(scaleRelatedX, scaleRelatedY);
         }
     }
 };
@@ -138,7 +138,7 @@ const onWheel = (event: WheelEvent) => {
     <div id="canvas-box"
          ref="canvasBoxRef"
          class="overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800"
-         :style="canvasStore.canvasBoxStyle"
+         :style="store.canvasBoxStyle"
          @contextmenu="onContextMenu"
          @mousedown="onPointDown($event)"
          @touchstart="onPointDown($event)"

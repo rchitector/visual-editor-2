@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
-import {useCanvasStore} from "@/js/stores/canvasStore";
+import {useStore} from "@/js/stores/store";
 
 interface Props {
     color?: string;
@@ -8,6 +8,7 @@ interface Props {
     x?: number;
     y?: number;
 }
+
 const props = withDefaults(defineProps<Props>(), {
     color: DebugColor.Red,
     size: 2,
@@ -15,10 +16,10 @@ const props = withDefaults(defineProps<Props>(), {
     y: 0,
 });
 
-const canvasStore = useCanvasStore();
+const store = useStore();
 </script>
 <template>
-    <div v-if="canvasStore.debug"
+    <div v-if="store.debug"
          :style="{
             backgroundColor: props.color,
             transform: `matrix(1, 0, 0, 1, ${props.x}, ${props.y})`,

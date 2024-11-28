@@ -1,3 +1,5 @@
+import {ZOOM_LEVEL_DEFAULT} from "@/js/stores/constants";
+
 export const PortTypes = {
     INPUT_PORT: "input",
     OUTPUT_PORT: "output",
@@ -26,8 +28,7 @@ export interface Item {
     },
 }
 
-export interface CanvasState {
-    baseCellSize: number;
+export interface GlobalState {
     isDraggingCanvas: boolean;
     draggingElement: Item | null;
     lastMouseX: number | null;
@@ -40,12 +41,7 @@ export interface CanvasState {
     scaleRelatedY: number;
     items: Item[];
     zoomLevelPrevious: number,
-    zoomLevelDefault: number,
     zoomLevel: number,
-    zoomLevelMin: 1,
-    zoomLevelMax: 400,
-    zoomManualLevels: number[],
-    zoomLevelsVisible: number[],
     debug: boolean,
     rectCenterX: number,
     rectCenterY: number,
@@ -57,4 +53,6 @@ export interface CanvasState {
     minY: number,
     maxX: number,
     maxY: number,
+    // zoomLevelPrevious: ZOOM_LEVEL_DEFAULT,
+    // zoomLevel: ZOOM_LEVEL_DEFAULT,
 }
