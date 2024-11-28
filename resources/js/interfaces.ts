@@ -17,6 +17,15 @@ export interface GlobalState {
         is: boolean,
         element: HTMLElement | null,
     },
+    canvasBoxRect: {
+        exists: boolean, 
+        width: number, 
+        height: number, 
+        top: number, 
+        left: number, 
+        x: number, 
+        y: number
+    },
     element: Item | null,
     lastMouseX: number | null,
     lastMouseY: number | null,

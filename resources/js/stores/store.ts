@@ -16,8 +16,9 @@ export const useStore = defineStore('canvas', {
             is: false,
             element: null
         },
-        canvasBoxRect: {width: 0, height: 0, top: 0, left: 0, x: 0, y: 0},
+        canvasBoxRect: {exists: false, width: 0, height: 0, top: 0, left: 0, x: 0, y: 0},
         startPoint: {x: 0, y: 0},
+        currentPoint: {x: 0, y: 0},
         lastMouseX: null,
         lastMouseY: null,
         canvasTranslateX: 0,
@@ -80,9 +81,73 @@ export const useStore = defineStore('canvas', {
         rectCenterY: (state) => {
             return state.canvasBoxRect.height / 2;
         },
-        // rectCenterX: (state) => {},
     },
     actions: {
+        onWheel(deltaY: number, pointX: number, pointY: number) {
+            const scaleRelatedX = pointX - this.canvasBoxRect.left;
+            const scaleRelatedY = pointY - this.canvasBoxRect.top;
+            const vector = Math.sign(deltaY);
+            if (vector > 0) {
+                this.zoomOut(scaleRelatedX, scaleRelatedY);
+            } else if (vector < 0) {
+                this.zoomIn(scaleRelatedX, scaleRelatedY);
+            }
+        },
+        onPointUp() {
+            // if (this.canvasBoxRect.exists) {
+            //     if ((this.startPoint.x === this.lastMouseX && this.startPoint.y === this.lastMouseY)) {
+            //         const relatedX = this.lastMouseX - this.canvasBoxRect.left - this.canvasTranslateX;
+            //         const relatedY = this.lastMouseY - this.canvasBoxRect.top - this.canvasTranslateY;
+            //         this.items.push({
+            //             id: uuidv4(),
+            //             x: relatedX / (this.zoom.value / 100),
+            //             y: relatedY / (this.zoom.value / 100),
+            //             w: 0,
+            //             h: 0,
+            //             onTop: false,
+            //         });
+            //     }
+            // }
+            this.dragging.is = false;
+            this.dragging.element = null;
+            this.lastMouseX = null;
+            this.lastMouseY = null;
+            this.startPoint.x = null;
+            this.startPoint.y = null;
+        },
+        onPointDown(pointX: number, pointY: number) {
+            this.dragging.is = true;
+            this.lastMouseX = pointX;
+            this.lastMouseY = pointY;
+            this.startPoint.x = pointX;
+            this.startPoint.y = pointY;
+        },
+        onPointMove(pointX: number, pointY: number) {
+            if (this.canvasBoxRect.exists) {
+                this.clientX = pointX - this.canvasBoxRect.left;
+                this.clientY = pointY - this.canvasBoxRect.top;
+            }
+            if (this.dragging.is) {
+                if (this.lastMouseX !== null) {
+                    this.canvasTranslateX += (pointX - this.lastMouseX);
+                }
+                if (this.lastMouseY !== null) {
+                    this.canvasTranslateY += (pointY - this.lastMouseY);
+                }
+                this.lastMouseX = pointX;
+                this.lastMouseY = pointY;
+            }
+            if (this.dragging.element !== null) {
+                if (this.lastMouseX !== null) {
+                    this.dragging.element.x = (this.dragging.element.x + (pointX - this.lastMouseX) / (this.zoom.value / 100));
+                }
+                if (this.lastMouseY !== null) {
+                    this.dragging.element.y = (this.dragging.element.y + (pointY - this.lastMouseY) / (this.zoom.value / 100));
+                }
+                this.lastMouseX = pointX;
+                this.lastMouseY = pointY;
+            }
+        },
         setItemSize(itemId: string, width: number, height: number) {
             const me = this.items.find(item => item.id === itemId);
             if (me) {
@@ -106,6 +171,7 @@ export const useStore = defineStore('canvas', {
         },
         updateCanvasBoxRect(rect: DOMRect): void {
             this.canvasBoxRect = {
+                exists: true,
                 width: rect.width,
                 height: rect.height,
                 top: rect.top,
