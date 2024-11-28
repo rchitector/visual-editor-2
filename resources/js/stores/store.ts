@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
-import {getRandomIntInclusive} from '@/js/helper.js';
-import {GlobalState, Item} from '../interfaces'
+import {getRandomIntInclusive} from '@/js/stores/helper';
+import {GlobalState, Item} from '@/js/interfaces'
 import {BG_CELL_SIZE, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_MIN, ZOOM_MANUAL_LEVELS} from '@/js/stores/constants';
 
 export const useStore = defineStore('canvas', {

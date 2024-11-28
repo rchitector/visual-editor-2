@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {Item} from '../../interfaces'
-import {useStore} from '../../stores/store';
+import {Item} from '@/js/interfaces'
+import {useStore} from '@/js/stores/store';
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
 import {vElementSize} from '@vueuse/components'

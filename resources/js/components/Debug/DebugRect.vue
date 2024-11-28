@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
 import {useStore} from "@/js/stores/store";
 

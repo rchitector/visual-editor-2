@@ -1,18 +1,3 @@
-// export const PortTypes = {
-//     INPUT_PORT: "input",
-//     OUTPUT_PORT: "output",
-// };
-//
-// export interface InputPort {
-//     type: typeof PortTypes.INPUT_PORT,
-//     color: 'red',
-// }
-//
-// export interface OutputPort {
-//     type: typeof PortTypes.OUTPUT_PORT,
-//     color: 'green',
-// }
-
 export interface Item {
     id: string;
     x: number;

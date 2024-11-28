@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {useStore} from "@/js/stores/store";
 import {ZOOM_VISIBLE_LEVELS} from "@/js/stores/constants";
 

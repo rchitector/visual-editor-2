@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import DebugButton from "@/js/components/Debug/DebugButton.vue";
 </script>
 
