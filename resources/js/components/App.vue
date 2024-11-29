@@ -5,7 +5,7 @@ import Canvas from "./Canvas/Canvas.vue";
 
 <template>
     <SideBar/>
-    <div class="sm:ml-64 h-screen pt-16 flex items-center justify-center">
+    <div class="sm:ml-64 h-screen pt-16 border-0 box-border flex items-center justify-center">
         <Canvas/>
     </div>
 </template>

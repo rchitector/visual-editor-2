@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CanvasItem from "@/js/components/Canvas/CanvasItem.vue";
 import {useStore} from "@/js/stores/store";
+import CanvasItemsControl from "@/js/components/Controls/CanvasItemsControl.vue";
 
 const store = useStore();
 </script>
@@ -12,4 +13,5 @@ const store = useStore();
         <div v-if="store.debug" class="w-2 h-2 rounded-full absolute left-0 top-0 bg-red-500 -ml-1 -mt-1"></div>
         <CanvasItem v-for="item in store.items" :key="item.id" :item="item"/>
     </div>
+    <CanvasItemsControl/>
 </template>

@@ -79,7 +79,8 @@ const onDocumentTouchEnd = (event: TouchEvent) => {
 </script>
 <template>
     <div ref="mainBoxRef"
-         class="overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800"
+         id="main-box"
+         class="border-0 box-border overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800"
          @contextmenu="onMainBoxContextMenu"
          @mousedown="onMainBoxMouseDown($event)"
          @touchstart="onMainBoxTouchStart($event)"
@@ -87,6 +88,7 @@ const onDocumentTouchEnd = (event: TouchEvent) => {
     >
         <CanvasBackground/>
         <CanvasItems/>
+
         <CanvasZoomControl/>
         <DebugInfo/>
     </div>

@@ -1,3 +1,5 @@
+import {ItemTypes} from "@/js/stores/constants";
+
 export interface Item {
     id: string;
     x: number;
@@ -40,5 +42,6 @@ export interface GlobalState {
     documentLastPoint: Point,
     canvasTranslateX: number,
     canvasTranslateY: number,
-    itemsRect: { x: number, y: number, width: number, height: number, center: Point }
+    itemsRect: { x: number, y: number, width: number, height: number, center: Point },
+    itemType: ItemTypes | null,
 }

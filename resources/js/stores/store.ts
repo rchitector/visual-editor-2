@@ -2,6 +2,7 @@ import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
 // import {getRandomIntInclusive} from '@/js/stores/helper';
 import {GlobalState, Item} from '@/js/interfaces'
+import {ItemTypes} from '@/js/stores/constants'
 import {ITEMS_RECTANGLE_PADDING, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_MIN, ZOOM_MANUAL_LEVELS} from '@/js/stores/constants';
 
 const defaultValues = {
@@ -23,7 +24,8 @@ const defaultValues = {
     canvasTranslateY: 0,
     // relatedPointX: 0,
     // relatedPointY: 0,
-    itemsRect: {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}}
+    itemsRect: {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}},
+    itemType: null,
 };
 
 export const useStore = defineStore('canvas', {
@@ -59,6 +61,9 @@ export const useStore = defineStore('canvas', {
         },
     },
     actions: {
+        setCanvasItemTypeActive(itemType: ItemTypes | null) {
+            this.itemType = itemType;
+        },
         onMainBoxWheel(deltaY: number, pointX: number, pointY: number) {
             const scaleRelatedX = pointX - this.mainBoxRect.left;
             const scaleRelatedY = pointY - this.mainBoxRect.top;
@@ -75,36 +80,27 @@ export const useStore = defineStore('canvas', {
             this.startPoint.x = pointX;
             this.startPoint.y = pointY;
         },
-        onDocumentPointMove(pointX: number, pointY: number) {
-            this.documentPoint = {x: pointX, y: pointY};
+        onDocumentPointMove(documentPointX: number, documentPointY: number) {
+            this.documentPoint = {x: documentPointX, y: documentPointY};
             // if (this.mainBoxRect.exists) {
             //     this.relatedPointX = pointX - this.mainBoxRect.left;
             //     this.relatedPointY = pointY - this.mainBoxRect.top;
             // }
             if (this.dragging.is) {
-                this.canvasTranslateX += (pointX - this.documentLastPoint.x);
-                this.canvasTranslateY += (pointY - this.documentLastPoint.y);
-                this.documentLastPoint = {x: pointX, y: pointY};
+                this.canvasTranslateX += (documentPointX - this.documentLastPoint.x);
+                this.canvasTranslateY += (documentPointY - this.documentLastPoint.y);
+                this.documentLastPoint = {x: documentPointX, y: documentPointY};
             }
             if (this.dragging.element !== null) {
-                this.dragging.element.x = (this.dragging.element.x + (pointX - this.documentLastPoint.x) / (this.zoom.value / 100));
-                this.dragging.element.y = (this.dragging.element.y + (pointY - this.documentLastPoint.y) / (this.zoom.value / 100));
-                this.documentLastPoint = {x: pointX, y: pointY};
+                this.dragging.element.x = (this.dragging.element.x + (documentPointX - this.documentLastPoint.x) / (this.zoom.value / 100));
+                this.dragging.element.y = (this.dragging.element.y + (documentPointY - this.documentLastPoint.y) / (this.zoom.value / 100));
+                this.documentLastPoint = {x: documentPointX, y: documentPointY};
             }
         },
-        onDocumentPointUp(pointX: number, pointY: number) {
+        onDocumentPointUp(documentPointX: number, documentPointY: number) {
             if (this.mainBoxRect.exists) {
-                if ((this.startPoint.x === pointX && this.startPoint.y === pointY)) {
-                    const relatedX = pointX - this.mainBoxRect.left - this.canvasTranslateX;
-                    const relatedY = pointY - this.mainBoxRect.top - this.canvasTranslateY;
-                    this.items.push({
-                        id: uuidv4(),
-                        x: relatedX / (this.zoom.value / 100),
-                        y: relatedY / (this.zoom.value / 100),
-                        w: 0,
-                        h: 0,
-                        onTop: false,
-                    });
+                if ((this.startPoint.x === documentPointX && this.startPoint.y === documentPointY)) {
+                    this.tryToCreateItem(documentPointX, documentPointY);
                 }
             }
             this.dragging.is = false;
@@ -112,6 +108,56 @@ export const useStore = defineStore('canvas', {
             this.documentLastPoint = {x: 0, y: 0};
             this.startPoint.x = null;
             this.startPoint.y = null;
+        },
+        generateBaseItem(documentPointX: number, documentPointY: number): Item {
+            const relatedX = documentPointX - this.mainBoxRect.left - this.canvasTranslateX;
+            const relatedY = documentPointY - this.mainBoxRect.top - this.canvasTranslateY;
+            return {
+                id: uuidv4(),
+                x: relatedX / (this.zoom.value / 100),
+                y: relatedY / (this.zoom.value / 100),
+                w: 0,
+                h: 0,
+                onTop: true,
+            };
+        },
+        addNewItem(baseItem: Item) {
+            this.items.push(baseItem);
+            this.setCanvasItemOnTop(baseItem.id);
+        },
+        createStartItem(baseItem: Item) {
+            // console.log('ItemTypes.Start:', ItemTypes.Start);
+            this.addNewItem(baseItem);
+        },
+        createEndItem(baseItem: Item) {
+            // console.log('ItemTypes.End:', ItemTypes.End);
+            this.addNewItem(baseItem);
+        },
+        createAction1Item(baseItem: Item) {
+            // console.log('ItemTypes.Action1:', ItemTypes.Action1);
+            this.addNewItem(baseItem);
+        },
+        createAction2Item(baseItem: Item) {
+            // console.log('ItemTypes.Action2:', ItemTypes.Action2);
+            this.addNewItem(baseItem);
+        },
+        createItem(itemType: string | null, documentPointX: number, documentPointY: number) {
+            const baseItem = this.generateBaseItem(documentPointX, documentPointY);
+            switch (itemType) {
+                case ItemTypes.Start:
+                    return this.createStartItem(baseItem);
+                case ItemTypes.End:
+                    return this.createEndItem(baseItem);
+                case ItemTypes.Action1:
+                    return this.createAction1Item(baseItem);
+                case ItemTypes.Action2:
+                    return this.createAction2Item(baseItem);
+            }
+        },
+        tryToCreateItem(documentPointX: number, documentPointY: number) {
+            if (this.itemType) {
+                this.createItem(this.itemType, documentPointX, documentPointY);
+            }
         },
         setCanvasItemSize(itemId: string, width: number, height: number) {
             const me = this.items.find(item => item.id === itemId);

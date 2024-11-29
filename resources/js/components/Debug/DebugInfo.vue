@@ -14,6 +14,7 @@ const baseClass = 'select-none absolute gap-1 rounded-lg border border-red-300 d
         <div>canvasPointMatrix: {{ store.canvasPointMatrix.scale.toFixed(2) }}:{{ store.canvasPointMatrix.x.toFixed(0) }}:{{ store.canvasPointMatrix.y.toFixed(0) }}</div>
         <div>canvasMatrix: {{ store.canvasMatrix.scale.toFixed(2) }}:{{ store.canvasMatrix.x.toFixed(0) }}:{{ store.canvasMatrix.y.toFixed(0) }}</div>
         <div>documentPoint: {{ store.documentPoint.x }}:{{ store.documentPoint.y }}</div>
+        <div>itemType: {{ store.itemType }}</div>
     </div>
 
     <!--    <div v-if="store.debug" :class="baseClass" class="left-5 top-5 flex flex-col">-->
