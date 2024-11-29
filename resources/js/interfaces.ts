@@ -23,7 +23,7 @@ export interface GlobalState {
         is: boolean,
         element: Item | null,
     },
-    globalBoxRect: {
+    mainBoxRect: {
         exists: boolean,
         width: number,
         height: number,
@@ -31,6 +31,10 @@ export interface GlobalState {
         left: number,
         x: number,
         y: number,
+    },
+    startPoint: {
+        x: number | null,
+        y: number | null,
     },
     documentPoint: Point,
     documentLastPoint: Point,

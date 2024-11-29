@@ -10,7 +10,7 @@ const baseClass = 'select-none absolute gap-1 rounded-lg border border-red-300 d
 
 <template>
     <div v-if="store.debug" :class="baseClass" class="left-5 bottom-5 flex flex-col">
-        <div>globalBoxRectCenter: {{ store.globalBoxRectCenter.x.toFixed(0) }}:{{ store.globalBoxRectCenter.y.toFixed(0) }}</div>
+        <div>mainBoxRectCenter: {{ store.mainBoxRectCenter.x.toFixed(0) }}:{{ store.mainBoxRectCenter.y.toFixed(0) }}</div>
         <div>canvasPointMatrix: {{ store.canvasPointMatrix.scale.toFixed(2) }}:{{ store.canvasPointMatrix.x.toFixed(0) }}:{{ store.canvasPointMatrix.y.toFixed(0) }}</div>
         <div>canvasMatrix: {{ store.canvasMatrix.scale.toFixed(2) }}:{{ store.canvasMatrix.x.toFixed(0) }}:{{ store.canvasMatrix.y.toFixed(0) }}</div>
         <div>documentPoint: {{ store.documentPoint.x }}:{{ store.documentPoint.y }}</div>

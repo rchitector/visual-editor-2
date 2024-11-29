@@ -8,69 +8,82 @@ import {useStore} from "@/js/stores/store";
 
 const store = useStore();
 
-const globalBoxRef = ref<HTMLDivElement | null>(null);
-
-const onUpdateWindowSize = () => {
-    if (globalBoxRef.value) {
-        const rect = globalBoxRef.value.getBoundingClientRect();
-        store.updateGlobalBoxRect(rect);
-    }
-};
+const mainBoxRef = ref<HTMLDivElement | null>(null);
 
 onMounted(() => {
-    onUpdateWindowSize();
-    window.addEventListener('resize', onUpdateWindowSize);
-    document.addEventListener('mousemove', onPointMove);
-    document.addEventListener('touchmove', onPointMove);
-    document.addEventListener('mouseup', onPointUp);
-    document.addEventListener('touchend', onPointUp);
+    onWindowSizeUpdate();
+    window.addEventListener('resize', onWindowSizeUpdate);
+    document.addEventListener('mousemove', onDocumentMouseMove);
+    document.addEventListener('touchmove', onDocumentTouchMove);
+    document.addEventListener('mouseup', onDocumentMouseUp);
+    document.addEventListener('touchend', onDocumentTouchEnd);
     // store.initRandomElements();
     store.zoomFit();
 });
 
 onUnmounted(() => {
-    window.removeEventListener('resize', onUpdateWindowSize);
-    document.removeEventListener('mousemove', onPointMove);
-    document.removeEventListener('touchmove', onPointMove);
-    document.removeEventListener('mouseup', onPointUp);
-    document.removeEventListener('touchend', onPointUp);
+    window.removeEventListener('resize', onWindowSizeUpdate);
+    document.removeEventListener('mousemove', onDocumentMouseMove);
+    document.removeEventListener('touchmove', onDocumentTouchMove);
+    document.removeEventListener('mouseup', onDocumentMouseUp);
+    document.removeEventListener('touchend', onDocumentTouchEnd);
 });
 
-
-const onContextMenu = (event: MouseEvent) => {
-    event.preventDefault();
-};
-
-const onPointDown = (event: MouseEvent | TouchEvent) => {
-    const point = 'touches' in event ? event.touches[0] : event;
-    store.onPointDown(point.clientX, point.clientY);
-};
-
-const onPointMove = (event: MouseEvent | TouchEvent) => {
-    const point = 'touches' in event ? event.touches[0] : event;
-    store.onPointMove(point.clientX, point.clientY);
-};
-
-const onPointUp = (event: MouseEvent | TouchEvent) => {
-    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
-    // store.renderAllItemsRect();
-    store.onPointUp(point.clientX, point.clientY);
-};
-
-const onWheel = (event: WheelEvent) => {
-    event.preventDefault();
-    if (globalBoxRef.value) {
-        store.onWheel(event.deltaY, event.clientX, event.clientY);
+const onWindowSizeUpdate = () => {
+    if (mainBoxRef.value) {
+        const rect = mainBoxRef.value.getBoundingClientRect();
+        store.updateMainBoxRect(rect);
     }
+};
+
+const onMainBoxContextMenu = (event: MouseEvent) => {
+    event.preventDefault();
+};
+
+const onMainBoxWheel = (event: WheelEvent) => {
+    event.preventDefault();
+    if (mainBoxRef.value) {
+        store.onMainBoxWheel(event.deltaY, event.clientX, event.clientY);
+    }
+};
+
+const onMainBoxMouseDown = (event: MouseEvent) => {
+    if (event.target === mainBoxRef.value) { // trigger event ONLY for MainBox and NOT for children
+        store.onMainBoxPointDown(event.clientX, event.clientY);
+    }
+};
+const onMainBoxTouchStart = (event: TouchEvent) => {
+    if (event.target === mainBoxRef.value) { // trigger event ONLY for MainBox and NOT for children
+        const point = event.touches[0];
+        store.onMainBoxPointDown(point.clientX, point.clientY);
+    }
+};
+
+const onDocumentMouseMove = (event: MouseEvent) => {
+    store.onDocumentPointMove(event.clientX, event.clientY);
+};
+const onDocumentTouchMove = (event: TouchEvent) => {
+    const point = event.touches[0];
+    store.onDocumentPointMove(point.clientX, point.clientY);
+};
+
+const onDocumentMouseUp = (event: MouseEvent) => {
+    // store.renderAllItemsRect();
+    store.onDocumentPointUp(event.clientX, event.clientY);
+};
+const onDocumentTouchEnd = (event: TouchEvent) => {
+    // store.renderAllItemsRect();
+    const point = event.changedTouches[0];
+    store.onDocumentPointUp(point.clientX, point.clientY);
 };
 </script>
 <template>
-    <div ref="globalBoxRef"
+    <div ref="mainBoxRef"
          class="overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800"
-         @contextmenu="onContextMenu"
-         @mousedown="onPointDown($event)"
-         @touchstart="onPointDown($event)"
-         @wheel="onWheel"
+         @contextmenu="onMainBoxContextMenu"
+         @mousedown="onMainBoxMouseDown($event)"
+         @touchstart="onMainBoxTouchStart($event)"
+         @wheel="onMainBoxWheel"
     >
         <CanvasBackground/>
         <CanvasItems/>
