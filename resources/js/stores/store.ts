@@ -119,26 +119,32 @@ export const useStore = defineStore('canvas', {
                 w: 0,
                 h: 0,
                 onTop: true,
+                type: null
             };
         },
         addNewItem(baseItem: Item) {
             this.items.push(baseItem);
             this.setCanvasItemOnTop(baseItem.id);
+            this.setCanvasItemTypeActive(null);
         },
         createStartItem(baseItem: Item) {
             // console.log('ItemTypes.Start:', ItemTypes.Start);
+            baseItem.type = ItemTypes.Start;
             this.addNewItem(baseItem);
         },
         createEndItem(baseItem: Item) {
             // console.log('ItemTypes.End:', ItemTypes.End);
+            baseItem.type = ItemTypes.End;
             this.addNewItem(baseItem);
         },
         createAction1Item(baseItem: Item) {
             // console.log('ItemTypes.Action1:', ItemTypes.Action1);
+            baseItem.type = ItemTypes.Action1;
             this.addNewItem(baseItem);
         },
         createAction2Item(baseItem: Item) {
             // console.log('ItemTypes.Action2:', ItemTypes.Action2);
+            baseItem.type = ItemTypes.Action2;
             this.addNewItem(baseItem);
         },
         createItem(itemType: string | null, documentPointX: number, documentPointY: number) {
@@ -212,6 +218,8 @@ export const useStore = defineStore('canvas', {
             this.zoom.value = Math.min(ZOOM_LEVEL_MAX, Math.max(ZOOM_LEVEL_MIN, newZoomLevel));
 
             const coefficient = ((this.zoom.value / 100) / (this.zoom.previous / 100) - (ZOOM_LEVEL_DEFAULT / 100));
+            // this.canvasTranslateX = this.canvasTranslateX - ((scaleRelatedX ?? this.mainBoxRectCenter.x) - this.canvasTranslateX) * coefficient;
+            // this.canvasTranslateY = this.canvasTranslateY - ((scaleRelatedY ?? this.mainBoxRectCenter.y) - this.canvasTranslateY) * coefficient;
             this.canvasTranslateX = this.canvasTranslateX - ((scaleRelatedX ?? this.mainBoxRectCenter.x) - this.canvasTranslateX) * coefficient;
             this.canvasTranslateY = this.canvasTranslateY - ((scaleRelatedY ?? this.mainBoxRectCenter.y) - this.canvasTranslateY) * coefficient;
         },
@@ -226,6 +234,8 @@ export const useStore = defineStore('canvas', {
             const scaleX = this.mainBoxRect.width / this.itemsRect.width;
             const scaleY = this.mainBoxRect.height / this.itemsRect.height;
             this.zoom.value = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);
+            console.log('this.itemsRect.center.x:', this.itemsRect.center.x);
+            console.log('this.mainBoxRectCenter.x:', this.mainBoxRectCenter.x);
             this.canvasTranslateX = 0 - this.itemsRect.center.x * this.zoom.value / 100 + this.mainBoxRectCenter.x;
             this.canvasTranslateY = 0 - this.itemsRect.center.y * this.zoom.value / 100 + this.mainBoxRectCenter.y;
         },
@@ -255,25 +265,27 @@ export const useStore = defineStore('canvas', {
                 };
             }
         },
-        // initRandomElements(): void {
-        //     const maxItems = 1;
-        //     const diff = 0;
-        //     this.items = [];
-        //     for (let i = 1; i <= maxItems; i++) {
-        //         this.items.push({
-        //             id: uuidv4(),
-        //             onTop: false,
-        //             x: getRandomIntInclusive(-diff, diff),
-        //             y: getRandomIntInclusive(-diff, diff),
-        //             w: 0,
-        //             h: 0,
-        //             ports: {
-        //                 in: [],
-        //                 out: [],
-        //             }
-        //         });
-        //     }
-        //     this.zoomFit();
-        // },
+        initRandomElements(): void {
+            this.items = [];
+            // this.items.push({
+            //     id: uuidv4(),
+            //     onTop: true,
+            //     x: 0,
+            //     y: 0,
+            //     w: 0,
+            //     h: 0,
+            //     type: ItemTypes.Start,
+            // });
+            this.lines = [];
+            this.lines.push({
+                id: uuidv4(),
+                startId: uuidv4(),
+                startX: 100,
+                startY: 200,
+                endId: uuidv4(),
+                endX: 200,
+                endY: 300,
+            });
+        },
     },
 });

@@ -17,7 +17,7 @@ onMounted(() => {
     document.addEventListener('touchmove', onDocumentTouchMove);
     document.addEventListener('mouseup', onDocumentMouseUp);
     document.addEventListener('touchend', onDocumentTouchEnd);
-    // store.initRandomElements();
+    store.initRandomElements();
     store.zoomFit();
 });
 
@@ -88,7 +88,6 @@ const onDocumentTouchEnd = (event: TouchEvent) => {
     >
         <CanvasBackground/>
         <CanvasItems/>
-
         <CanvasZoomControl/>
         <DebugInfo/>
     </div>

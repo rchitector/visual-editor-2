@@ -7,6 +7,7 @@ export interface Item {
     w: number;
     h: number;
     onTop: boolean;
+    type: ItemTypes | null;
 }
 
 export interface Point {
@@ -14,9 +15,20 @@ export interface Point {
     y: number;
 }
 
+export interface Line {
+    id: string;
+    startId: string;
+    startX: number;
+    startY: number;
+    endId: string;
+    endX: number;
+    endY: number;
+}
+
 export interface GlobalState {
     debug: boolean,
     items: Item[],
+    lines: Line[],
     zoom: {
         previous: number,
         value: number,
