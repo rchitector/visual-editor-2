@@ -10,29 +10,31 @@ const store = useStore();
 
 const props = defineProps<{ item: Item; }>();
 
-const onMouseDown = (event: MouseEvent, itemId: string) => {
-    event.stopPropagation();
-    store.onCanvasItemPointDown(event, itemId);
-};
-const onTouchStart = (event: TouchEvent, itemId: string) => {
-    event.stopPropagation();
-    store.onCanvasItemPointDown(event.touches[0], itemId);
-};
 const onResize = ({width, height}: { width: number, height: number }) => {
     store.setCanvasItemSize(props.item.id, width, height)
 };
+
+const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
+    event.stopPropagation();
+    store.setCanvasItemOnTop(props.item.id);
+    store.dragging.element = store.items.find(item => item.id === props.item.id) || null;
+    const point = 'touches' in event ? event.touches[0] : event;
+    store.documentLastPoint = {x: point.clientX, y: point.clientY};
+};
+
 </script>
 <template>
     <div class="absolute box-border top-0 left-0 select-none"
          :key="props.item.id"
          :style="{ transform: `matrix(1, 0, 0, 1, ${props.item.x}, ${props.item.y})` }"
          v-element-size="onResize"
-         @mousedown="onMouseDown($event, props.item.id)"
-         @touchstart="onTouchStart($event, props.item.id)"
     >
         <DebugDot :color="DebugColor.Green" :size="1"/>
         <div class="p-0.5 border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
-            <div class="cursor-grab p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 whitespace-nowrap flex items-center" data-is-draggable="true">
+            <div class="cursor-grab p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 whitespace-nowrap flex items-center"
+                 @mousedown="onStartDragItem"
+                 @touchstart="onStartDragItem"
+            >
                 <div class="grow" :style="{ color: itemTypeColor(props.item.type) }">{{ props.item.type }}</div>
                 <div>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">

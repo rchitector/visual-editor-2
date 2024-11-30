@@ -1,4 +1,4 @@
-export const BG_CELL_SIZE: number = 20;
+export const BG_CELL_SIZE: number = 10;
 export const ZOOM_LEVEL_MIN: number = 1;
 export const ZOOM_LEVEL_MAX: number = 400;
 export const ZOOM_LEVEL_DEFAULT: number = 100;

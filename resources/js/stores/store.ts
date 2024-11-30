@@ -8,6 +8,7 @@ import {ITEMS_RECTANGLE_PADDING, ZOOM_LEVEL_DEFAULT, ZOOM_LEVEL_MAX, ZOOM_LEVEL_
 const defaultValues = {
     debug: true,
     items: [],
+    lines: [],
     zoom: {
         previous: ZOOM_LEVEL_DEFAULT,
         value: ZOOM_LEVEL_DEFAULT,
@@ -234,8 +235,6 @@ export const useStore = defineStore('canvas', {
             const scaleX = this.mainBoxRect.width / this.itemsRect.width;
             const scaleY = this.mainBoxRect.height / this.itemsRect.height;
             this.zoom.value = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);
-            console.log('this.itemsRect.center.x:', this.itemsRect.center.x);
-            console.log('this.mainBoxRectCenter.x:', this.mainBoxRectCenter.x);
             this.canvasTranslateX = 0 - this.itemsRect.center.x * this.zoom.value / 100 + this.mainBoxRectCenter.x;
             this.canvasTranslateY = 0 - this.itemsRect.center.y * this.zoom.value / 100 + this.mainBoxRectCenter.y;
         },
@@ -277,15 +276,15 @@ export const useStore = defineStore('canvas', {
             //     type: ItemTypes.Start,
             // });
             this.lines = [];
-            this.lines.push({
-                id: uuidv4(),
-                startId: uuidv4(),
-                startX: 100,
-                startY: 200,
-                endId: uuidv4(),
-                endX: 200,
-                endY: 300,
-            });
+            // this.lines.push({
+            //     id: uuidv4(),
+            //     startId: uuidv4(),
+            //     startX: 20,
+            //     startY: 30,
+            //     endId: uuidv4(),
+            //     endX: 40,
+            //     endY: 50,
+            // });
         },
     },
 });

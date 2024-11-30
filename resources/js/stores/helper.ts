@@ -7,7 +7,7 @@ export const getRandomIntInclusive = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-export const itemTypeColor = (itemType: ItemTypes) => {
+export const itemTypeColor = (itemType: ItemTypes | null) => {
     switch (itemType) {
         case ItemTypes.Start:
             return rgbToHex(DebugColor.Red);

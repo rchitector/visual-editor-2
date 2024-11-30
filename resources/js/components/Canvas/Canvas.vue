@@ -4,6 +4,8 @@ import CanvasZoomControl from "@/js/components/Controls/CanvasZoomControl.vue";
 import CanvasBackground from "@/js/components/Canvas/CanvasBackground.vue";
 import CanvasItems from "@/js/components/Canvas/CanvasItems.vue";
 import DebugInfo from "@/js/components/Debug/DebugInfo.vue";
+import CanvasItemsControl from "@/js/components/Controls/CanvasItemsControl.vue";
+import CanvasLines from "@/js/components/Canvas/CanvasLines.vue";
 import {useStore} from "@/js/stores/store";
 
 const store = useStore();
@@ -14,18 +16,17 @@ onMounted(() => {
     onWindowSizeUpdate();
     window.addEventListener('resize', onWindowSizeUpdate);
     document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('touchmove', onDocumentTouchMove);
     document.addEventListener('mouseup', onDocumentMouseUp);
+    document.addEventListener('touchmove', onDocumentTouchMove);
     document.addEventListener('touchend', onDocumentTouchEnd);
-    store.initRandomElements();
     store.zoomFit();
 });
 
 onUnmounted(() => {
     window.removeEventListener('resize', onWindowSizeUpdate);
     document.removeEventListener('mousemove', onDocumentMouseMove);
-    document.removeEventListener('touchmove', onDocumentTouchMove);
     document.removeEventListener('mouseup', onDocumentMouseUp);
+    document.removeEventListener('touchmove', onDocumentTouchMove);
     document.removeEventListener('touchend', onDocumentTouchEnd);
 });
 
@@ -48,11 +49,15 @@ const onMainBoxWheel = (event: WheelEvent) => {
 };
 
 const onMainBoxMouseDown = (event: MouseEvent) => {
+    // document.addEventListener('mousemove', onDocumentMouseMove);
+    // document.addEventListener('mouseup', onDocumentMouseUp);
     if (event.target === mainBoxRef.value) { // trigger event ONLY for MainBox and NOT for children
         store.onMainBoxPointDown(event.clientX, event.clientY);
     }
 };
 const onMainBoxTouchStart = (event: TouchEvent) => {
+    // document.addEventListener('touchmove', onDocumentTouchMove);
+    // document.addEventListener('touchend', onDocumentTouchEnd);
     if (event.target === mainBoxRef.value) { // trigger event ONLY for MainBox and NOT for children
         const point = event.touches[0];
         store.onMainBoxPointDown(point.clientX, point.clientY);
@@ -68,10 +73,14 @@ const onDocumentTouchMove = (event: TouchEvent) => {
 };
 
 const onDocumentMouseUp = (event: MouseEvent) => {
+    // document.removeEventListener('mousemove', onDocumentMouseMove);
+    // document.removeEventListener('mouseup', onDocumentMouseUp);
     // store.renderAllItemsRect();
     store.onDocumentPointUp(event.clientX, event.clientY);
 };
 const onDocumentTouchEnd = (event: TouchEvent) => {
+    // document.removeEventListener('touchmove', onDocumentTouchMove);
+    // document.removeEventListener('touchend', onDocumentTouchEnd);
     // store.renderAllItemsRect();
     const point = event.changedTouches[0];
     store.onDocumentPointUp(point.clientX, point.clientY);
@@ -87,7 +96,9 @@ const onDocumentTouchEnd = (event: TouchEvent) => {
          @wheel="onMainBoxWheel"
     >
         <CanvasBackground/>
+        <CanvasLines/>
         <CanvasItems/>
+        <CanvasItemsControl/>
         <CanvasZoomControl/>
         <DebugInfo/>
     </div>
