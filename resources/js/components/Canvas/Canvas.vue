@@ -5,8 +5,8 @@ import CanvasBackground from "@/js/components/Canvas/CanvasBackground.vue";
 import CanvasItems from "@/js/components/Canvas/CanvasItems.vue";
 import DebugInfo from "@/js/components/Debug/DebugInfo.vue";
 import CanvasItemsControl from "@/js/components/Controls/CanvasItemsControl.vue";
-import CanvasLines from "@/js/components/Canvas/CanvasLines.vue";
 import {useStore} from "@/js/stores/store";
+import {DraggingTypes} from "@/js/stores/constants";
 
 const store = useStore();
 
@@ -15,19 +15,11 @@ const mainBoxRef = ref<HTMLDivElement | null>(null);
 onMounted(() => {
     onWindowSizeUpdate();
     window.addEventListener('resize', onWindowSizeUpdate);
-    document.addEventListener('mousemove', onDocumentMouseMove);
-    document.addEventListener('mouseup', onDocumentMouseUp);
-    document.addEventListener('touchmove', onDocumentTouchMove);
-    document.addEventListener('touchend', onDocumentTouchEnd);
-    store.zoomFit();
+    // store.zoomFit();
 });
 
 onUnmounted(() => {
     window.removeEventListener('resize', onWindowSizeUpdate);
-    document.removeEventListener('mousemove', onDocumentMouseMove);
-    document.removeEventListener('mouseup', onDocumentMouseUp);
-    document.removeEventListener('touchmove', onDocumentTouchMove);
-    document.removeEventListener('touchend', onDocumentTouchEnd);
 });
 
 const onWindowSizeUpdate = () => {
@@ -38,68 +30,66 @@ const onWindowSizeUpdate = () => {
 };
 
 const onMainBoxContextMenu = (event: MouseEvent) => {
-    event.preventDefault();
+    if (event.target === mainBoxRef.value) {
+        event.preventDefault();
+    }
 };
 
 const onMainBoxWheel = (event: WheelEvent) => {
     event.preventDefault();
-    if (mainBoxRef.value) {
-        store.onMainBoxWheel(event.deltaY, event.clientX, event.clientY);
-    }
+    // if (event.target === mainBoxRef.value) {
+    store.onMainBoxWheel(event.deltaY, event.clientX, event.clientY);
+    // }
 };
 
-const onMainBoxMouseDown = (event: MouseEvent) => {
-    // document.addEventListener('mousemove', onDocumentMouseMove);
-    // document.addEventListener('mouseup', onDocumentMouseUp);
-    if (event.target === mainBoxRef.value) { // trigger event ONLY for MainBox and NOT for children
-        store.onMainBoxPointDown(event.clientX, event.clientY);
+const onMainBoxPointDown = (event: MouseEvent | TouchEvent) => {
+    if (event.target === mainBoxRef.value) {
+        document.addEventListener('mousemove', onDocumentPointMove);
+        document.addEventListener('mouseup', onDocumentPointUp);
+        document.addEventListener('touchmove', onDocumentPointMove);
+        document.addEventListener('touchend', onDocumentPointUp);
+
+        const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+        store.clearDragging();
+        store.dragging.type = DraggingTypes.Canvas;
+        store.dragging.element = store.canvasMatrix;
+        const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
+        store.dragging.pointerShift = {
+            x: mainBoxPoint.x - store.dragging.element.x,
+            y: mainBoxPoint.y - store.dragging.element.y,
+        };
     }
 };
-const onMainBoxTouchStart = (event: TouchEvent) => {
-    // document.addEventListener('touchmove', onDocumentTouchMove);
-    // document.addEventListener('touchend', onDocumentTouchEnd);
-    if (event.target === mainBoxRef.value) { // trigger event ONLY for MainBox and NOT for children
-        const point = event.touches[0];
-        store.onMainBoxPointDown(point.clientX, point.clientY);
-    }
+const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
+    store.dragging.element.x = mainBoxPoint.x - store.dragging.pointerShift.x;
+    store.dragging.element.y = mainBoxPoint.y - store.dragging.pointerShift.y;
 };
-
-const onDocumentMouseMove = (event: MouseEvent) => {
-    store.onDocumentPointMove(event.clientX, event.clientY);
-};
-const onDocumentTouchMove = (event: TouchEvent) => {
-    const point = event.touches[0];
-    store.onDocumentPointMove(point.clientX, point.clientY);
-};
-
-const onDocumentMouseUp = (event: MouseEvent) => {
-    // document.removeEventListener('mousemove', onDocumentMouseMove);
-    // document.removeEventListener('mouseup', onDocumentMouseUp);
-    // store.renderAllItemsRect();
-    store.onDocumentPointUp(event.clientX, event.clientY);
-};
-const onDocumentTouchEnd = (event: TouchEvent) => {
-    // document.removeEventListener('touchmove', onDocumentTouchMove);
-    // document.removeEventListener('touchend', onDocumentTouchEnd);
-    // store.renderAllItemsRect();
-    const point = event.changedTouches[0];
-    store.onDocumentPointUp(point.clientX, point.clientY);
+const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
+    // const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    document.removeEventListener('mousemove', onDocumentPointMove);
+    document.removeEventListener('touchmove', onDocumentPointMove);
+    document.removeEventListener('mouseup', onDocumentPointUp);
+    document.removeEventListener('touchend', onDocumentPointUp);
+    store.clearDragging();
 };
 </script>
 <template>
-    <div ref="mainBoxRef"
-         id="main-box"
-         class="border-0 box-border overflow-hidden relative w-full h-full bg-gray-50 dark:bg-gray-800"
+    <div id="main-box"
+         ref="mainBoxRef"
+         :data-type="DraggingTypes.Canvas"
+         class="relative w-full h-full overflow-hidden border-0 box-border bg-gray-50 dark:bg-gray-800"
          @contextmenu="onMainBoxContextMenu"
-         @mousedown="onMainBoxMouseDown($event)"
-         @touchstart="onMainBoxTouchStart($event)"
+         @mousedown="onMainBoxPointDown"
+         @touchstart="onMainBoxPointDown"
          @wheel="onMainBoxWheel"
     >
         <CanvasBackground/>
-        <CanvasLines/>
+        <!--        <CanvasLines/>-->
         <CanvasItems/>
-        <CanvasItemsControl/>
-        <CanvasZoomControl/>
-        <DebugInfo/>
     </div>
+    <CanvasItemsControl/>
+    <CanvasZoomControl/>
+    <DebugInfo/>
 </template>

@@ -1,10 +1,11 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {Item} from '@/js/interfaces'
 import {useStore} from '@/js/stores/store';
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
 import {vElementSize} from '@vueuse/components'
 import {itemTypeColor} from "@/js/stores/helper";
+import {DraggingTypes} from "@/js/stores/constants";
 
 const store = useStore();
 
@@ -17,28 +18,64 @@ const onResize = ({width, height}: { width: number, height: number }) => {
 const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
     event.stopPropagation();
     store.setCanvasItemOnTop(props.item.id);
-    store.dragging.element = store.items.find(item => item.id === props.item.id) || null;
-    const point = 'touches' in event ? event.touches[0] : event;
-    store.documentLastPoint = {x: point.clientX, y: point.clientY};
+    const draggableHeader = event.target.closest('[data-draggable]');
+    if (draggableHeader) {
+        document.addEventListener('mousemove', onDocumentPointMove);
+        document.addEventListener('touchmove', onDocumentPointMove);
+        document.addEventListener('mouseup', onDocumentPointUp);
+        document.addEventListener('touchend', onDocumentPointUp);
+        const point = 'touches' in event ? event.touches[0] : event;
+
+        store.clearDragging();
+        store.dragging.type = DraggingTypes.Item;
+        store.dragging.element = store.items.find(item => item.id === props.item.id) || null;
+        const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
+        store.dragging.pointerShift = {
+            x: mainBoxPoint.x - store.dragging.element.x,
+            y: mainBoxPoint.y - store.dragging.element.y,
+        };
+    }
+};
+
+const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
+    // store.dragging.element.x = mainBoxPoint.x - store.dragging.pointerShift.x;
+    // store.dragging.element.y = mainBoxPoint.y - store.dragging.pointerShift.y;
+
+    // const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
+    // console.log('store.canvasMatrix.scale:', store.canvasMatrix.scale);
+    store.dragging.element.x = (mainBoxPoint.x - store.dragging.pointerShift.x) / store.canvasMatrix.scale;
+    store.dragging.element.y = (mainBoxPoint.y - store.dragging.pointerShift.y) / store.canvasMatrix.scale;
+
+};
+const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
+    // const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    document.removeEventListener('mousemove', onDocumentPointMove);
+    document.removeEventListener('touchmove', onDocumentPointMove);
+    document.removeEventListener('mouseup', onDocumentPointUp);
+    document.removeEventListener('touchend', onDocumentPointUp);
 };
 
 </script>
 <template>
-    <div class="absolute box-border top-0 left-0 select-none"
-         :key="props.item.id"
-         :style="{ transform: `matrix(1, 0, 0, 1, ${props.item.x}, ${props.item.y})` }"
+    <div :key="props.item.id"
          v-element-size="onResize"
+         :style="{ transform: `matrix(1, 0, 0, 1, ${props.item.x}, ${props.item.y})` }"
+         class="absolute box-border top-0 left-0 select-none"
+         @mousedown="onStartDragItem"
+         @touchstart="onStartDragItem"
     >
         <DebugDot :color="DebugColor.Green" :size="1"/>
-        <div class="p-0.5 border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
+        <div
+            class="p-0.5 border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
             <div class="cursor-grab p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 whitespace-nowrap flex items-center"
-                 @mousedown="onStartDragItem"
-                 @touchstart="onStartDragItem"
-            >
-                <div class="grow" :style="{ color: itemTypeColor(props.item.type) }">{{ props.item.type }}</div>
+                 data-draggable>
+                <div :style="{ color: itemTypeColor(props.item.type) }" class="grow">{{ props.item.type }}</div>
                 <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-                        <path d="m13.28 7.78 3.22-3.22v2.69a.75.75 0 0 0 1.5 0v-4.5a.75.75 0 0 0-.75-.75h-4.5a.75.75 0 0 0 0 1.5h2.69l-3.22 3.22a.75.75 0 0 0 1.06 1.06ZM2 17.25v-4.5a.75.75 0 0 1 1.5 0v2.69l3.22-3.22a.75.75 0 0 1 1.06 1.06L4.56 16.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.747.747 0 0 1-.75-.75ZM12.22 13.28l3.22 3.22h-2.69a.75.75 0 0 0 0 1.5h4.5a.747.747 0 0 0 .75-.75v-4.5a.75.75 0 0 0-1.5 0v2.69l-3.22-3.22a.75.75 0 1 0-1.06 1.06ZM3.5 4.56l3.22 3.22a.75.75 0 0 0 1.06-1.06L4.56 3.5h2.69a.75.75 0 0 0 0-1.5h-4.5a.75.75 0 0 0-.75.75v4.5a.75.75 0 0 0 1.5 0V4.56Z"/>
+                    <svg class="size-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="m13.28 7.78 3.22-3.22v2.69a.75.75 0 0 0 1.5 0v-4.5a.75.75 0 0 0-.75-.75h-4.5a.75.75 0 0 0 0 1.5h2.69l-3.22 3.22a.75.75 0 0 0 1.06 1.06ZM2 17.25v-4.5a.75.75 0 0 1 1.5 0v2.69l3.22-3.22a.75.75 0 0 1 1.06 1.06L4.56 16.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.747.747 0 0 1-.75-.75ZM12.22 13.28l3.22 3.22h-2.69a.75.75 0 0 0 0 1.5h4.5a.747.747 0 0 0 .75-.75v-4.5a.75.75 0 0 0-1.5 0v2.69l-3.22-3.22a.75.75 0 1 0-1.06 1.06ZM3.5 4.56l3.22 3.22a.75.75 0 0 0 1.06-1.06L4.56 3.5h2.69a.75.75 0 0 0 0-1.5h-4.5a.75.75 0 0 0-.75.75v4.5a.75.75 0 0 0 1.5 0V4.56Z"/>
                     </svg>
                 </div>
             </div>
@@ -49,9 +86,12 @@ const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
                             <div>input 1</div>
                             <div>input 1</div>
                             <div class="output-sign absolute top-0 -left-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
+                                <svg class="size-6" fill="none" stroke="currentColor"
+                                     stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"/>
                                 </svg>
                             </div>
                         </div>
@@ -59,9 +99,12 @@ const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
                             <div>input 2</div>
                             <div>input 2</div>
                             <div class="output-sign absolute top-0 -left-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
+                                <svg class="size-6" fill="none" stroke="currentColor"
+                                     stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"/>
                                 </svg>
                             </div>
                         </div>
@@ -71,9 +114,12 @@ const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
                             <div>output 1</div>
                             <div>output 1</div>
                             <div class="output-sign absolute top-0 -right-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
+                                <svg class="size-6" fill="none" stroke="currentColor"
+                                     stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"/>
                                 </svg>
                             </div>
                         </div>
@@ -81,9 +127,12 @@ const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
                             <div>output 2</div>
                             <div>output 2</div>
                             <div class="output-sign absolute top-0 -right-8">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
+                                <svg class="size-6" fill="none" stroke="currentColor"
+                                     stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"/>
                                 </svg>
                             </div>
                         </div>
@@ -96,8 +145,11 @@ const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
                 <div>h:{{ props.item.h.toFixed(3) }}</div>
                 <div>type:{{ props.item.type }}</div>
                 <div class="mt-2 flex gap-2">
-                    <button class="border p-1 rounded" @click="()=>store.moveCanvasItemToCenter(props.item.id)">Center</button>
-                    <button class="border p-1 rounded bg-red-800" @click="()=>store.deleteCanvasItem(props.item.id)">Delete</button>
+                    <button class="border p-1 rounded" @click="()=>store.moveCanvasItemToCenter(props.item.id)">Center
+                    </button>
+                    <button class="border p-1 rounded bg-red-800" @click="()=>store.deleteCanvasItem(props.item.id)">
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>

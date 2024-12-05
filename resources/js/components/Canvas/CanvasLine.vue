@@ -1,10 +1,9 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {Line} from "@/js/interfaces";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useStore} from "@/js/stores/store";
 
 const props = defineProps<{ line: Line }>();
-console.log('props.line:', props.line.startX, props.line.endX, props.line.startY, props.line.endY);
 
 const store = useStore();
 
@@ -12,8 +11,6 @@ let startX = ref(props.line.startX);
 let endX = ref(props.line.endX);
 let startY = ref(props.line.startY);
 let endY = ref(props.line.endY);
-
-console.log('startX:startY, endX:endY:', startX.value + ':' + startY.value, endX.value + ':' + endY.value);
 
 onMounted(() => {
     document.addEventListener('mousedown', mouseDownHandler);
@@ -83,39 +80,39 @@ const lineStyle = computed(() => {
 </script>
 
 <template>
-    <div class="line-box absolute left-0 top-0 pointer-events-all" :data-id="props.line.id">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             data-is-draggable="true"
-             data-type="line-start-point"
-             class="line-start-point absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2"
-             :viewBox="`0 0 ${padding*2} ${padding*2}`"
-             :width="padding*2" :height="padding*2"
+    <div :data-id="props.line.id" class="line-box absolute left-0 top-0 pointer-events-all">
+        <svg :height="padding*2"
              :style="{ transform: `matrix(1, 0, 0, 1, ${startX - padding}, ${startY - padding})` }"
-        >
-            <circle :cx="padding" :cy="padding" :r="padding" fill="#3b82f6"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg"
-             data-is-draggable="true"
-             data-type="line-end-point"
-             class="line-end-point absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2"
              :viewBox="`0 0 ${padding*2} ${padding*2}`"
-             :width="padding*2" :height="padding*2"
-             :style="{ transform: `matrix(1, 0, 0, 1, ${endX - padding}, ${endY - padding})` }"
+             :width="padding*2"
+             class="line-start-point absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2"
+             data-is-draggable="true" data-type="line-start-point"
+             xmlns="http://www.w3.org/2000/svg"
         >
             <circle :cx="padding" :cy="padding" :r="padding" fill="#3b82f6"/>
         </svg>
-        <svg xmlns="http://www.w3.org/2000/svg"
-             :width="width + strokePadding*2"
-             :height="height + strokePadding*2"
+        <svg :height="padding*2"
+             :style="{ transform: `matrix(1, 0, 0, 1, ${endX - padding}, ${endY - padding})` }"
+             :viewBox="`0 0 ${padding*2} ${padding*2}`"
+             :width="padding*2"
+             class="line-end-point absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2"
+             data-is-draggable="true" data-type="line-end-point"
+             xmlns="http://www.w3.org/2000/svg"
+        >
+            <circle :cx="padding" :cy="padding" :r="padding" fill="#3b82f6"/>
+        </svg>
+        <svg :height="height + strokePadding*2"
              :style="lineStyle"
              :viewBox="`-${strokePadding} -${strokePadding} ${width + strokePadding*2} ${height + strokePadding*2}`"
+             :width="width + strokePadding*2"
+             xmlns="http://www.w3.org/2000/svg"
         >
-            <rect :width="width" :height="height" fill="#ef444433"/>
-            <line :x1="cx1"
-                  :y1="cy1"
+            <rect :height="height" :width="width" fill="#ef444433"/>
+            <line :stroke-width="strokeWidth"
+                  :x1="cx1"
                   :x2="cx2"
-                  :y2="cy2"
-                  stroke="white" stroke-linecap="round" :stroke-width="strokeWidth"/>
+                  :y1="cy1"
+                  :y2="cy2" stroke="white" stroke-linecap="round"/>
         </svg>
     </div>
 </template>

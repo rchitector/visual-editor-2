@@ -12,3 +12,14 @@ export enum ItemTypes {
     Action1 = 'action1',
     Action2 = 'action2',
 }
+
+export enum DraggingTypes {
+    Canvas = 'canvas',
+    Item = 'item',
+    Line = 'line',
+    // ItemGhost = 'item-ghost',
+    // ItemStartGhost = 'item-start-ghost',
+    // ItemEndGhost = 'item-end-ghost',
+    // ItemAction1Ghost = 'item-action1-ghost',
+    // ItemAction2Ghost = 'item-action2-ghost',
+}

@@ -1,4 +1,4 @@
-import {ItemTypes} from "@/js/stores/constants";
+import {DraggingTypes, ItemTypes} from "@/js/stores/constants";
 
 export interface Item {
     id: string;
@@ -15,6 +15,12 @@ export interface Point {
     y: number;
 }
 
+export interface Matrix {
+    x: number;
+    y: number;
+    scale: number;
+}
+
 export interface Line {
     id: string;
     startId: string;
@@ -27,6 +33,7 @@ export interface Line {
 
 export interface GlobalState {
     debug: boolean,
+    canvasMatrix: Matrix,
     items: Item[],
     lines: Line[],
     zoom: {
@@ -34,8 +41,9 @@ export interface GlobalState {
         value: number,
     },
     dragging: {
-        is: boolean,
-        element: Item | null,
+        element: Point | null,
+        pointerShift: Point | null,
+        type: DraggingTypes | null,
     },
     mainBoxRect: {
         exists: boolean,
@@ -52,8 +60,6 @@ export interface GlobalState {
     },
     documentPoint: Point,
     documentLastPoint: Point,
-    canvasTranslateX: number,
-    canvasTranslateY: number,
     itemsRect: { x: number, y: number, width: number, height: number, center: Point },
     itemType: ItemTypes | null,
 }
