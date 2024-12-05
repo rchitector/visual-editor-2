@@ -42,17 +42,14 @@ export interface GlobalState {
     },
     dragging: {
         element: Point | null,
-        pointerShift: Point | null,
+        startPoint: Point | null,
         type: DraggingTypes | null,
     },
     mainBoxRect: {
-        exists: boolean,
-        width: number,
-        height: number,
-        top: number,
-        left: number,
         x: number,
         y: number,
+        width: number,
+        height: number,
     },
     startPoint: {
         x: number | null,

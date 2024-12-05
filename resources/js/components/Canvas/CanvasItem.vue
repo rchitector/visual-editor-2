@@ -18,36 +18,28 @@ const onResize = ({width, height}: { width: number, height: number }) => {
 const onStartDragItem = (event: MouseEvent | TouchEvent): void => {
     event.stopPropagation();
     store.setCanvasItemOnTop(props.item.id);
-    const draggableHeader = event.target.closest('[data-draggable]');
-    if (draggableHeader) {
+    if (event.target.closest('[data-draggable]')) {
         document.addEventListener('mousemove', onDocumentPointMove);
         document.addEventListener('touchmove', onDocumentPointMove);
         document.addEventListener('mouseup', onDocumentPointUp);
         document.addEventListener('touchend', onDocumentPointUp);
         const point = 'touches' in event ? event.touches[0] : event;
-
+        store.documentPoint = {x: point.clientX, y: point.clientY};
         store.clearDragging();
         store.dragging.type = DraggingTypes.Item;
         store.dragging.element = store.items.find(item => item.id === props.item.id) || null;
-        const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
-        store.dragging.pointerShift = {
-            x: mainBoxPoint.x - store.dragging.element.x,
-            y: mainBoxPoint.y - store.dragging.element.y,
+        store.dragging.cursorOffset = {
+            x: store.canvasPoint.x * 1 - store.dragging.element.x,
+            y: store.canvasPoint.y * 1 - store.dragging.element.y,
         };
     }
 };
 
 const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
     const point = 'changedTouches' in event ? event.changedTouches[0] : event;
-    const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
-    // store.dragging.element.x = mainBoxPoint.x - store.dragging.pointerShift.x;
-    // store.dragging.element.y = mainBoxPoint.y - store.dragging.pointerShift.y;
-
-    // const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
-    // console.log('store.canvasMatrix.scale:', store.canvasMatrix.scale);
-    store.dragging.element.x = (mainBoxPoint.x - store.dragging.pointerShift.x) / store.canvasMatrix.scale;
-    store.dragging.element.y = (mainBoxPoint.y - store.dragging.pointerShift.y) / store.canvasMatrix.scale;
-
+    store.documentPoint = {x: point.clientX, y: point.clientY};
+    store.dragging.element.x = store.canvasPoint.x * 1 - store.dragging.cursorOffset.x;
+    store.dragging.element.y = store.canvasPoint.y * 1 - store.dragging.cursorOffset.y;
 };
 const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
     // const point = 'changedTouches' in event ? event.changedTouches[0] : event;
@@ -84,7 +76,6 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
                     <div class="input-ports">
                         <div class="input-port relative">
                             <div>input 1</div>
-                            <div>input 1</div>
                             <div class="output-sign absolute top-0 -left-8">
                                 <svg class="size-6" fill="none" stroke="currentColor"
                                      stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +87,6 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
                             </div>
                         </div>
                         <div class="input-port relative">
-                            <div>input 2</div>
                             <div>input 2</div>
                             <div class="output-sign absolute top-0 -left-8">
                                 <svg class="size-6" fill="none" stroke="currentColor"
@@ -112,7 +102,6 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
                     <div class="output-ports">
                         <div class="output-port relative">
                             <div>output 1</div>
-                            <div>output 1</div>
                             <div class="output-sign absolute top-0 -right-8">
                                 <svg class="size-6" fill="none" stroke="currentColor"
                                      stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +113,6 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
                             </div>
                         </div>
                         <div class="output-port relative border">
-                            <div>output 2</div>
                             <div>output 2</div>
                             <div class="output-sign absolute top-0 -right-8">
                                 <svg class="size-6" fill="none" stroke="currentColor"
@@ -138,19 +126,19 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
                         </div>
                     </div>
                 </div>
-                <div>id:{{ props.item.id }}</div>
-                <div>x:{{ props.item.x.toFixed(3) }}</div>
-                <div>y:{{ props.item.y.toFixed(3) }}</div>
-                <div>w:{{ props.item.w.toFixed(3) }}</div>
-                <div>h:{{ props.item.h.toFixed(3) }}</div>
-                <div>type:{{ props.item.type }}</div>
-                <div class="mt-2 flex gap-2">
-                    <button class="border p-1 rounded" @click="()=>store.moveCanvasItemToCenter(props.item.id)">Center
-                    </button>
-                    <button class="border p-1 rounded bg-red-800" @click="()=>store.deleteCanvasItem(props.item.id)">
-                        Delete
-                    </button>
-                </div>
+                <!--                <div>id:{{ props.item.id }}</div>-->
+                <!--                <div>x:{{ props.item.x.toFixed(3) }}</div>-->
+                <!--                <div>y:{{ props.item.y.toFixed(3) }}</div>-->
+                <!--                <div>w:{{ props.item.w.toFixed(3) }}</div>-->
+                <!--                <div>h:{{ props.item.h.toFixed(3) }}</div>-->
+                <!--                <div>type:{{ props.item.type }}</div>-->
+                <!--                <div class="mt-2 flex gap-2">-->
+                <!--                    <button class="border p-1 rounded" @click="()=>store.moveCanvasItemToCenter(props.item.id)">Center-->
+                <!--                    </button>-->
+                <!--                    <button class="border p-1 rounded bg-red-800" @click="()=>store.deleteCanvasItem(props.item.id)">-->
+                <!--                        Delete-->
+                <!--                    </button>-->
+                <!--                </div>-->
             </div>
         </div>
     </div>

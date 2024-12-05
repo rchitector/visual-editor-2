@@ -2,7 +2,6 @@ import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
 import {GlobalState, Item} from '@/js/interfaces'
 import {
-    DraggingTypes,
     ITEMS_RECTANGLE_PADDING,
     ItemTypes,
     ZOOM_LEVEL_DEFAULT,
@@ -13,7 +12,10 @@ import {
 
 const defaultValues = {
     debug: true,
+    mainBoxRect: {x: 0, y: 0, width: 0, height: 0},
+    documentPoint: {x: 0, y: 0},
     canvasMatrix: {x: 0, y: 0, scale: 1},
+
     items: [],
     lines: [],
     zoom: {
@@ -23,14 +25,10 @@ const defaultValues = {
     dragging: {
         type: null,
         element: null,
-        pointerShift: null,
+        startPoint: null,
     },
-    mainBoxRect: {exists: false, width: 0, height: 0, top: 0, left: 0, x: 0, y: 0},
     startPoint: {x: 0, y: 0},
-    documentPoint: {x: 0, y: 0},
     documentLastPoint: {x: 0, y: 0},
-    // relatedPointX: 0,
-    // relatedPointY: 0,
     itemsRect: {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}},
     itemType: null,
 };
@@ -48,6 +46,12 @@ export const useStore = defineStore('canvas', {
         previousZoomManualLevel: (state) => {
             const filtered = ZOOM_MANUAL_LEVELS.filter(num => num < state.zoom.value)
             return filtered.length ? Math.max(...filtered) : ZOOM_LEVEL_MIN;
+        },
+        canvasPoint: (state) => {
+            return {
+                x: ((state.documentPoint.x - state.mainBoxRect.x - state.canvasMatrix.x) / state.canvasMatrix.scale).toFixed(0),
+                y: ((state.documentPoint.y - state.mainBoxRect.y - state.canvasMatrix.y) / state.canvasMatrix.scale).toFixed(0),
+            };
         },
         canvasPointMatrix: (state) => {
             return {
@@ -95,16 +99,7 @@ export const useStore = defineStore('canvas', {
         clearDragging() {
             this.dragging.type = null;
             this.dragging.element = null;
-            this.dragging.pointerShift = null;
-        },
-        getMainBoxPoint(documentPointX: number, documentPointY: number): Point {
-            return {
-                x: (documentPointX - this.mainBoxRect.x),
-                y: (documentPointY - this.mainBoxRect.y),
-            }
-        },
-        setCanvasItemTypeActive(itemType: ItemTypes | null) {
-            this.itemType = itemType;
+            this.dragging.startPoint = null;
         },
         onMainBoxWheel(deltaY: number, documentPointX: number, documentPointY: number) {
             const scaleRelatedX = documentPointX - this.mainBoxRect.x;
@@ -115,45 +110,6 @@ export const useStore = defineStore('canvas', {
             } else if (vector < 0) {
                 this.zoomIn(scaleRelatedX, scaleRelatedY);
             }
-        },
-        onMainBoxPointDown(documentPointX: number, documentPointY: number, event: MouseEvent | TouchEvent) {
-            this.clearDragging();
-            this.dragging.type = event.currentTarget?.closest('[data-type]')?.getAttribute('data-type') || null;
-            switch (this.dragging.type) {
-                case DraggingTypes.Item:
-                    const itemId = event.currentTarget?.closest('[data-id]')?.getAttribute('data-id') || null;
-                    this.dragging.element = this.items.find(item => item.id === itemId) || null;
-                    if (this.dragging.element) {
-                        const mainBoxPoint = this.getMainBoxPoint(documentPointX, documentPointY);
-                        this.dragging.pointerShift = {
-                            x: mainBoxPoint.x - this.dragging.element.x,
-                            y: mainBoxPoint.y - this.dragging.element.y,
-                        };
-                    }
-                    break;
-                case DraggingTypes.Line:
-                    break;
-            }
-        },
-        onDocumentPointMove(documentPointX: number, documentPointY: number) {
-            switch (this.dragging.type) {
-                case DraggingTypes.Item:
-                    this.dragging.element.x = (this.dragging.element.x + (documentPointX - this.documentLastPoint.x) / (this.zoom.value / 100));
-                    this.dragging.element.y = (this.dragging.element.y + (documentPointY - this.documentLastPoint.y) / (this.zoom.value / 100));
-                    this.documentLastPoint = {x: documentPointX, y: documentPointY};
-                    break;
-                case DraggingTypes.Line:
-                    break;
-            }
-        },
-        onDocumentPointUp(documentPointX: number, documentPointY: number) {
-            // console.log('onDocumentPointUp:');
-            // console.log('this.dragging.type:', this.dragging.type);
-            // if (this.mainBoxRect.exists) {
-            //     if ((this.startPoint.x === documentPointX && this.startPoint.y === documentPointY)) {
-            //         this.tryToCreateItem(documentPointX, documentPointY);
-            //     }
-            // }
         },
         generateBaseItem(documentPointX: number, documentPointY: number): Item {
             const relatedX = documentPointX - this.mainBoxRect.x - this.canvasMatrix.x;
@@ -207,36 +163,11 @@ export const useStore = defineStore('canvas', {
                     return this.createAction2Item(baseItem);
             }
         },
-        // tryToCreateItem(documentPointX: number, documentPointY: number) {
-        //     if (this.itemType) {
-        //         this.createItem(this.itemType, documentPointX, documentPointY);
-        //     }
-        // },
         setCanvasItemSize(itemId: string, width: number, height: number) {
             const me = this.items.find(item => item.id === itemId);
             if (me) {
                 me.w = width;
                 me.h = height;
-            }
-        },
-        moveCanvasItemToCenter(itemId: string): void {
-            const me = this.items.find(item => item.id === itemId);
-            if (me) {
-                me.x = 0;
-                me.y = 0;
-            }
-        },
-        deleteCanvasItem(itemId: string): void {
-            this.items = this.items.filter(item => item.id !== itemId);
-        },
-        onCanvasItemPointDown(event: MouseEvent | Touch, itemId: string): void {
-            this.setCanvasItemOnTop(itemId);
-            this.startCanvasItemDragging(event, itemId);
-        },
-        startCanvasItemDragging(event: MouseEvent | Touch, itemId: string): void {
-            if (event.target && (event.target as HTMLElement).closest('[data-is-draggable]')) {
-                this.dragging.element = this.items.find(item => item.id === itemId) || null;
-                this.documentLastPoint = {x: event.clientX, y: event.clientY};
             }
         },
         setCanvasItemOnTop(itemId: string): void {
@@ -251,11 +182,10 @@ export const useStore = defineStore('canvas', {
         },
         updateMainBoxRect(rect: DOMRect): void {
             this.mainBoxRect = {
-                exists: true,
-                width: rect.width,
-                height: rect.height,
                 x: rect.x,
                 y: rect.y,
+                width: rect.width,
+                height: rect.height,
             };
         },
         zoomIn(scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void {
@@ -271,8 +201,8 @@ export const useStore = defineStore('canvas', {
             scaleRelatedY = scaleRelatedY ?? this.mainBoxRectCenter.y;
             const coefficient = ((this.zoom.value / 100) / (this.zoom.previous / 100) - (ZOOM_LEVEL_DEFAULT / 100));
             this.canvasMatrix.scale = this.zoom.value / 100;
-            this.canvasMatrix.x = this.canvasMatrix.x - (scaleRelatedX - this.canvasMatrix.x) * coefficient;
-            this.canvasMatrix.y = this.canvasMatrix.y - (scaleRelatedY - this.canvasMatrix.y) * coefficient;
+            this.canvasMatrix.x = (this.canvasMatrix.x - (scaleRelatedX - this.canvasMatrix.x) * coefficient).toFixed(0);
+            this.canvasMatrix.y = (this.canvasMatrix.y - (scaleRelatedY - this.canvasMatrix.y) * coefficient).toFixed(0);
         },
         zoomFit(): void {
             this.zoom.previous = this.zoom.value;
@@ -281,31 +211,111 @@ export const useStore = defineStore('canvas', {
             const scaleY = this.mainBoxRect.height / itemsRect.height;
             this.zoom.value = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);
             this.canvasMatrix.scale = this.zoom.value / 100;
-            this.canvasMatrix.x = 0 - itemsRect.center.x * this.zoom.value / 100 + this.mainBoxRectCenter.x;
-            this.canvasMatrix.y = 0 - itemsRect.center.y * this.zoom.value / 100 + this.mainBoxRectCenter.y;
+            this.canvasMatrix.x = (0 - itemsRect.center.x * this.zoom.value / 100 + this.mainBoxRectCenter.x).toFixed(0);
+            this.canvasMatrix.y = (0 - itemsRect.center.y * this.zoom.value / 100 + this.mainBoxRectCenter.y).toFixed(0);
         },
-
-        initRandomElements(): void {
-            this.items = [];
-            // this.items.push({
-            //     id: uuidv4(),
-            //     onTop: true,
-            //     x: 0,
-            //     y: 0,
-            //     w: 0,
-            //     h: 0,
-            //     type: ItemTypes.Start,
-            // });
-            this.lines = [];
-            // this.lines.push({
-            //     id: uuidv4(),
-            //     startId: uuidv4(),
-            //     startX: 20,
-            //     startY: 30,
-            //     endId: uuidv4(),
-            //     endX: 40,
-            //     endY: 50,
-            // });
+        moveZeroTo(scaleRelatedX: number, scaleRelatedY: number): void {
+            this.canvasMatrix.x = scaleRelatedX;
+            this.canvasMatrix.y = scaleRelatedY;
         },
+        moveZeroToCenter(): void {
+            const scaleRelatedX = (this.mainBoxRect.x + this.mainBoxRect.width / 2) - this.mainBoxRect.x;
+            const scaleRelatedY = (this.mainBoxRect.y + this.mainBoxRect.height / 2) - this.mainBoxRect.y;
+            this.canvasMatrix.x = scaleRelatedX;
+            this.canvasMatrix.y = scaleRelatedY;
+        },
+        // getMainBoxPoint(documentPointX: number, documentPointY: number): Point {
+        //     return {
+        //         x: (documentPointX - this.mainBoxRect.x),
+        //         y: (documentPointY - this.mainBoxRect.y),
+        //     }
+        // },
+        // setCanvasItemTypeActive(itemType: ItemTypes | null) {
+        //     this.itemType = itemType;
+        // },
+        // onMainBoxPointDown(documentPointX: number, documentPointY: number, event: MouseEvent | TouchEvent) {
+        //     this.clearDragging();
+        //     this.dragging.type = event.currentTarget?.closest('[data-type]')?.getAttribute('data-type') || null;
+        //     switch (this.dragging.type) {
+        //         case DraggingTypes.Item:
+        //             const itemId = event.currentTarget?.closest('[data-id]')?.getAttribute('data-id') || null;
+        //             this.dragging.element = this.items.find(item => item.id === itemId) || null;
+        //             if (this.dragging.element) {
+        //                 const mainBoxPoint = this.getMainBoxPoint(documentPointX, documentPointY);
+        //                 this.dragging.pointerShift = {
+        //                     x: mainBoxPoint.x - this.dragging.element.x,
+        //                     y: mainBoxPoint.y - this.dragging.element.y,
+        //                 };
+        //             }
+        //             break;
+        //         case DraggingTypes.Line:
+        //             break;
+        //     }
+        // },
+        // onDocumentPointMove(documentPointX: number, documentPointY: number) {
+        //     switch (this.dragging.type) {
+        //         case DraggingTypes.Item:
+        //             this.dragging.element.x = (this.dragging.element.x + (documentPointX - this.documentLastPoint.x) / (this.zoom.value / 100));
+        //             this.dragging.element.y = (this.dragging.element.y + (documentPointY - this.documentLastPoint.y) / (this.zoom.value / 100));
+        //             this.documentLastPoint = {x: documentPointX, y: documentPointY};
+        //             break;
+        //         case DraggingTypes.Line:
+        //             break;
+        //     }
+        // },
+        // onDocumentPointUp(documentPointX: number, documentPointY: number) {
+        //     // console.log('onDocumentPointUp:');
+        //     // console.log('this.dragging.type:', this.dragging.type);
+        //     // if ((this.startPoint.x === documentPointX && this.startPoint.y === documentPointY)) {
+        //     //     this.tryToCreateItem(documentPointX, documentPointY);
+        //     // }
+        // },
+        // tryToCreateItem(documentPointX: number, documentPointY: number) {
+        //     if (this.itemType) {
+        //         this.createItem(this.itemType, documentPointX, documentPointY);
+        //     }
+        // },
+        // moveCanvasItemToCenter(itemId: string): void {
+        //     const me = this.items.find(item => item.id === itemId);
+        //     if (me) {
+        //         me.x = 0;
+        //         me.y = 0;
+        //     }
+        // },
+        // deleteCanvasItem(itemId: string): void {
+        //     this.items = this.items.filter(item => item.id !== itemId);
+        // },
+        // onCanvasItemPointDown(event: MouseEvent | Touch, itemId: string): void {
+        //     this.setCanvasItemOnTop(itemId);
+        //     this.startCanvasItemDragging(event, itemId);
+        // },
+        // startCanvasItemDragging(event: MouseEvent | Touch, itemId: string): void {
+        //     if (event.target && (event.target as HTMLElement).closest('[data-is-draggable]')) {
+        //         this.dragging.element = this.items.find(item => item.id === itemId) || null;
+        //         this.documentLastPoint = {x: event.clientX, y: event.clientY};
+        //     }
+        // },
+        // initRandomElements(): void {
+        //     this.items = [];
+        //     // this.items.push({
+        //     //     id: uuidv4(),
+        //     //     onTop: true,
+        //     //     x: 0,
+        //     //     y: 0,
+        //     //     w: 0,
+        //     //     h: 0,
+        //     //     type: ItemTypes.Start,
+        //     // });
+        //     this.lines = [];
+        //     // this.lines.push({
+        //     //     id: uuidv4(),
+        //     //     startId: uuidv4(),
+        //     //     startX: 20,
+        //     //     startY: 30,
+        //     //     endId: uuidv4(),
+        //     //     endX: 40,
+        //     //     endY: 50,
+        //     // });
+        // },
     },
 });

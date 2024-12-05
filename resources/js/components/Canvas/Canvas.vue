@@ -6,28 +6,64 @@ import CanvasItems from "@/js/components/Canvas/CanvasItems.vue";
 import DebugInfo from "@/js/components/Debug/DebugInfo.vue";
 import CanvasItemsControl from "@/js/components/Controls/CanvasItemsControl.vue";
 import {useStore} from "@/js/stores/store";
-import {DraggingTypes} from "@/js/stores/constants";
+import {DraggingTypes, ItemTypes} from "@/js/stores/constants";
+import {v4 as uuidv4} from "uuid";
 
 const store = useStore();
-
 const mainBoxRef = ref<HTMLDivElement | null>(null);
 
+const resizeObserver = new ResizeObserver((entries) => {
+    for (let entry of entries) {
+        store.updateMainBoxRect(mainBoxRef.value.getBoundingClientRect());
+    }
+});
+
 onMounted(() => {
-    onWindowSizeUpdate();
-    window.addEventListener('resize', onWindowSizeUpdate);
-    // store.zoomFit();
+    if (mainBoxRef.value) {
+        resizeObserver.observe(mainBoxRef.value);
+
+        store.updateMainBoxRect(mainBoxRef.value.getBoundingClientRect());
+
+        store.moveZeroTo(100, 100);
+        // store.moveZeroToCenter();
+
+        store.items.push({
+            id: uuidv4(),
+            x: 100,
+            y: 100,
+            w: 0,
+            h: 0,
+            onTop: true,
+            type: ItemTypes.Start,
+        });
+
+        store.items.push({
+            id: uuidv4(),
+            x: 400,
+            y: 100,
+            w: 0,
+            h: 0,
+            onTop: true,
+            type: ItemTypes.Action1,
+        });
+
+        store.items.push({
+            id: uuidv4(),
+            x: 700,
+            y: 100,
+            w: 0,
+            h: 0,
+            onTop: true,
+            type: ItemTypes.End,
+        });
+    }
 });
 
 onUnmounted(() => {
-    window.removeEventListener('resize', onWindowSizeUpdate);
-});
-
-const onWindowSizeUpdate = () => {
     if (mainBoxRef.value) {
-        const rect = mainBoxRef.value.getBoundingClientRect();
-        store.updateMainBoxRect(rect);
+        resizeObserver.unobserve(mainBoxRef.value);
     }
-};
+});
 
 const onMainBoxContextMenu = (event: MouseEvent) => {
     if (event.target === mainBoxRef.value) {
@@ -53,19 +89,18 @@ const onMainBoxPointDown = (event: MouseEvent | TouchEvent) => {
         store.clearDragging();
         store.dragging.type = DraggingTypes.Canvas;
         store.dragging.element = store.canvasMatrix;
-        const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
-        store.dragging.pointerShift = {
-            x: mainBoxPoint.x - store.dragging.element.x,
-            y: mainBoxPoint.y - store.dragging.element.y,
+        store.dragging.startPoint = {
+            x: point.clientX - store.canvasMatrix.x,
+            y: point.clientY - store.canvasMatrix.y
         };
     }
 };
 const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
     const point = 'changedTouches' in event ? event.changedTouches[0] : event;
-    const mainBoxPoint = store.getMainBoxPoint(point.clientX, point.clientY);
-    store.dragging.element.x = mainBoxPoint.x - store.dragging.pointerShift.x;
-    store.dragging.element.y = mainBoxPoint.y - store.dragging.pointerShift.y;
+    store.dragging.element.x = point.clientX - store.dragging.startPoint.x;
+    store.dragging.element.y = point.clientY - store.dragging.startPoint.y;
 };
+
 const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
     // const point = 'changedTouches' in event ? event.changedTouches[0] : event;
     document.removeEventListener('mousemove', onDocumentPointMove);

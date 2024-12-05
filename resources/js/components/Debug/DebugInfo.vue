@@ -1,29 +1,44 @@
 <script lang="ts" setup>
 import {useStore} from "@/js/stores/store";
 import {ZOOM_VISIBLE_LEVELS} from "@/js/stores/constants";
+import {onMounted, onUnmounted} from "vue";
 
 const store = useStore();
-
 const baseClass = 'absolute gap-1 rounded-lg border border-red-300 dark:border-red-400 p-2 bg-white dark:bg-gray-800'
 
-</script>
+onMounted(() => {
+    document.addEventListener('mousemove', onDocumentPointMove);
+});
 
+onUnmounted(() => {
+    document.removeEventListener('mousemove', onDocumentPointMove);
+});
+const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    store.documentPoint = {x: point.clientX, y: point.clientY};
+};
+</script>
 <template>
     <div v-if="store.debug" :class="baseClass" class="left-5 bottom-5 flex flex-col">
-        <div>mainBoxRectCenter: {{ store.mainBoxRectCenter.x.toFixed(0) }}:{{
-                store.mainBoxRectCenter.y.toFixed(0)
-            }}
-        </div>
-        <div>canvasPointMatrix: {{ store.canvasPointMatrix.scale.toFixed(2) }}:{{
-                store.canvasPointMatrix.x.toFixed(0)
-            }}:{{ store.canvasPointMatrix.y.toFixed(0) }}
-        </div>
-        <div>canvasMatrix: {{ store.canvasMatrix.scale.toFixed(2) }}:{{
-                store.canvasMatrix.x.toFixed(0)
-            }}:{{ store.canvasMatrix.y.toFixed(0) }}
-        </div>
-        <div>documentPoint: {{ store.documentPoint.x }}:{{ store.documentPoint.y }}</div>
         <div>itemType: {{ store.itemType }}</div>
+        <hr>
+        <div>documentPoint X: {{ store.documentPoint.x }}</div>
+        <div>documentPoint Y: {{ store.documentPoint.y }}</div>
+        <hr>
+        <div>canvasMatrix X: {{ store.canvasMatrix.x }}</div>
+        <div>canvasMatrix Y: {{ store.canvasMatrix.y }}</div>
+        <div>canvasMatrix Scale: {{ store.canvasMatrix.scale }}</div>
+        <hr>
+        <div>canvasPointMatrix X: {{ store.canvasPointMatrix.x }}</div>
+        <div>canvasPointMatrix Y: {{ store.canvasPointMatrix.y }}</div>
+        <hr>
+        <div>canvasPoint X: {{ store.canvasPoint.x }}</div>
+        <div>canvasPoint Y: {{ store.canvasPoint.y }}</div>
+        <hr>
+        <div>mainBoxRect X: {{ store.mainBoxRect.x }}</div>
+        <div>mainBoxRect Y: {{ store.mainBoxRect.y }}</div>
+        <div>mainBoxRect W: {{ store.mainBoxRect.width }}</div>
+        <div>mainBoxRect H: {{ store.mainBoxRect.height }}</div>
     </div>
 
     <div v-if="store.debug"
