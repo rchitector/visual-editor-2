@@ -90,10 +90,10 @@ const setCanvasItemTypeActive = (itemType, event: MouseEvent | TouchEvent) => {
                 @click="setCanvasItemTypeActive(ItemTypes.Start, $event)">Start
             </button>
             <button
-                :style="{ color: itemTypeColor(ItemTypes.End) }"
+                :style="{ color: itemTypeColor(ItemTypes.Finish) }"
                 class="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 type="button"
-                @click="setCanvasItemTypeActive(ItemTypes.End, $event)">End
+                @click="setCanvasItemTypeActive(ItemTypes.Finish, $event)">End
             </button>
             <button
                 :style="{ color: itemTypeColor(ItemTypes.Action1) }"

@@ -8,7 +8,7 @@ export const ITEMS_RECTANGLE_PADDING: number = 20;
 
 export enum ItemTypes {
     Start = 'start',
-    End = 'end',
+    Finish = 'finish',
     Action1 = 'action1',
     Action2 = 'action2',
 }
@@ -17,9 +17,9 @@ export enum DraggingTypes {
     Canvas = 'canvas',
     Item = 'item',
     Line = 'line',
-    // ItemGhost = 'item-ghost',
-    // ItemStartGhost = 'item-start-ghost',
-    // ItemEndGhost = 'item-end-ghost',
-    // ItemAction1Ghost = 'item-action1-ghost',
-    // ItemAction2Ghost = 'item-action2-ghost',
+}
+
+export enum PortType {
+    Output = 'output-port',
+    Input = 'input-port',
 }

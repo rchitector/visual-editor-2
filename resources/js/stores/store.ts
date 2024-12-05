@@ -131,22 +131,18 @@ export const useStore = defineStore('canvas', {
             this.itemType = null;
         },
         createStartItem(baseItem: Item) {
-            // console.log('ItemTypes.Start:', ItemTypes.Start);
             baseItem.type = ItemTypes.Start;
             this.addNewItem(baseItem);
         },
         createEndItem(baseItem: Item) {
-            // console.log('ItemTypes.End:', ItemTypes.End);
-            baseItem.type = ItemTypes.End;
+            baseItem.type = ItemTypes.Finish;
             this.addNewItem(baseItem);
         },
         createAction1Item(baseItem: Item) {
-            // console.log('ItemTypes.Action1:', ItemTypes.Action1);
             baseItem.type = ItemTypes.Action1;
             this.addNewItem(baseItem);
         },
         createAction2Item(baseItem: Item) {
-            // console.log('ItemTypes.Action2:', ItemTypes.Action2);
             baseItem.type = ItemTypes.Action2;
             this.addNewItem(baseItem);
         },
@@ -155,7 +151,7 @@ export const useStore = defineStore('canvas', {
             switch (itemType) {
                 case ItemTypes.Start:
                     return this.createStartItem(baseItem);
-                case ItemTypes.End:
+                case ItemTypes.Finish:
                     return this.createEndItem(baseItem);
                 case ItemTypes.Action1:
                     return this.createAction1Item(baseItem);

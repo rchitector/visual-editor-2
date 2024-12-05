@@ -11,7 +11,7 @@ export const itemTypeColor = (itemType: ItemTypes | null) => {
     switch (itemType) {
         case ItemTypes.Start:
             return rgbToHex(DebugColor.Red);
-        case ItemTypes.End:
+        case ItemTypes.Finish:
             return rgbToHex(DebugColor.Green);
         case ItemTypes.Action1:
             return rgbToHex(DebugColor.Blue);

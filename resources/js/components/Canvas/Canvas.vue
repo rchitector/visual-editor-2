@@ -54,7 +54,7 @@ onMounted(() => {
             w: 0,
             h: 0,
             onTop: true,
-            type: ItemTypes.End,
+            type: ItemTypes.Finish,
         });
     }
 });
@@ -126,5 +126,5 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
     </div>
     <CanvasItemsControl/>
     <CanvasZoomControl/>
-    <DebugInfo/>
+    <DebugInfo v-if="store.debug"/>
 </template>
