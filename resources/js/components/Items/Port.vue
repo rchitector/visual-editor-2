@@ -1,26 +1,67 @@
 <script setup lang="ts">
 
-import {PortType} from "@/js/stores/constants";
+import {ColorName, PortType} from "@/js/stores/constants";
+import {onMounted, onUnmounted} from "vue";
+import ActionIcon from "@/js/components/Items/Icons/ActionIcon.vue";
 
-const props = defineProps<{ title: string; type: PortType; }>();
+const props = defineProps<{
+    title: string,
+    type: PortType,
+    active: boolean,
+    disabled: boolean,
+    baseColor: ColorName
+}>();
+
+onMounted(() => {
+    document.addEventListener('mousedown', onDocumentPointDown);
+    document.addEventListener('touchstart', onDocumentPointDown);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('mousedown', onDocumentPointDown);
+    document.removeEventListener('touchstart', onDocumentPointDown);
+    stopListenMoving();
+});
+
+const startListenMoving = () => {
+    document.addEventListener('mousemove', onDocumentPointMove);
+    document.addEventListener('touchmove', onDocumentPointMove);
+    document.addEventListener('mouseup', onDocumentPointUp);
+    document.addEventListener('touchend', onDocumentPointUp);
+};
+const stopListenMoving = () => {
+    document.removeEventListener('mousemove', onDocumentPointMove);
+    document.removeEventListener('touchmove', onDocumentPointMove);
+    document.removeEventListener('mouseup', onDocumentPointUp);
+    document.removeEventListener('touchend', onDocumentPointUp);
+};
+const onDocumentPointDown = (event: MouseEvent | TouchEvent) => {
+    // 'data-dropable-action-port'
+    console.log('event.target:', event.target);
+    console.log('event.target.closest([data-draggable-action-port]):', event.target.closest('[data-draggable-action-port]'));
+    if (event.target.closest('[data-draggable-action-port]')) {
+        startListenMoving();
+    }
+};
+const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    console.log('point:', point);
+    // store.dragging.element.x = point.clientX - store.dragging.startPoint.x;
+    // store.dragging.element.y = point.clientY - store.dragging.startPoint.y;
+};
+const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
+    stopListenMoving();
+};
 </script>
 
 <template>
     <div class="relative port">
         <div>{{ props.title }}</div>
-        <div v-if="props.type == PortType.Input" class="absolute top-0 -left-8">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                 stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
-            </svg>
+        <div v-if="props.type == PortType.Input" class="absolute top-1 -left-7 pointer-events-auto">
+            <ActionIcon :active="props.active" :disabled="props.disabled" :baseColor="props.baseColor"/>
         </div>
-        <div v-if="props.type == PortType.Output" class="absolute top-0 -right-8">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                 stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
-            </svg>
+        <div v-if="props.type == PortType.Output" class="absolute top-1 -right-7 pointer-events-auto">
+            <ActionIcon :active="props.active" :disabled="props.disabled" :baseColor="props.baseColor"/>
         </div>
     </div>
 </template>

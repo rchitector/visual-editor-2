@@ -12,7 +12,8 @@ sail-down:
 
 pnpm-install:
 	#./vendor/bin/sail pnpm install --verbose
-	./vendor/bin/sail pnpm i @vueuse/core @vueuse/components
+	#./vendor/bin/sail pnpm i @vueuse/core @vueuse/components
+	./vendor/bin/sail pnpm i tailwindcss
 
 vue-tsc:
 	./vendor/bin/sail npx vue-tsc --noEmit

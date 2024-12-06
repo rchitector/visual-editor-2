@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import {DebugColor} from "@/js/components/Debug/DebugEnums";
-import {itemTypeColor} from "@/js/stores/helper";
 import DebugDot from "@/js/components/Debug/DebugDot.vue";
 import {vElementSize} from '@vueuse/components'
 import {useStore} from "@/js/stores/store";
 import {Item} from "@/js/interfaces";
 import {ref} from "vue";
 import {DraggingTypes} from "@/js/stores/constants";
+import ItemHeader from "@/js/components/Items/ItemHeader.vue";
 
 const store = useStore();
 
@@ -64,18 +64,9 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
         <DebugDot :color="DebugColor.Green" :size="1"/>
         <div
             class="p-0.5 border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
-            <div class="cursor-grab p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 whitespace-nowrap flex items-center"
-                 data-draggable="true"
-            >
-                <div class="grow" :style="{ color: itemTypeColor(props.item.type) }">{{ props.item.type }}</div>
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-                        <path
-                            d="m13.28 7.78 3.22-3.22v2.69a.75.75 0 0 0 1.5 0v-4.5a.75.75 0 0 0-.75-.75h-4.5a.75.75 0 0 0 0 1.5h2.69l-3.22 3.22a.75.75 0 0 0 1.06 1.06ZM2 17.25v-4.5a.75.75 0 0 1 1.5 0v2.69l3.22-3.22a.75.75 0 0 1 1.06 1.06L4.56 16.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.747.747 0 0 1-.75-.75ZM12.22 13.28l3.22 3.22h-2.69a.75.75 0 0 0 0 1.5h4.5a.747.747 0 0 0 .75-.75v-4.5a.75.75 0 0 0-1.5 0v2.69l-3.22-3.22a.75.75 0 1 0-1.06 1.06ZM3.5 4.56l3.22 3.22a.75.75 0 0 0 1.06-1.06L4.56 3.5h2.69a.75.75 0 0 0 0-1.5h-4.5a.75.75 0 0 0-.75.75v4.5a.75.75 0 0 0 1.5 0V4.56Z"/>
-                    </svg>
-                </div>
-            </div>
-            <div class="action-ports flex flex-row justify-between gap-2">
+            <ItemHeader :type="props.item.type" :title="props.item.type"/>
+            <div
+                class="p-2 action-ports flex flex-row justify-between gap-2 border-b border-gray-200 dark:border-gray-600">
                 <div class="input-ports">
                     <slot name="inputPorts"></slot>
                 </div>

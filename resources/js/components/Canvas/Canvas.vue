@@ -8,6 +8,7 @@ import CanvasItemsControl from "@/js/components/Controls/CanvasItemsControl.vue"
 import {useStore} from "@/js/stores/store";
 import {DraggingTypes, ItemTypes} from "@/js/stores/constants";
 import {v4 as uuidv4} from "uuid";
+import CanvasLines from "@/js/components/Canvas/CanvasLines.vue";
 
 const store = useStore();
 const mainBoxRef = ref<HTMLDivElement | null>(null);
@@ -121,7 +122,7 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
          @wheel="onMainBoxWheel"
     >
         <CanvasBackground/>
-        <!--        <CanvasLines/>-->
+        <CanvasLines/>
         <CanvasItems/>
     </div>
     <CanvasItemsControl/>

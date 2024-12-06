@@ -1,4 +1,5 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
+import colors from "tailwindcss/colors.js";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -11,11 +12,24 @@ export default {
         './resources/**/*.vue',
         './node_modules/flowbite/**/*.js',
     ],
+    safelist: [
+        {
+            pattern: /^text-.*/, // Сохранить все классы, начинающиеся с text-
+            variants: ['hover', 'dark', 'dark:hover'], // Сохранить вариации
+        },
+        {
+            pattern: /^fill-.*/, // Сохранить все классы, начинающиеся с fill-
+            variants: ['hover', 'dark', 'dark:hover'], // Сохранить вариации
+        },
+    ],
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                ...colors,
+            }
         },
     },
     plugins: [
