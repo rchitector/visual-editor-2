@@ -13,7 +13,7 @@ const props = defineProps<{ item: Item; }>();
 <template>
     <BaseItem :item="props.item" :key="props.item.id">
         <template v-slot:outputPorts>
-            <Port :type="PortType.Output" title="Start" :active="true" :baseColor="ColorName.green" :disabled="false"/>
+            <Port :type="PortType.Output" title="Start" :active="true" :disabled="false" :baseColor="ColorName.green"/>
         </template>
     </BaseItem>
 </template>

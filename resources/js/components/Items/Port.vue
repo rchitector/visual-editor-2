@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import {ColorName, PortType} from "@/js/stores/constants";
-import {onMounted, onUnmounted} from "vue";
 import ActionIcon from "@/js/components/Items/Icons/ActionIcon.vue";
 
 const props = defineProps<{
@@ -12,55 +11,60 @@ const props = defineProps<{
     baseColor: ColorName
 }>();
 
-onMounted(() => {
-    document.addEventListener('mousedown', onDocumentPointDown);
-    document.addEventListener('touchstart', onDocumentPointDown);
-});
-
-onUnmounted(() => {
-    document.removeEventListener('mousedown', onDocumentPointDown);
-    document.removeEventListener('touchstart', onDocumentPointDown);
-    stopListenMoving();
-});
-
-const startListenMoving = () => {
-    document.addEventListener('mousemove', onDocumentPointMove);
-    document.addEventListener('touchmove', onDocumentPointMove);
-    document.addEventListener('mouseup', onDocumentPointUp);
-    document.addEventListener('touchend', onDocumentPointUp);
-};
-const stopListenMoving = () => {
-    document.removeEventListener('mousemove', onDocumentPointMove);
-    document.removeEventListener('touchmove', onDocumentPointMove);
-    document.removeEventListener('mouseup', onDocumentPointUp);
-    document.removeEventListener('touchend', onDocumentPointUp);
-};
-const onDocumentPointDown = (event: MouseEvent | TouchEvent) => {
-    // 'data-dropable-action-port'
-    console.log('event.target:', event.target);
-    console.log('event.target.closest([data-draggable-action-port]):', event.target.closest('[data-draggable-action-port]'));
-    if (event.target.closest('[data-draggable-action-port]')) {
-        startListenMoving();
-    }
-};
-const onDocumentPointMove = (event: MouseEvent | TouchEvent) => {
+const onInputPortPointDown = (event) => {
     const point = 'changedTouches' in event ? event.changedTouches[0] : event;
-    console.log('point:', point);
-    // store.dragging.element.x = point.clientX - store.dragging.startPoint.x;
-    // store.dragging.element.y = point.clientY - store.dragging.startPoint.y;
+    console.log('Down point:', point);
+    document.addEventListener('mousemove', onInputPortPointMove);
+    document.addEventListener('touchmove', onInputPortPointMove);
+    document.addEventListener('mouseup', onInputPortPointUp);
+    document.addEventListener('touchend', onInputPortPointUp);
 };
-const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
-    stopListenMoving();
+const onInputPortPointMove = (event: MouseEvent | TouchEvent) => {
+    // const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    // console.log('Move point:', point);
+};
+const onInputPortPointUp = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    console.log('Up point:', point);
+    document.removeEventListener('mousemove', onInputPortPointMove);
+    document.removeEventListener('touchmove', onInputPortPointMove);
+    document.removeEventListener('mouseup', onInputPortPointUp);
+    document.removeEventListener('touchend', onInputPortPointUp);
+};
+
+const onOutputPortPointDown = (event) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    console.log('Down point:', point);
+    document.addEventListener('mousemove', onOutputPortPointMove);
+    document.addEventListener('touchmove', onOutputPortPointMove);
+    document.addEventListener('mouseup', onOutputPortPointUp);
+    document.addEventListener('touchend', onOutputPortPointUp);
+};
+const onOutputPortPointMove = (event: MouseEvent | TouchEvent) => {
+    // const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    // console.log('Move point:', point);
+};
+const onOutputPortPointUp = (event: MouseEvent | TouchEvent) => {
+    const point = 'changedTouches' in event ? event.changedTouches[0] : event;
+    console.log('Up point:', point);
+    document.removeEventListener('mousemove', onOutputPortPointMove);
+    document.removeEventListener('touchmove', onOutputPortPointMove);
+    document.removeEventListener('mouseup', onOutputPortPointUp);
+    document.removeEventListener('touchend', onOutputPortPointUp);
 };
 </script>
 
 <template>
     <div class="relative port">
         <div>{{ props.title }}</div>
-        <div v-if="props.type == PortType.Input" class="absolute top-1 -left-7 pointer-events-auto">
+        <div v-if="props.type == PortType.Input"
+             @mousedown="onInputPortPointDown"
+             class="absolute top-1 -left-7 pointer-events-auto">
             <ActionIcon :active="props.active" :disabled="props.disabled" :baseColor="props.baseColor"/>
         </div>
-        <div v-if="props.type == PortType.Output" class="absolute top-1 -right-7 pointer-events-auto">
+        <div v-if="props.type == PortType.Output"
+             @mousedown="onOutputPortPointDown"
+             class="absolute top-1 -right-7 pointer-events-auto">
             <ActionIcon :active="props.active" :disabled="props.disabled" :baseColor="props.baseColor"/>
         </div>
     </div>

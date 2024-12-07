@@ -4,7 +4,7 @@ import BaseItem from "@/js/components/Items/BaseItem.vue";
 import {useStore} from "@/js/stores/store";
 import {Item} from "@/js/interfaces";
 import Port from "@/js/components/Items/Port.vue";
-import {PortType} from "@/js/stores/constants";
+import {ColorName, PortType} from "@/js/stores/constants";
 
 const store = useStore();
 
@@ -14,10 +14,12 @@ const props = defineProps<{ item: Item; }>();
 <template>
     <BaseItem :item="props.item" :key="props.item.id">
         <template v-slot:inputPorts>
-            <Port :type="PortType.Input" title="Action 1 Start"/>
+            <Port :type="PortType.Input" title="Action 1 Start" :active="false" :disabled="false"
+                  :baseColor="ColorName.green"/>
         </template>
         <template v-slot:outputPorts>
-            <Port :type="PortType.Output" title="Action 1 Finish"/>
+            <Port :type="PortType.Output" title="Action 1 Finish" :active="false" :disabled="false"
+                  :baseColor="ColorName.green"/>
         </template>
     </BaseItem>
 </template>
