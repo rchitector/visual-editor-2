@@ -7,6 +7,7 @@ interface Props {
     size?: number;
     x?: number;
     y?: number;
+    show?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -14,12 +15,13 @@ const props = withDefaults(defineProps<Props>(), {
     size: 2,
     x: 0,
     y: 0,
+    show: false,
 });
 
 const store = useStore();
 </script>
 <template>
-    <div v-if="store.debug"
+    <div v-if="props.show"
          :style="{
             backgroundColor: props.color,
             transform: `matrix(1, 0, 0, 1, ${props.x}, ${props.y})`,

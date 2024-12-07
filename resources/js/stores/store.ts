@@ -1,9 +1,10 @@
 import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
-import {GlobalState, Item} from '@/js/interfaces'
+import {Element, GlobalState, Item} from '@/js/interfaces'
 import {
     ITEMS_RECTANGLE_PADDING,
     ItemTypes,
+    PortType,
     ZOOM_LEVEL_DEFAULT,
     ZOOM_LEVEL_MAX,
     ZOOM_LEVEL_MIN,
@@ -11,13 +12,13 @@ import {
 } from '@/js/stores/constants'
 
 const defaultValues = {
-    debug: true,
+    debug: false,
     mainBoxRect: {x: 0, y: 0, width: 0, height: 0},
     documentPoint: {x: 0, y: 0},
     canvasMatrix: {x: 0, y: 0, scale: 1},
-
+    elements: {},
+    lines: {},
     items: [],
-    lines: [],
     zoom: {
         previous: ZOOM_LEVEL_DEFAULT,
         value: ZOOM_LEVEL_DEFAULT,
@@ -66,22 +67,22 @@ export const useStore = defineStore('canvas', {
                 y: state.mainBoxRect.height / 2,
             };
         },
-        allItemsRect: (state) => {
-            let itemsRect = {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}}
-            if (state.items.length) {
+        allElementsRect: (state) => {
+            let elementsRect = {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}}
+            if (state.elements) {
                 let minX: number = Infinity, minY: number = Infinity, maxX: number = -Infinity,
                     maxY: number = -Infinity;
-                state.items.forEach(item => {
-                    minX = Math.min(minX, item.x);
-                    minY = Math.min(minY, item.y);
-                    maxX = Math.max(maxX, item.x + item.w);
-                    maxY = Math.max(maxY, item.y + item.h);
-                });
+                for (const [key, element] of Object.entries(state.elements)) {
+                    minX = Math.min(minX, element.x);
+                    minY = Math.min(minY, element.y);
+                    maxX = Math.max(maxX, element.x + element.w);
+                    maxY = Math.max(maxY, element.y + element.h);
+                }
                 let _minX = Math.min(minX, maxX) - ITEMS_RECTANGLE_PADDING;
                 let _minY = Math.min(minY, maxY) - ITEMS_RECTANGLE_PADDING;
                 let _maxX = Math.max(minX, maxX) + ITEMS_RECTANGLE_PADDING;
                 let _maxY = Math.max(minY, maxY) + ITEMS_RECTANGLE_PADDING;
-                itemsRect = {
+                elementsRect = {
                     x: _minX,
                     y: _minY,
                     width: _maxX - _minX,
@@ -92,10 +93,16 @@ export const useStore = defineStore('canvas', {
                     }
                 };
             }
-            return itemsRect;
+            return elementsRect;
         },
     },
     actions: {
+        documentPointToRelatedToCanvasZeroPoint(documentPointX, documentPointY) {
+            return {
+                relatedX: (documentPointX - this.mainBoxRect.x - this.canvasMatrix.x) / this.canvasMatrix.scale,
+                relatedY: (documentPointY - this.mainBoxRect.y - this.canvasMatrix.y) / this.canvasMatrix.scale,
+            };
+        },
         clearDragging() {
             this.dragging.type = null;
             this.dragging.element = null;
@@ -110,6 +117,167 @@ export const useStore = defineStore('canvas', {
             } else if (vector < 0) {
                 this.zoomIn(scaleRelatedX, scaleRelatedY);
             }
+        },
+        generateBaseElement(documentPointX: number, documentPointY: number): Element {
+            const relatedX = (documentPointX - this.mainBoxRect.x - this.canvasMatrix.x) / this.canvasMatrix.scale;
+            const relatedY = (documentPointY - this.mainBoxRect.y - this.canvasMatrix.y) / this.canvasMatrix.scale;
+            return {
+                id: uuidv4(),
+                x: relatedX,
+                y: relatedY,
+                w: 0,
+                h: 0,
+                onTop: true,
+                ports: {}
+            }
+        },
+        createStartElement(documentPointX: number, documentPointY: number) {
+            const baseElement = this.generateBaseElement(documentPointX, documentPointY);
+            baseElement.type = ItemTypes.Start;
+
+            const ports = [
+                {
+                    id: uuidv4(),
+                    index: 1,
+                    titlePrefix: 'Action Input',
+                    type: PortType.ActionInput,
+                    active: true,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 2,
+                    titlePrefix: 'Action Input',
+                    type: PortType.ActionInput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 3,
+                    titlePrefix: 'Action Input',
+                    type: PortType.ActionInput,
+                    active: true,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 4,
+                    titlePrefix: 'Action Input',
+                    type: PortType.ActionInput,
+                    active: false,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 1,
+                    titlePrefix: 'Action Output',
+                    type: PortType.ActionOutput,
+                    active: true,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 2,
+                    titlePrefix: 'Action Output',
+                    type: PortType.ActionOutput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 3,
+                    titlePrefix: 'Action Output',
+                    type: PortType.ActionOutput,
+                    active: true,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 4,
+                    titlePrefix: 'Action Output',
+                    type: PortType.ActionOutput,
+                    active: false,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 1,
+                    titlePrefix: 'Data Input',
+                    type: PortType.DataInput,
+                    active: true,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 2,
+                    titlePrefix: 'Data Input',
+                    type: PortType.DataInput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 3,
+                    titlePrefix: 'Data Input',
+                    type: PortType.DataInput,
+                    active: true,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 4,
+                    titlePrefix: 'Data Input',
+                    type: PortType.DataInput,
+                    active: false,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 1,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: true,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 2,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: 3,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: true,
+                    disabled: false
+                },
+                {
+                    id: uuidv4(),
+                    index: 4,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: false,
+                    disabled: false
+                },
+            ];
+
+            ports.forEach(port => {
+                baseElement.ports[port.id] = {
+                    elementId: baseElement.id,
+                    id: port.id,
+                    type: port.type,
+                    title: `${port.titlePrefix} ${port.index}`,
+                    active: port.active,
+                    disabled: port.disabled,
+                };
+            })
+
+            this.elements[baseElement.id] = baseElement;
         },
         generateBaseItem(documentPointX: number, documentPointY: number): Item {
             const relatedX = documentPointX - this.mainBoxRect.x - this.canvasMatrix.x;
@@ -202,7 +370,7 @@ export const useStore = defineStore('canvas', {
         },
         zoomFit(): void {
             this.zoom.previous = this.zoom.value;
-            const itemsRect = this.allItemsRect;
+            const itemsRect = this.allElementsRect;
             const scaleX = this.mainBoxRect.width / itemsRect.width;
             const scaleY = this.mainBoxRect.height / itemsRect.height;
             this.zoom.value = Math.min(Math.min(scaleX, scaleY) * 100, ZOOM_LEVEL_DEFAULT);

@@ -61,17 +61,17 @@ const onDocumentPointUp = (event: MouseEvent | TouchEvent) => {
          @mousedown="onStartDragItem"
          @touchstart="onStartDragItem"
     >
-        <DebugDot :color="DebugColor.Green" :size="1"/>
+        <DebugDot :show="store.debug" :color="DebugColor.Green" :size="1"/>
         <div
             class="p-0.5 border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
-            <ItemHeader :type="props.item.type" :title="props.item.type"/>
+            <ItemHeader :type="props.item.type" :title="props.item.type" element=""/>
             <div
                 class="p-2 action-ports flex flex-row justify-between gap-2 border-b border-gray-200 dark:border-gray-600">
                 <div class="input-ports">
-                    <slot name="inputPorts"></slot>
+                    <slot name="inputActionPorts"></slot>
                 </div>
                 <div class="output-ports">
-                    <slot name="outputPorts"></slot>
+                    <slot name="outputActionPorts"></slot>
                 </div>
             </div>
             <div class="border-gray-200 dark:border-gray-700 p-1.5">

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useStore} from "@/js/stores/store";
-import {DraggingTypes, ItemTypes} from "@/js/stores/constants";
+import {ColorName, DraggingTypes, ItemTypeColor, ItemTypes} from "@/js/stores/constants";
 import {onMounted, onUnmounted, ref} from 'vue';
 import {itemTypeColor} from "@/js/stores/helper";
 
@@ -84,28 +84,28 @@ const setCanvasItemTypeActive = (itemType, event: MouseEvent | TouchEvent) => {
         class="absolute left-5 top-5 rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
         <div class="gap-1 flex items-center">
             <button
-                :style="{ color: itemTypeColor(ItemTypes.Start) }"
+                :class="`text-${ColorName[ItemTypeColor.start]}-500`"
                 class="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 type="button"
                 @click="setCanvasItemTypeActive(ItemTypes.Start, $event)">Start
             </button>
             <button
-                :style="{ color: itemTypeColor(ItemTypes.Finish) }"
-                class="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                type="button"
-                @click="setCanvasItemTypeActive(ItemTypes.Finish, $event)">End
-            </button>
-            <button
-                :style="{ color: itemTypeColor(ItemTypes.Action1) }"
+                :class="`text-${ColorName[ItemTypeColor.action1]}-500`"
                 class="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 type="button"
                 @click="setCanvasItemTypeActive(ItemTypes.Action1, $event)">Action 1
             </button>
             <button
-                :style="{ color: itemTypeColor(ItemTypes.Action2) }"
+                :class="`text-${ColorName[ItemTypeColor.action2]}-500`"
                 class="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 type="button"
                 @click="setCanvasItemTypeActive(ItemTypes.Action2, $event)">Action 2
+            </button>
+            <button
+                :class="`text-${ColorName[ItemTypeColor.finish]}-500`"
+                class="p-2 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                type="button"
+                @click="setCanvasItemTypeActive(ItemTypes.Finish, $event)">Finish
             </button>
         </div>
     </div>

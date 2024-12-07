@@ -1,4 +1,5 @@
-import {DraggingTypes, ItemTypes} from "@/js/stores/constants";
+import {DraggingTypes, ItemTypes, PortType} from "@/js/stores/constants";
+import {Ref} from 'vue';
 
 export interface Item {
     id: string;
@@ -21,21 +22,62 @@ export interface Matrix {
     scale: number;
 }
 
+// export interface Line {
+//     id: string;
+//     startId: string;
+//     startX: number;
+//     startY: number;
+//     endId: string;
+//     endX: number;
+//     endY: number;
+// }
+
+export interface Port {
+    elementId: string;
+    id: string;
+    type: PortType;
+    title: string;
+    active: boolean;
+    disabled: boolean;
+}
+
+export interface Element {
+    id: string;
+    x: Ref<number>;
+    y: Ref<number>;
+    w: Ref<number>;
+    h: Ref<number>;
+    onTop: boolean;
+    type: ItemTypes;
+    ports: {
+        [portId: string]: Port;
+    };
+}
+
 export interface Line {
     id: string;
-    startId: string;
-    startX: number;
-    startY: number;
-    endId: string;
-    endX: number;
-    endY: number;
+    start: {
+        elementId: string;
+        portId: string;
+        x: Ref<number>;
+        y: Ref<number>;
+    }
+    end: {
+        elementId: string;
+        portId: string;
+        x: Ref<number>;
+        y: Ref<number>;
+    }
 }
 
 export interface GlobalState {
     debug: boolean,
     canvasMatrix: Matrix,
-    items: Item[],
-    lines: Line[],
+    elements: {
+        [elementId: string]: Element;
+    },
+    // items: Item[],
+    // lines: Line[],
     zoom: {
         previous: number,
         value: number,

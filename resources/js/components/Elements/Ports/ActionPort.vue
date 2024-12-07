@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {ColorName, PortType} from "@/js/stores/constants";
-import ActionIcon from "@/js/components/Items/Icons/ActionIcon.vue";
+import ActionIcon from "@/js/components/Icons/ActionIcon.vue";
 
 const props = defineProps<{
     title: string,
@@ -55,14 +55,14 @@ const onOutputPortPointUp = (event: MouseEvent | TouchEvent) => {
 </script>
 
 <template>
-    <div class="relative port">
+    <div class="relative port whitespace-nowrap">
         <div>{{ props.title }}</div>
-        <div v-if="props.type == PortType.Input"
+        <div v-if="props.type == PortType.ActionInput"
              @mousedown="onInputPortPointDown"
              class="absolute top-1 -left-7 pointer-events-auto">
             <ActionIcon :active="props.active" :disabled="props.disabled" :baseColor="props.baseColor"/>
         </div>
-        <div v-if="props.type == PortType.Output"
+        <div v-if="props.type == PortType.ActionOutput"
              @mousedown="onOutputPortPointDown"
              class="absolute top-1 -right-7 pointer-events-auto">
             <ActionIcon :active="props.active" :disabled="props.disabled" :baseColor="props.baseColor"/>

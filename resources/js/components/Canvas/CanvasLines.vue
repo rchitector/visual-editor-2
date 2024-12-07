@@ -7,15 +7,16 @@ import {useStore} from "@/js/stores/store";
 const store = useStore();
 
 onMounted(() => {
-    store.lines.push({
-        id: uuidv4(),
+    const lineId = uuidv4();
+    store.lines[lineId] = {
+        id: lineId,
         startId: uuidv4(),
         startX: 20,
         startY: 30,
         endId: uuidv4(),
         endX: 80,
         endY: 60,
-    });
+    };
 })
 </script>
 

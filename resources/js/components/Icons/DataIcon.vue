@@ -34,6 +34,6 @@ const dynamicClass = computed(() => {
          stroke-width="2"
          style="width:14px;height:14px;"
          :class="dynamicClass">
-        <circle cx="7" cy="7" r="6"/>
+        <circle cx="7" cy="7" r="5.5"/>
     </svg>
 </template>

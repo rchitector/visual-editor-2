@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {Element} from "@/js/interfaces";
 import {useStore} from "@/js/stores/store";
+import {ref} from "vue";
 
 const store = useStore();
 const props = defineProps<{ element: Element, title: string }>();
 
+const dragging = ref(false);
 const startDragging = (event) => {
     const {relatedX, relatedY} = store.documentPointToRelatedToCanvasZeroPoint(event.clientX, event.clientY);
     const offsetX = relatedX - props.element.x;
@@ -18,16 +20,20 @@ const startDragging = (event) => {
     const stop = () => {
         window.removeEventListener('mousemove', move)
         window.removeEventListener('mouseup', stop)
+        dragging.value = false;
     }
     window.addEventListener('mousemove', move)
     window.addEventListener('mouseup', stop)
+    dragging.value = true;
 };
 </script>
 
 <template>
-    <div class="cursor-grab p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 whitespace-nowrap flex items-center"
-         data-draggable="true"
-         @mousedown="startDragging($event)"
+    <div
+        class=" p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 whitespace-nowrap flex items-center"
+        :class="`${dragging ? 'cursor-grabbing' : 'cursor-grab'}`"
+        data-draggable="true"
+        @mousedown="startDragging($event)"
     >
         <div class="grow">{{ props.title }}</div>
         <div>
