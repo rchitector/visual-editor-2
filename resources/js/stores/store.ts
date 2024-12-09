@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
-import {Element, GlobalState, Item} from '@/js/interfaces'
+import {Element, GlobalState, Point} from '@/js/interfaces'
 import {
     ITEMS_RECTANGLE_PADDING,
     ItemTypes,
@@ -97,16 +97,11 @@ export const useStore = defineStore('canvas', {
         },
     },
     actions: {
-        documentPointToRelatedToCanvasZeroPoint(documentPointX, documentPointY) {
+        documentPointToRelatedToCanvasZeroPoint(documentPointX, documentPointY): Point {
             return {
-                relatedX: (documentPointX - this.mainBoxRect.x - this.canvasMatrix.x) / this.canvasMatrix.scale,
-                relatedY: (documentPointY - this.mainBoxRect.y - this.canvasMatrix.y) / this.canvasMatrix.scale,
+                x: (documentPointX - this.mainBoxRect.x - this.canvasMatrix.x) / this.canvasMatrix.scale,
+                y: (documentPointY - this.mainBoxRect.y - this.canvasMatrix.y) / this.canvasMatrix.scale,
             };
-        },
-        clearDragging() {
-            this.dragging.type = null;
-            this.dragging.element = null;
-            this.dragging.startPoint = null;
         },
         onMainBoxWheel(deltaY: number, documentPointX: number, documentPointY: number) {
             const scaleRelatedX = documentPointX - this.mainBoxRect.x;
@@ -119,8 +114,13 @@ export const useStore = defineStore('canvas', {
             }
         },
         generateBaseElement(documentPointX: number, documentPointY: number): Element {
-            const relatedX = (documentPointX - this.mainBoxRect.x - this.canvasMatrix.x) / this.canvasMatrix.scale;
-            const relatedY = (documentPointY - this.mainBoxRect.y - this.canvasMatrix.y) / this.canvasMatrix.scale;
+            const {
+                x: relatedX,
+                y: relatedY
+            } = this.documentPointToRelatedToCanvasZeroPoint(documentPointX, documentPointY);
+            return this.generateBaseElementRelated(relatedX, relatedY);
+        },
+        generateBaseElementRelated(relatedX: number, relatedY: number) {
             return {
                 id: uuidv4(),
                 x: relatedX,
@@ -131,49 +131,16 @@ export const useStore = defineStore('canvas', {
                 ports: {}
             }
         },
-        createStartElement(documentPointX: number, documentPointY: number) {
-            const baseElement = this.generateBaseElement(documentPointX, documentPointY);
+        createStartElementRelated(relatedX: number, relatedY: number) {
+            const baseElement = this.generateBaseElementRelated(relatedX, relatedY);
             baseElement.type = ItemTypes.Start;
-
             const ports = [
                 {
                     id: uuidv4(),
                     index: 1,
                     titlePrefix: 'Action Input',
                     type: PortType.ActionInput,
-                    active: true,
-                    disabled: true
-                },
-                {
-                    id: uuidv4(),
-                    index: 2,
-                    titlePrefix: 'Action Input',
-                    type: PortType.ActionInput,
                     active: false,
-                    disabled: true
-                },
-                {
-                    id: uuidv4(),
-                    index: 3,
-                    titlePrefix: 'Action Input',
-                    type: PortType.ActionInput,
-                    active: true,
-                    disabled: false
-                },
-                {
-                    id: uuidv4(),
-                    index: 4,
-                    titlePrefix: 'Action Input',
-                    type: PortType.ActionInput,
-                    active: false,
-                    disabled: false
-                },
-                {
-                    id: uuidv4(),
-                    index: 1,
-                    titlePrefix: 'Action Output',
-                    type: PortType.ActionOutput,
-                    active: true,
                     disabled: true
                 },
                 {
@@ -187,74 +154,10 @@ export const useStore = defineStore('canvas', {
                 {
                     id: uuidv4(),
                     index: 3,
-                    titlePrefix: 'Action Output',
-                    type: PortType.ActionOutput,
-                    active: true,
-                    disabled: false
-                },
-                {
-                    id: uuidv4(),
-                    index: 4,
-                    titlePrefix: 'Action Output',
-                    type: PortType.ActionOutput,
-                    active: false,
-                    disabled: false
-                },
-                {
-                    id: uuidv4(),
-                    index: 1,
-                    titlePrefix: 'Data Input',
-                    type: PortType.DataInput,
-                    active: true,
-                    disabled: true
-                },
-                {
-                    id: uuidv4(),
-                    index: 2,
                     titlePrefix: 'Data Input',
                     type: PortType.DataInput,
                     active: false,
                     disabled: true
-                },
-                {
-                    id: uuidv4(),
-                    index: 3,
-                    titlePrefix: 'Data Input',
-                    type: PortType.DataInput,
-                    active: true,
-                    disabled: false
-                },
-                {
-                    id: uuidv4(),
-                    index: 4,
-                    titlePrefix: 'Data Input',
-                    type: PortType.DataInput,
-                    active: false,
-                    disabled: false
-                },
-                {
-                    id: uuidv4(),
-                    index: 1,
-                    titlePrefix: 'Data Output',
-                    type: PortType.DataOutput,
-                    active: true,
-                    disabled: true
-                },
-                {
-                    id: uuidv4(),
-                    index: 2,
-                    titlePrefix: 'Data Output',
-                    type: PortType.DataOutput,
-                    active: false,
-                    disabled: true
-                },
-                {
-                    id: uuidv4(),
-                    index: 3,
-                    titlePrefix: 'Data Output',
-                    type: PortType.DataOutput,
-                    active: true,
-                    disabled: false
                 },
                 {
                     id: uuidv4(),
@@ -262,10 +165,9 @@ export const useStore = defineStore('canvas', {
                     titlePrefix: 'Data Output',
                     type: PortType.DataOutput,
                     active: false,
-                    disabled: false
+                    disabled: true
                 },
             ];
-
             ports.forEach(port => {
                 baseElement.ports[port.id] = {
                     elementId: baseElement.id,
@@ -274,59 +176,239 @@ export const useStore = defineStore('canvas', {
                     title: `${port.titlePrefix} ${port.index}`,
                     active: port.active,
                     disabled: port.disabled,
+                    connection: {x: 0, y: 0},
+                };
+            })
+            this.elements[baseElement.id] = baseElement;
+        },
+        createStartElement(documentPointX: number, documentPointY: number) {
+            const baseElement = this.generateBaseElement(documentPointX, documentPointY);
+            baseElement.type = ItemTypes.Start;
+
+            let index = 0;
+            const ports = [
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Action Input',
+                    type: PortType.ActionInput,
+                    active: true,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Action Input',
+                    type: PortType.ActionInput,
+                    active: false,
+                    disabled: true
+                },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Action Input',
+                //     type: PortType.ActionInput,
+                //     active: true,
+                //     disabled: false
+                // },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Action Input',
+                //     type: PortType.ActionInput,
+                //     active: false,
+                //     disabled: false
+                // },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Action Output',
+                    type: PortType.ActionOutput,
+                    active: true,
+                    disabled: true
+                },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Action Output',
+                //     type: PortType.ActionOutput,
+                //     active: false,
+                //     disabled: true
+                // },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Action Output',
+                //     type: PortType.ActionOutput,
+                //     active: true,
+                //     disabled: false
+                // },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Action Output',
+                //     type: PortType.ActionOutput,
+                //     active: false,
+                //     disabled: false
+                // },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Data Input',
+                    type: PortType.DataInput,
+                    active: true,
+                    disabled: true
+                },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Data Input',
+                //     type: PortType.DataInput,
+                //     active: false,
+                //     disabled: true
+                // },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Data Input',
+                //     type: PortType.DataInput,
+                //     active: true,
+                //     disabled: false
+                // },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Data Input',
+                //     type: PortType.DataInput,
+                //     active: false,
+                //     disabled: false
+                // },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: true,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: false,
+                    disabled: true
+                },
+                {
+                    id: uuidv4(),
+                    index: index++,
+                    titlePrefix: 'Data Output',
+                    type: PortType.DataOutput,
+                    active: false,
+                    disabled: true
+                },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Data Output',
+                //     type: PortType.DataOutput,
+                //     active: true,
+                //     disabled: false
+                // },
+                // {
+                //     id: uuidv4(),
+                //     index: index++,
+                //     titlePrefix: 'Data Output',
+                //     type: PortType.DataOutput,
+                //     active: false,
+                //     disabled: false
+                // },
+            ];
+
+            ports.forEach(port => {
+                baseElement.ports[port.id] = {
+                    elementId: baseElement.id,
+                    id: port.id,
+                    index: port.index,
+                    type: port.type,
+                    title: `${port.titlePrefix} ${port.index}`,
+                    active: port.active,
+                    disabled: port.disabled,
+                    connection: {x: 0, y: 0},
                 };
             })
 
             this.elements[baseElement.id] = baseElement;
         },
-        generateBaseItem(documentPointX: number, documentPointY: number): Item {
-            const relatedX = documentPointX - this.mainBoxRect.x - this.canvasMatrix.x;
-            const relatedY = documentPointY - this.mainBoxRect.y - this.canvasMatrix.y;
-            return {
-                id: uuidv4(),
-                x: relatedX / (this.zoom.value / 100),
-                y: relatedY / (this.zoom.value / 100),
-                w: 0,
-                h: 0,
-                onTop: true,
-                type: null
-            };
-        },
-        addNewItem(baseItem: Item) {
-            this.items.push(baseItem);
-            this.setCanvasItemOnTop(baseItem.id);
-            // this.setCanvasItemTypeActive(null);
-            this.itemType = null;
-        },
-        createStartItem(baseItem: Item) {
-            baseItem.type = ItemTypes.Start;
-            this.addNewItem(baseItem);
-        },
-        createEndItem(baseItem: Item) {
-            baseItem.type = ItemTypes.Finish;
-            this.addNewItem(baseItem);
-        },
-        createAction1Item(baseItem: Item) {
-            baseItem.type = ItemTypes.Action1;
-            this.addNewItem(baseItem);
-        },
-        createAction2Item(baseItem: Item) {
-            baseItem.type = ItemTypes.Action2;
-            this.addNewItem(baseItem);
-        },
-        createItem(itemType: ItemTypes | null, documentPointX: number, documentPointY: number) {
-            const baseItem = this.generateBaseItem(documentPointX, documentPointY);
-            switch (itemType) {
-                case ItemTypes.Start:
-                    return this.createStartItem(baseItem);
-                case ItemTypes.Finish:
-                    return this.createEndItem(baseItem);
-                case ItemTypes.Action1:
-                    return this.createAction1Item(baseItem);
-                case ItemTypes.Action2:
-                    return this.createAction2Item(baseItem);
-            }
-        },
+        // clearDragging() {
+        //     this.dragging.type = null;
+        //     this.dragging.element = null;
+        //     this.dragging.startPoint = null;
+        // },
+        // generateBaseItem(documentPointX: number, documentPointY: number): Item {
+        //     const relatedX = documentPointX - this.mainBoxRect.x - this.canvasMatrix.x;
+        //     const relatedY = documentPointY - this.mainBoxRect.y - this.canvasMatrix.y;
+        //     return {
+        //         id: uuidv4(),
+        //         x: relatedX / (this.zoom.value / 100),
+        //         y: relatedY / (this.zoom.value / 100),
+        //         w: 0,
+        //         h: 0,
+        //         onTop: true,
+        //         type: null
+        //     };
+        // },
+        // addNewItem(baseItem: Item) {
+        //     this.items.push(baseItem);
+        //     this.setCanvasItemOnTop(baseItem.id);
+        //     // this.setCanvasItemTypeActive(null);
+        //     this.itemType = null;
+        // },
+        // createStartItem(baseItem: Item) {
+        //     baseItem.type = ItemTypes.Start;
+        //     this.addNewItem(baseItem);
+        // },
+        // createEndItem(baseItem: Item) {
+        //     baseItem.type = ItemTypes.Finish;
+        //     this.addNewItem(baseItem);
+        // },
+        // createAction1Item(baseItem: Item) {
+        //     baseItem.type = ItemTypes.Action1;
+        //     this.addNewItem(baseItem);
+        // },
+        // createAction2Item(baseItem: Item) {
+        //     baseItem.type = ItemTypes.Action2;
+        //     this.addNewItem(baseItem);
+        // },
+        // createItem(itemType: ItemTypes | null, documentPointX: number, documentPointY: number) {
+        //     const baseItem = this.generateBaseItem(documentPointX, documentPointY);
+        //     switch (itemType) {
+        //         case ItemTypes.Start:
+        //             return this.createStartItem(baseItem);
+        //         case ItemTypes.Finish:
+        //             return this.createEndItem(baseItem);
+        //         case ItemTypes.Action1:
+        //             return this.createAction1Item(baseItem);
+        //         case ItemTypes.Action2:
+        //             return this.createAction2Item(baseItem);
+        //     }
+        // },
         setCanvasItemSize(itemId: string, width: number, height: number) {
             const me = this.items.find(item => item.id === itemId);
             if (me) {

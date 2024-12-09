@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import {Element} from "@/js/interfaces";
 import {useStore} from "@/js/stores/store";
-import {ref} from "vue";
+import {provide, ref} from "vue";
 
 const store = useStore();
-const props = defineProps<{ element: Element, title: string }>();
+const moveParentHandler = ref(null);
+const props = defineProps<{ element: Element, title: string, onDrag }>();
 
 const dragging = ref(false);
 const startDragging = (event) => {
-    const {relatedX, relatedY} = store.documentPointToRelatedToCanvasZeroPoint(event.clientX, event.clientY);
+    const {x: relatedX, y: relatedY} = store.documentPointToRelatedToCanvasZeroPoint(event.clientX, event.clientY);
     const offsetX = relatedX - props.element.x;
     const offsetY = relatedY - props.element.y;
 
     const move = (e) => {
-        const {relatedX, relatedY} = store.documentPointToRelatedToCanvasZeroPoint(e.clientX, e.clientY);
+        const {x: relatedX, y: relatedY} = store.documentPointToRelatedToCanvasZeroPoint(e.clientX, e.clientY);
         props.element.x = relatedX - offsetX;
         props.element.y = relatedY - offsetY;
+
+        props.onDrag();
     }
     const stop = () => {
         window.removeEventListener('mousemove', move)
@@ -26,13 +29,15 @@ const startDragging = (event) => {
     window.addEventListener('mouseup', stop)
     dragging.value = true;
 };
+
+provide('moveParentHandler', moveParentHandler);
+
 </script>
 
 <template>
     <div
         class=" p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 whitespace-nowrap flex items-center"
         :class="`${dragging ? 'cursor-grabbing' : 'cursor-grab'}`"
-        data-draggable="true"
         @mousedown="startDragging($event)"
     >
         <div class="grow">{{ props.title }}</div>

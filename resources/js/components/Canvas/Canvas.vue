@@ -2,11 +2,11 @@
 import {onMounted, onUnmounted, ref} from 'vue';
 import CanvasZoomControl from "@/js/components/Controls/CanvasZoomControl.vue";
 import CanvasBackground from "@/js/components/Canvas/CanvasBackground.vue";
-import CanvasItems from "@/js/components/Canvas/CanvasElements.vue";
 import DebugInfo from "@/js/components/Debug/DebugInfo.vue";
-import CanvasItemsControl from "@/js/components/Controls/CanvasItemsControl.vue";
+import CanvasItemsControl from "@/js/components/Controls/CanvasElementsControl.vue";
 import {useStore} from "@/js/stores/store";
 import {DraggingTypes} from "@/js/stores/constants";
+import CanvasElements from "@/js/components/Canvas/CanvasElements.vue";
 
 const store = useStore();
 const mainBoxRef = ref<HTMLDivElement | null>(null);
@@ -27,7 +27,7 @@ onMounted(() => {
         // store.moveZeroToCenter();
 
         store.createStartElement(store.mainBoxRect.x + 200, store.mainBoxRect.y + 200);
-        store.createStartElement(store.mainBoxRect.x + 700, store.mainBoxRect.y + 200);
+        // store.createStartElement(store.mainBoxRect.x + 700, store.mainBoxRect.y + 200);
     }
 });
 
@@ -108,7 +108,7 @@ const startDragging = (event) => {
     >
         <CanvasBackground/>
         <!--        <CanvasLines/>-->
-        <CanvasItems/>
+        <CanvasElements/>
     </div>
     <CanvasItemsControl/>
     <CanvasZoomControl/>

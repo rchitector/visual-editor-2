@@ -1,16 +1,6 @@
 import {DraggingTypes, ItemTypes, PortType} from "@/js/stores/constants";
 import {Ref} from 'vue';
 
-export interface Item {
-    id: string;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    onTop: boolean;
-    type: ItemTypes | null;
-}
-
 export interface Point {
     x: number;
     y: number;
@@ -22,16 +12,6 @@ export interface Matrix {
     scale: number;
 }
 
-// export interface Line {
-//     id: string;
-//     startId: string;
-//     startX: number;
-//     startY: number;
-//     endId: string;
-//     endX: number;
-//     endY: number;
-// }
-
 export interface Port {
     elementId: string;
     id: string;
@@ -39,6 +19,10 @@ export interface Port {
     title: string;
     active: boolean;
     disabled: boolean;
+    connection: {
+        x: number;
+        y: number;
+    };
 }
 
 export interface Element {
@@ -76,8 +60,6 @@ export interface GlobalState {
     elements: {
         [elementId: string]: Element;
     },
-    // items: Item[],
-    // lines: Line[],
     zoom: {
         previous: number,
         value: number,
