@@ -31,4 +31,8 @@ export const rgbToHex = (rgbString: string) => {
         return `#${hex.join('')}`;
     }
     return '';
-}
+};
+
+export const styleString = (styleObj) => {
+    return Object.entries(styleObj).map(([key, value]) => `${key}: ${value};`).join(' ');
+};

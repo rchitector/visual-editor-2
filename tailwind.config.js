@@ -9,6 +9,7 @@ export default {
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
+        './resources/**/*.svelte',
         './node_modules/flowbite/**/*.js',
     ],
     safelist: [
