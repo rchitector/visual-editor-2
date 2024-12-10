@@ -11,6 +11,7 @@ export default {
         './resources/**/*.vue',
         './resources/**/*.svelte',
         './node_modules/flowbite/**/*.js',
+        "./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}"
     ],
     safelist: [
         {

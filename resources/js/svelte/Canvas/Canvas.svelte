@@ -3,6 +3,7 @@
     import CanvasBackground from "@/js/svelte/Canvas/CanvasBackground.svelte";
     import CanvasElements from "@/js/svelte/Canvas/CanvasElements.svelte";
     import {onMount} from "svelte";
+    import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
 
     let mainBoxRef;
     let moving = false;
@@ -79,6 +80,6 @@
     <!--    <span>CanvasElements</span>-->
 </div>
 <!--<span>CanvasItemsControl</span>-->
-<!--<span>CanvasZoomControl</span>-->
+<CanvasZoomControl/>
 <!--<span>DebugInfo v-if="store.debug"</span>-->
 <svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove}/>

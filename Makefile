@@ -16,7 +16,7 @@ pnpm-install:
 	#./vendor/bin/sail pnpm i tailwindcss
 	#./vendor/bin/sail pnpm install pnpm@latest
 	#./vendor/bin/sail pnpm clean
-	./vendor/bin/sail pnpx degit sveltejs/template my-new-svelte-app
+	./vendor/bin/sail pnpm i flowbite flowbite-svelte tailwind-merge @popperjs/core
 
 
 vue-tsc:

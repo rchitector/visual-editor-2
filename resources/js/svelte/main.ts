@@ -1,3 +1,4 @@
+import 'flowbite';
 import {mount} from 'svelte';
 import App from '@/js/svelte/App.svelte';
 
