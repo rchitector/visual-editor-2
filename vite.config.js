@@ -6,6 +6,9 @@ import path from 'path';
 import {svelte} from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
+    server: {
+        hmr: false, // Отключение HMR
+    },
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/svelte/main.ts'],
