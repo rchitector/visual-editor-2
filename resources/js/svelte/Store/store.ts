@@ -173,28 +173,164 @@ export const createElementGlobal = (documentX: number, documentY: number, elemen
     createElementRelated(newElementPosition.x, newElementPosition.y, elementType);
 };
 export const createElementRelated = (relatedX: number, relatedY: number, elementType: ItemTypes) => {
-    const elementId = uuidv4();
-    const portId = uuidv4();
-    store.update(state => {
-        state.elements[elementId] = {
-            id: elementId,
-            x: relatedX,
-            y: relatedY,
-            w: 0,
-            h: 0,
-            onTop: true,
-            type: elementType,
-            ports: {
-                [portId]: {
-                    id: portId,
-                    index: 1,
-                    titlePrefix: 'Action Output',
-                    type: PortType.ActionOutputt,
-                    active: false,
-                    disabled: true
-                },
-            }
+
+    const baseElement = {
+        id: uuidv4(),
+        x: relatedX,
+        y: relatedY,
+        w: 0,
+        h: 0,
+        onTop: true,
+        type: elementType,
+        ports: {}
+    };
+
+    let portIndex = 0;
+    const ports = [
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Input',
+            type: PortType.ActionInput,
+            active: true,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Input',
+            type: PortType.ActionInput,
+            active: true,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Input',
+            type: PortType.ActionInput,
+            active: false,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Input',
+            type: PortType.ActionInput,
+            active: false,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Output',
+            type: PortType.ActionOutput,
+            active: true,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Output',
+            type: PortType.ActionOutput,
+            active: true,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Output',
+            type: PortType.ActionOutput,
+            active: false,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Action Output',
+            type: PortType.ActionOutput,
+            active: false,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Input',
+            type: PortType.DataInput,
+            active: true,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Input',
+            type: PortType.DataInput,
+            active: true,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Input',
+            type: PortType.DataInput,
+            active: false,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Input',
+            type: PortType.DataInput,
+            active: false,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Output',
+            type: PortType.DataOutput,
+            active: true,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Output',
+            type: PortType.DataOutput,
+            active: true,
+            disabled: false
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Output',
+            type: PortType.DataOutput,
+            active: false,
+            disabled: true
+        },
+        {
+            id: uuidv4(),
+            index: portIndex++,
+            titlePrefix: 'Data Output',
+            type: PortType.DataOutput,
+            active: false,
+            disabled: false
+        },
+    ];
+
+    ports.forEach(port => {
+        baseElement.ports[port.id] = {
+            elementId: baseElement.id,
+            id: port.id,
+            type: port.type,
+            title: `${port.titlePrefix} ${port.index}`,
+            active: port.active,
+            disabled: port.disabled,
+            connection: {x: 0, y: 0},
         };
+    });
+
+    store.update(state => {
+        state.elements[baseElement.id] = baseElement;
         return state;
     });
 };

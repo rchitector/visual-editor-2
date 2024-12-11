@@ -1,46 +1,34 @@
 <script lang="ts">
     import {ColorName, ElementTypeColor, ItemTypes} from "@/js/stores/constants";
     import {createElementGlobal, store} from "@/js/svelte/Store/store";
-    import {styleString} from "@/js/stores/helper";
+    import {writable} from "svelte/store";
 
     let {mainBoxRef} = $props();
-
-    let elementType = $state(null);
     let pointCoordinates = $state({x: 0, y: 0});
+    let activeTool = writable(null);
 
     const onElementTypeClick = (event, type) => {
-        let downCoordinates;
-        const down = (event) => {
-            downCoordinates = {x: event.clientX, y: event.clientY};
-        }
-        const move = (event) => {
-            pointCoordinates = {x: event.clientX - $store.mainBoxRect.x, y: event.clientY - $store.mainBoxRect.y};
-        }
-        const stop = (event) => {
-            if (!mainBoxRef) return;
-
-            if (mainBoxRef == event.target && Math.abs(downCoordinates.x - event.clientX) == 0 && Math.abs(downCoordinates.y - event.clientY) == 0) {
-                window.removeEventListener('mousedown', down);
-                window.removeEventListener('mousemove', move);
-                window.removeEventListener('mouseup', stop);
-                createElementGlobal(event.clientX, event.clientY, elementType);
-                elementType = null;
-            }
-        }
-        window.addEventListener('mousedown', down);
-        window.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', stop);
-        elementType = type;
+        $activeTool = type;
         pointCoordinates = {x: event.clientX - $store.mainBoxRect.x, y: event.clientY - $store.mainBoxRect.y};
     };
+    const handleMouseMove = (event) => {
+        if ($activeTool) {
+            pointCoordinates = {x: event.clientX - $store.mainBoxRect.x, y: event.clientY - $store.mainBoxRect.y};
+        }
+    };
+    const handleMouseDown = (event) => {
+        if ($activeTool && event.target === mainBoxRef) {
+            createElementGlobal(event.clientX, event.clientY, $activeTool);
+            $activeTool = null;
+        }
+    };
 
-    const style = $derived({
-        'transform': `matrix(${$store.canvasMatrix.scale}, 0, 0, ${$store.canvasMatrix.scale}, ${pointCoordinates.x}, ${pointCoordinates.y})`,
-    });
 </script>
-{#if elementType}
-    <div style={styleString(style)}
-         class={`text-${ElementTypeColor[elementType]}-500 pointer-events-none absolute left-0 top-0 w-0 h-0`}>
+<svelte:body onmousemove={handleMouseMove} onmousedown={handleMouseDown}/>
+{#if $activeTool}
+    <div
+        style:transform={`matrix(${$store.canvasMatrix.scale}, 0, 0, ${$store.canvasMatrix.scale}, ${pointCoordinates.x}, ${pointCoordinates.y})`}
+        class={`text-${ElementTypeColor[$activeTool]}-500 pointer-events-none absolute left-0 top-0 w-0 h-0`}>
         <div
             class="pointer-events-none absolute rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
             <div>{ pointCoordinates.x }:{ pointCoordinates.y }:{$store.canvasMatrix.scale}</div>

@@ -7,12 +7,7 @@
     import CanvasElementsControl from "@/js/svelte/Controls/CanvasElementsControl.svelte";
 
     let mainBoxRef;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-            updateMainBoxRect(mainBoxRef.getBoundingClientRect());
-        }
-    });
+    let resizeObserver;
 
     const onMainBoxContextMenu = (event) => {
         if (event.target === mainBoxRef) {
@@ -54,10 +49,14 @@
 
     onMount(() => {
         if (mainBoxRef) {
+            resizeObserver = new ResizeObserver((entries) => {
+                for (let entry of entries) {
+                    updateMainBoxRect(mainBoxRef.getBoundingClientRect());
+                }
+            });
             resizeObserver.observe(mainBoxRef);
             updateMainBoxRect(mainBoxRef.getBoundingClientRect());
         }
-
         return () => {
             if (mainBoxRef) {
                 resizeObserver.unobserve(mainBoxRef);
