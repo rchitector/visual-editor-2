@@ -4,9 +4,9 @@
     import CanvasElements from "@/js/svelte/Canvas/CanvasElements.svelte";
     import {onMount} from "svelte";
     import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
+    import CanvasElementsControl from "@/js/svelte/Controls/CanvasElementsControl.svelte";
 
     let mainBoxRef;
-    let moving = false;
 
     const resizeObserver = new ResizeObserver((entries) => {
         for (let entry of entries) {
@@ -33,26 +33,24 @@
 
     const startDragging = (event) => {
         if (event.target === mainBoxRef) {
-            moving = true;
+            const move = (e) => {
+                store.update(state => ({
+                    ...state,
+                    canvasMatrix: {
+                        ...state.canvasMatrix,
+                        x: $store.canvasMatrix.x + e.movementX,
+                        y: $store.canvasMatrix.y + e.movementY,
+                    }
+                }));
+            }
+            const stop = () => {
+                window.removeEventListener('mousemove', move)
+                window.removeEventListener('mouseup', stop)
+            }
+            window.addEventListener('mousemove', move)
+            window.addEventListener('mouseup', stop)
         }
     };
-
-    const onMouseMove = (event) => {
-        if (moving) {
-            store.update(state => ({
-                ...state,
-                canvasMatrix: {
-                    ...state.canvasMatrix,
-                    x: $store.canvasMatrix.x + event.movementX,
-                    y: $store.canvasMatrix.y + event.movementY,
-                }
-            }));
-        }
-    };
-
-    const onMouseUp = (event) => {
-        moving = false;
-    }
 
     onMount(() => {
         if (mainBoxRef) {
@@ -78,8 +76,7 @@
     <CanvasElements/>
     <!--    <span>CanvasLines</span>-->
     <!--    <span>CanvasElements</span>-->
+    <CanvasElementsControl {mainBoxRef}/>
+    <CanvasZoomControl/>
 </div>
-<!--<span>CanvasItemsControl</span>-->
-<CanvasZoomControl/>
 <!--<span>DebugInfo v-if="store.debug"</span>-->
-<svelte:window on:mouseup={onMouseUp} on:mousemove={onMouseMove}/>

@@ -1,12 +1,15 @@
 import {derived, get, writable} from 'svelte/store';
 import {
     ITEMS_RECTANGLE_PADDING,
+    ItemTypes,
+    PortType,
     ZOOM_LEVEL_DEFAULT,
     ZOOM_LEVEL_MAX,
     ZOOM_LEVEL_MIN,
     ZOOM_MANUAL_LEVELS
 } from '@/js/stores/constants'
-import {GlobalState} from "@/js/interfaces";
+import {GlobalState, Point} from "@/js/interfaces";
+import {v4 as uuidv4} from "uuid";
 
 export const store = writable<GlobalState>({
     debug: false,
@@ -157,3 +160,41 @@ export const mainBoxRectCenter = derived(store, ($store) => {
         y: $store.mainBoxRect.height / 2,
     };
 });
+
+export const documentPointToRelatedToCanvasZeroPoint = (documentPointX, documentPointY): Point => {
+    return {
+        x: (documentPointX - get(store).mainBoxRect.x - get(store).canvasMatrix.x) / get(store).canvasMatrix.scale,
+        y: (documentPointY - get(store).mainBoxRect.y - get(store).canvasMatrix.y) / get(store).canvasMatrix.scale,
+    };
+};
+
+export const createElementGlobal = (documentX: number, documentY: number, elementType: ItemTypes) => {
+    const newElementPosition = documentPointToRelatedToCanvasZeroPoint(documentX, documentY);
+    createElementRelated(newElementPosition.x, newElementPosition.y, elementType);
+};
+export const createElementRelated = (relatedX: number, relatedY: number, elementType: ItemTypes) => {
+    const elementId = uuidv4();
+    const portId = uuidv4();
+    store.update(state => {
+        state.elements[elementId] = {
+            id: elementId,
+            x: relatedX,
+            y: relatedY,
+            w: 0,
+            h: 0,
+            onTop: true,
+            type: elementType,
+            ports: {
+                [portId]: {
+                    id: portId,
+                    index: 1,
+                    titlePrefix: 'Action Output',
+                    type: PortType.ActionOutputt,
+                    active: false,
+                    disabled: true
+                },
+            }
+        };
+        return state;
+    });
+};

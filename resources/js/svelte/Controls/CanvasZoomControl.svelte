@@ -7,7 +7,7 @@
     class="absolute right-5 bottom-5 rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
 
     <div class="gap-1 flex items-center">
-        <button on:click={()=>zoomOut()}
+        <button onclick={()=>zoomOut()}
                 type="button"
                 class="p-2 text-gray-900 rounded-lg dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -26,7 +26,7 @@
              class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownTopButton">
                 <li>
-                    <button on:click={()=>zoomFit()} type="button"
+                    <button onclick={()=>zoomFit()} type="button"
                             class="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                              stroke="currentColor" class="size-5">
@@ -38,7 +38,7 @@
                 </li>
                 {#each ZOOM_VISIBLE_LEVELS as level}
                     <li>
-                        <button on:click={()=>setZoom(level)} type="button"
+                        <button onclick={()=>setZoom(level)} type="button"
                                 class="w-full block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                  stroke="currentColor" class="size-4">
@@ -52,7 +52,7 @@
             </ul>
         </div>
 
-        <button on:click={()=>zoomIn()} type="button"
+        <button onclick={()=>zoomIn()} type="button"
                 class="p-2 text-gray-900 rounded-lg dark:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                  stroke="currentColor" class="size-6">
