@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import DarkModeButton from "@/js/svelte/Controls/DarkModeButton.svelte";
     import CanvasTopPanel from "@/js/svelte/Panels/CanvasTopPanel.svelte";
 </script>

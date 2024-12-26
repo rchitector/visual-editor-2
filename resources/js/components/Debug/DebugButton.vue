@@ -19,7 +19,7 @@ const store = useStore();
         <div :class="store.debug ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'" class="ms-3">
             <span>Debug is</span>
             <div class="ml-2 inline-block w-8">{{
-                    store.debug ? 'ON' : 'OFF'
+                store.debug ? 'ON' : 'OFF'
                 }}
             </div>
         </div>

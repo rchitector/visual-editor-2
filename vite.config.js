@@ -7,7 +7,8 @@ import {svelte} from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
     server: {
-        hmr: false, // Отключение HMR
+        hmr: true, // Включение HMR
+        // hmr: false, // Отключение HMR
     },
     plugins: [
         laravel({

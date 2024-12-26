@@ -1,10 +1,44 @@
 <script lang="ts">
-    import {PortType} from "@/js/stores/constants";
-    import {DebugColor} from "@/js/components/Debug/DebugEnums";
+    import {PortType, TailwindColorHEX} from "@/js/stores/constants";
     import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
 
     export let port;
     export let baseColor;
+
+    // const elementRect = getDerivedElementRectById(port.elementId);
+    // const elementById = derived(store, $store => $store.elements[port.elementId]);
+
+    // const unsubscribe = elementRect.subscribe(value => {
+    //     console.log('Новое значение:', value);
+    // });
+
+    // console.log('-----port:', port.id);
+    // console.log('-----port:', port.elementId);
+    // console.log('-----port:', port.connection);
+    let portIcon;
+    // let elementById;
+    // $: elementById = $store.elements[port.elementId];
+    // $: if (elementById !== undefined) {
+    //     if (portIcon) {
+    //         console.log('Текущее значение elementById:', elementById);
+    //         const rect = portIcon.getBoundingClientRect();
+    //         console.log('rect:', rect);
+    //         const connection = documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
+    //         console.log('connection:', connection);
+    //         // store.update(currentState => {
+    //         //     currentState.elements[elementById.id].ports[port.id] = {
+    //         //         ...port,
+    //         //         connection: {...connection},
+    //         //     };
+    //         //     return currentState;
+    //         // });
+    //
+    //         // store.update(current => {
+    //         //     current.level1.level2.level3 = 'changed';
+    //         //     return current;
+    //         // });
+    //     }
+    // }
 
     $: dynamicClass = (() => {
         let classes = 'stroke-current';
@@ -15,6 +49,7 @@
             } else {
                 classes += ` text-${baseColor}-400 hover:text-${baseColor}-500 dark:text-${baseColor}-500 dark:hover:text-${baseColor}-700`;
                 classes += ` fill-${baseColor}-400 hover:fill-${baseColor}-500 dark:fill-${baseColor}-500 dark:hover:fill-${baseColor}-700`;
+                classes += ` cursor-pointer`;
             }
         } else {
             if (port?.disabled) {
@@ -23,20 +58,25 @@
             } else {
                 classes += ` text-${baseColor}-400 hover:text-${baseColor}-500 dark:text-${baseColor}-500 dark:hover:text-${baseColor}-700`;
                 classes += ` fill-none`;
+                classes += ` cursor-pointer`;
             }
         }
         return classes;
     })();
 
+    // const rect = iconRef.value.getBoundingClientRect();
+    // props.port.connection = store.documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
+
 </script>
 
 <div class="relative">
-    <div ref="iconRef"
-         class="absolute w-0 h-0 top-1/2"
+    <div class="absolute w-0 h-0 top-1/2"
+         bind:this={portIcon}
          class:left-0={port.type === PortType.ActionInput || port.type === PortType.DataInput}
          class:right-0={port.type === PortType.ActionOutput || port.type === PortType.DataOutput}
     >
-        <DebugDot color={DebugColor.Orange} size="2"/>
+        <DebugDot color={TailwindColorHEX.green["200"]} size="2"/>
+        <!--<DebugDot color={TailwindColorHEX.green["800"]} size="1"/>-->
     </div>
     {#if port.type === PortType.ActionInput || port.type === PortType.ActionOutput}
         <svg xmlns="http://www.w3.org/2000/svg"

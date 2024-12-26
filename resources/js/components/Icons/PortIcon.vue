@@ -27,8 +27,8 @@ onMounted(() => {
     updateBoundingBox('onMounted');
     console.log('onMounted props.port.index:', props.port.index);
     resizeParentHandler.value = () => {
-        console.log('resizeParentHandler props.port.index:', props.port.index);
         updateBoundingBox(`Ресайз произошел! Это дочерний компонент. ${props.port.index}`);
+        console.log('resizeParentHandler props.port.index:', props.port.index);
     };
 });
 

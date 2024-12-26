@@ -1,8 +1,9 @@
 <script lang="ts">
-    import {ElementTypeColor, ItemTypes} from "@/js/stores/constants";
-    import {createElementGlobal, store} from "@/js/svelte/Store/store";
+    import {ColorName, ElementTypeColor, ItemTypes} from "@/js/stores/constants";
+    import {createElementGlobal, mainBoxRect, store} from "@/js/svelte/Store/store";
     import {writable} from "svelte/store";
     import {Button, ButtonGroup} from 'flowbite-svelte';
+    import {onDestroy, onMount, tick} from "svelte";
 
     let {mainBoxRef} = $props();
     let pointCoordinates = $state({x: 0, y: 0});
@@ -10,11 +11,11 @@
 
     const onElementTypeClick = (event, type) => {
         $activeTool = type;
-        pointCoordinates = {x: event.clientX - $store.mainBoxRect.x, y: event.clientY - $store.mainBoxRect.y};
+        pointCoordinates = {x: event.clientX - $mainBoxRect.x, y: event.clientY - $mainBoxRect.y};
     };
     const handleMouseMove = (event) => {
         if ($activeTool) {
-            pointCoordinates = {x: event.clientX - $store.mainBoxRect.x, y: event.clientY - $store.mainBoxRect.y};
+            pointCoordinates = {x: event.clientX - $mainBoxRect.x, y: event.clientY - $mainBoxRect.y};
         }
     };
     const handleMouseDown = (event) => {
@@ -34,14 +35,47 @@
         }
     }
 
+    const temp = () => {
+        for (const [key, element] of Object.entries($store.elements)) {
+            store.update(state => ({
+                ...state,
+                elements: {
+                    ...state.elements,
+                    [element.id]: {
+                        ...element,
+                        w: element.w + 1,
+                        h: element.h + 1,
+                    },
+                },
+            }));
+            return;
+        }
+    };
+
+    onMount(() => {
+        console.log('CanvasElementsControl mounted:');
+        return () => {
+            console.log('CanvasElementsControl unmounted:');
+        };
+    });
+    onDestroy(() => {
+        console.log('CanvasElementsControl destroyed');
+    });
+    $effect.pre(() => {
+        console.log('CanvasElementsControl component is about to update');
+        tick().then(() => {
+            console.log('CanvasElementsControl component just updated');
+        });
+    });
+
 </script>
 <svelte:body onmousemove={handleMouseMove} onmousedown={handleMouseDown} onkeydown={onKeyDown}/>
 {#if $activeTool}
     <div
-            style:transform={`matrix(${$store.canvasMatrix.scale}, 0, 0, ${$store.canvasMatrix.scale}, ${pointCoordinates.x}, ${pointCoordinates.y})`}
-            class={`text-${ElementTypeColor[$activeTool]}-500 pointer-events-none absolute left-0 top-0 w-0 h-0`}>
+        style:transform={`matrix(${$store.canvasMatrix.scale}, 0, 0, ${$store.canvasMatrix.scale}, ${pointCoordinates.x}, ${pointCoordinates.y})`}
+        class={`text-${ElementTypeColor[$activeTool]}-500 pointer-events-none absolute left-0 top-0 w-0 h-0`}>
         <div
-                class="pointer-events-none absolute rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
+            class="pointer-events-none absolute rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
             <div>{ pointCoordinates.x }:{ pointCoordinates.y }:{$store.canvasMatrix.scale}</div>
         </div>
     </div>
@@ -77,20 +111,29 @@
         <ButtonGroup>
             <Button onclick={(event)=>onElementTypeClick(event, ItemTypes.Start)}
                     class={`focus:ring-0 focus:outline-none ${ItemTypes.Start===$activeTool ? 'bg-gray-200 text-primary-700 dark:text-white dark:border-gray-500 dark:bg-gray-500' : ''}`}>
-                Start
+                <div class={`bg-${ColorName[ElementTypeColor[ItemTypes.Start]]}-500 w-3 h-3 rounded-full mr-1`}></div>
+                <span>Start</span>
             </Button>
             <Button onclick={(event)=>onElementTypeClick(event, ItemTypes.Action1)}
                     class={`focus:ring-0 focus:outline-none ${ItemTypes.Action1===$activeTool ? 'bg-gray-200 text-primary-700 dark:text-white dark:border-gray-500 dark:bg-gray-500' : ''}`}>
-                Action1
+                <div class={`bg-${ColorName[ElementTypeColor[ItemTypes.Action1]]}-500 w-3 h-3 rounded-full mr-1`}></div>
+                <span>Action1</span>
             </Button>
             <Button onclick={(event)=>onElementTypeClick(event, ItemTypes.Action2)}
                     class={`focus:ring-0 focus:outline-none ${ItemTypes.Action2===$activeTool ? 'bg-gray-200 text-primary-700 dark:text-white dark:border-gray-500 dark:bg-gray-500' : ''}`}>
-                Action2
+                <div class={`bg-${ColorName[ElementTypeColor[ItemTypes.Action2]]}-500 w-3 h-3 rounded-full mr-1`}></div>
+                <span>Action2</span>
             </Button>
             <Button onclick={(event)=>onElementTypeClick(event, ItemTypes.Finish)}
                     class={`focus:ring-0 focus:outline-none ${ItemTypes.Finish===$activeTool ? 'bg-gray-200 text-primary-700 dark:text-white dark:border-gray-500 dark:bg-gray-500' : ''}`}>
-                Finish
+                <div class={`bg-${ColorName[ElementTypeColor[ItemTypes.Finish]]}-500 w-3 h-3 rounded-full mr-1`}></div>
+                <span>Finish</span>
             </Button>
+        </ButtonGroup>
+    </div>
+    <div class="gap-1 flex items-center p-3">
+        <ButtonGroup>
+            <Button onclick={temp} class={`focus:ring-0 focus:outline-none`}><span>Temp</span></Button>
         </ButtonGroup>
     </div>
 </div>

@@ -1,8 +1,8 @@
 import './bootstrap';
 import 'flowbite';
 
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
+import {createApp} from 'vue';
+import {createPinia} from 'pinia';
 import App from './components/App.vue';
 
 const app = createApp(App);

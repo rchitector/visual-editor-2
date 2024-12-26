@@ -1,60 +1,63 @@
 <script lang="ts">
-    import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
+    import DebugDot from "@/js/svelte/Debug/DebugDot";
     import {DebugColor} from "@/js/components/Debug/DebugEnums";
-    import {onMount} from 'svelte';
     import BaseElement from "@/js/svelte/Elements/BaseElement.svelte";
     import Port from "@/js/svelte/Elements/Ports/Port.svelte";
     import {ColorName, ElementTypeColor, PortType} from "@/js/stores/constants";
+    import {filterAndGroupPortsByType, portsStore} from "@/js/svelte/Store/store";
 
     let {element} = $props();
     let elementRef;
-    let observer;
-    let size = $state({width: 0, height: 0});
 
-    onMount(() => {
-        if (elementRef) {
-            observer = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                    size = {
-                        width: entry.contentRect.width,
-                        height: entry.contentRect.height,
-                    };
-                }
-            });
-            observer.observe(elementRef);
-        }
-        return () => {
-            if (observer) {
-                observer.disconnect();
-                observer = null;
-            }
-        };
-    });
+    const {
+        actionOutputs,
+        actionInputs,
+        dataOutputs,
+        dataInputs
+    } = filterAndGroupPortsByType($portsStore, element.ports);
+
+    // onMount(() => {
+    //     let observer;
+    //     if (elementRef) {
+    //         observer = new ResizeObserver((entries) => {
+    //             for (const entry of entries) {
+    //                 console.log('entry.contentRect:', entry.contentRect);
+    //             }
+    //         });
+    //         observer.observe(elementRef);
+    //     }
+    //     return () => {
+    //         if (observer) {
+    //             observer.disconnect();
+    //             observer = null;
+    //         }
+    //     };
+    // });
 </script>
 
-<div bind:this={elementRef}
-     class="absolute left-0 top-0 border rounded-lg"
+<div class="absolute left-0 top-0 border rounded-lg"
+     bind:this={elementRef}
      style:transform={`matrix(1,0,0,1,${element.x},${element.y})`}
 >
     <DebugDot size="1" color={DebugColor.Green}/>
     <BaseElement element={element}>
         {#snippet inputActionPorts()}
-            {#each Object.values(element.ports).filter(port => port.type === PortType.ActionInput) as port}
+            {#each Object.values(actionInputs).filter(port => port.type === PortType.ActionInput) as port}
                 <Port port={port} baseColor={ColorName[ElementTypeColor[element.type]]}/>
             {/each}
         {/snippet}
         {#snippet outputActionPorts()}
-            {#each Object.values(element.ports).filter(port => port.type === PortType.ActionOutput) as port}
+            {#each Object.values(actionOutputs).filter(port => port.type === PortType.ActionOutput) as port}
                 <Port port={port} baseColor={ColorName[ElementTypeColor[element.type]]}/>
             {/each}
         {/snippet}
         {#snippet inputDataPorts()}
-            {#each Object.values(element.ports).filter(port => port.type === PortType.DataInput) as port}
+            {#each Object.values(dataInputs).filter(port => port.type === PortType.DataInput) as port}
                 <Port port={port} baseColor={ColorName[ElementTypeColor[element.type]]}/>
             {/each}
         {/snippet}
         {#snippet outputDataPorts()}
-            {#each Object.values(element.ports).filter(port => port.type === PortType.DataOutput) as port}
+            {#each Object.values(dataOutputs).filter(port => port.type === PortType.DataOutput) as port}
                 <Port port={port} baseColor={ColorName[ElementTypeColor[element.type]]}/>
             {/each}
         {/snippet}

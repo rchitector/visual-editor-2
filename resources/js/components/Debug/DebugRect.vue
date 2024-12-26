@@ -36,7 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
         <div v-if="store.debug"
              class="opacity-50 box-border select-none inline-block relative top-0 left-0 text-white text-nowrap"
              :style="{ backgroundColor: props.color }"
-        >{{ props.text }}: (x:{{ props.x.toFixed(2) }} y:{{ props.y.toFixed(2) }} width:{{ props.width.toFixed(2) }} height:{{ props.height.toFixed(2) }})
+        >{{ props.text }}: (x:{{ props.x.toFixed(2) }} y:{{ props.y.toFixed(2) }} width:{{ props.width.toFixed(2) }}
+            height:{{ props.height.toFixed(2) }})
         </div>
     </div>
     <div v-if="store.debug"
@@ -52,7 +53,8 @@ const props = withDefaults(defineProps<Props>(), {
         <div v-if="store.debug"
              class="opacity-50  box-border select-none inline-block relative text-white text-nowrap"
              :style="{ backgroundColor: props.color, top: `0.25rem`, left: `0.25rem` }"
-        >{{ props.text }}: center (x:{{ ((props.x * 2 + props.width) / 2).toFixed(2) }} y:{{ ((props.y * 2 + props.height) / 2).toFixed(2) }})
+        >{{ props.text }}: center (x:{{ ((props.x * 2 + props.width) / 2).toFixed(2) }} y:{{ ((props.y * 2 +
+            props.height) / 2).toFixed(2) }})
         </div>
     </div>
 

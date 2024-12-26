@@ -1,21 +1,21 @@
-<script>
-    import {store} from '@/js/svelte/Store/store';
+<script lang="ts">
     import {BG_CELL_SIZE} from "@/js/stores/constants";
+    import {canvasMatrix} from "@/js/svelte/Store/store";
 </script>
 
 <svg class="absolute left-0 top-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
     <pattern id="grid-pattern" patternUnits="userSpaceOnUse"
-             x={$store.canvasMatrix.x}
-             y={$store.canvasMatrix.y}
-             width={BG_CELL_SIZE * $store.canvasMatrix.scale}
-             height={BG_CELL_SIZE * $store.canvasMatrix.scale}>
-        <line opacity={Math.min($store.canvasMatrix.scale, 1)}
+             x={$canvasMatrix.x}
+             y={$canvasMatrix.y}
+             width={BG_CELL_SIZE * $canvasMatrix.scale}
+             height={BG_CELL_SIZE * $canvasMatrix.scale}>
+        <line opacity={Math.min($canvasMatrix.scale, 1)}
               class="stroke-gray-200 dark:stroke-gray-700"
               x1="0"
               y1="0"
               x2="100"
               y2="0"></line>
-        <line opacity={Math.min($store.canvasMatrix.scale, 1)}
+        <line opacity={Math.min($canvasMatrix.scale, 1)}
               class="stroke-gray-200 dark:stroke-gray-700"
               x1="0"
               y1="0"

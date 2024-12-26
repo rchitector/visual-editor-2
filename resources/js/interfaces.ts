@@ -29,13 +29,11 @@ export interface Element {
     id: string;
     x: Ref<number>;
     y: Ref<number>;
-    w: Ref<number>;
-    h: Ref<number>;
+    w: number;
+    h: number;
     onTop: boolean;
     type: ItemTypes;
-    ports: {
-        [portId: string]: Port;
-    };
+    ports: [portId: string];
 }
 
 export interface Line {
@@ -59,6 +57,9 @@ export interface GlobalState {
     canvasMatrix: Matrix,
     elements: {
         [elementId: string]: Element;
+    },
+    lines: {
+        [lineId: string]: Line;
     },
     zoom: {
         previous: number,

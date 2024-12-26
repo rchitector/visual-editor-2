@@ -1,51 +1,69 @@
 <script lang="ts">
-    import {documentPointToRelatedToCanvasZeroPoint, store} from "@/js/svelte/Store/store";
+    import {documentPointToRelatedToCanvasZeroPoint, elementsStore} from "@/js/svelte/Store/store";
+    import {ColorName, ElementTypeColor} from "@/js/stores/constants";
+    import {writable} from "svelte/store";
 
-    let {title, element, onDragHeader} = $props();
-    let thisElement;
-
-    let dragging = false;
+    let {title, element} = $props();
+    let thisRef;
+    let dragging = writable(false);
     const startDragging = (event) => {
         const {x: relatedX, y: relatedY} = documentPointToRelatedToCanvasZeroPoint(event.clientX, event.clientY);
         const offsetX = relatedX - element.x;
         const offsetY = relatedY - element.y;
 
         const move = (e) => {
-            if (dragging) {
+            if ($dragging) {
                 const {x: relatedX, y: relatedY} = documentPointToRelatedToCanvasZeroPoint(e.clientX, e.clientY);
-                element.x = relatedX - offsetX;
-                element.y = relatedY - offsetY;
-                onDragHeader();
-
-                store.update(state => ({
-                    ...state,
-                    elements: {
-                        ...state.elements,
-                        [element.id]: {...element},
-                    },
-                }));
+                elementsStore.update(state => {
+                    state[element.id] = {
+                        ...element,
+                        x: relatedX - offsetX,
+                        y: relatedY - offsetY,
+                    };
+                    return state;
+                });
             }
         }
         const stop = () => {
             window.removeEventListener('mousemove', move);
             window.removeEventListener('mouseup', stop);
-            dragging = false;
+            dragging.set(false);
         }
 
         window.addEventListener('mousemove', move);
         window.addEventListener('mouseup', stop);
-        dragging = true;
+        dragging.set(true);
     };
+
+    // onMount(() => {
+    //     console.log('ElementHeader mounted:');
+    //     return () => {
+    //         console.log('ElementHeader unmounted:');
+    //     };
+    // });
+    // onDestroy(() => {
+    //     console.log('ElementHeader destroyed');
+    // });
+    // $effect.pre(() => {
+    //     console.log('ElementHeader component is about to update');
+    //     tick().then(() => {
+    //         console.log('ElementHeader component just updated');
+    //     });
+    // });
 </script>
 
 <div
-    bind:this={thisElement}
+    bind:this={thisRef}
     onmousedown={startDragging}
     class="min-w-64 p-2 rounded-t-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 whitespace-nowrap flex items-center"
-    class:cursor-grabbing={dragging}
-    class:cursor-grab={!dragging}
+    class:cursor-grabbing={$dragging}
+    class:cursor-grab={!$dragging}
 >
-    <div class="grow">{title}</div>
+    <div
+        class="grow flex items-center text-gray-900 hover:text-primary-700 focus-within:text-primary-700 dark:focus-within:text-white dark:hover:text-white dark:text-white">
+        <div class={`bg-${ColorName[ElementTypeColor[element.type]]}-500 w-3 h-3 rounded-full mr-1`}></div>
+        <span class="capitalize">{title}</span>
+    </div>
     <div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
             <path

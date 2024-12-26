@@ -1,5 +1,4 @@
 <script lang="ts">
-
     import {PortType} from "@/js/stores/constants";
     import PortIcon from "@/js/svelte/Icons/PortIcon.svelte";
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import DebugButton from "@/js/svelte/Debug/DebugButton.svelte";
 </script>
 

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import {DebugColor} from "@/js/components/Debug/DebugEnums";
 
     let {x = 0, y = 0, size = 2, color = DebugColor.Red} = $props();

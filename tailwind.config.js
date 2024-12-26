@@ -1,4 +1,5 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
+import colors from "tailwindcss/colors";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -7,6 +8,7 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/**/*.blade.php',
+        './resources/**/*.ts',
         './resources/**/*.js',
         './resources/**/*.vue',
         './resources/**/*.svelte',
@@ -22,15 +24,19 @@ export default {
             pattern: /^fill-.*/, // Сохранить все классы, начинающиеся с fill-
             variants: ['hover', 'dark', 'dark:hover'], // Сохранить вариации
         },
+        {
+            pattern: /^bg-.*/, // Сохранить все классы, начинающиеся с bg-
+            variants: ['hover', 'dark', 'dark:hover'], // Сохранить вариации
+        },
     ],
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-            // colors: {
-            //     ...colors,
-            // }
+            colors: {
+                ...colors,
+            }
         },
     },
     plugins: [

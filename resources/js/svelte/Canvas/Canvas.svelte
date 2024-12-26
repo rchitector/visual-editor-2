@@ -1,10 +1,9 @@
 <script lang="ts">
-    import {store, updateMainBoxRect, zoomIn, zoomOut} from '@/js/svelte/Store/store.ts';
-    import CanvasBackground from "@/js/svelte/Canvas/CanvasBackground.svelte";
-    import CanvasElements from "@/js/svelte/Canvas/CanvasElements.svelte";
+    import {canvasMatrix, mainBoxRect, updateMainBoxRect, zoomIn, zoomOut} from '@/js/svelte/Store/store.ts';
     import {onMount} from "svelte";
+    import CanvasElements from "@/js/svelte/Canvas/CanvasElements.svelte";
+    import CanvasBackground from "@/js/svelte/Canvas/CanvasBackground.svelte";
     import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
-    import CanvasElementsControl from "@/js/svelte/Controls/CanvasElementsControl.svelte";
 
     let mainBoxRef;
     let resizeObserver;
@@ -17,8 +16,8 @@
 
     const onWheel = (event) => {
         event.preventDefault();
-        const scaleRelatedX = event.clientX - $store.mainBoxRect.x;
-        const scaleRelatedY = event.clientY - $store.mainBoxRect.y;
+        const scaleRelatedX = event.clientX - $mainBoxRect.x;
+        const scaleRelatedY = event.clientY - $mainBoxRect.y;
         if (event.deltaY > 0) {
             zoomOut(scaleRelatedX, scaleRelatedY);
         } else if (event.deltaY < 0) {
@@ -29,13 +28,10 @@
     const startDragging = (event) => {
         if (event.target === mainBoxRef) {
             const move = (e) => {
-                store.update(state => ({
+                canvasMatrix.update(state => ({
                     ...state,
-                    canvasMatrix: {
-                        ...state.canvasMatrix,
-                        x: $store.canvasMatrix.x + e.movementX,
-                        y: $store.canvasMatrix.y + e.movementY,
-                    }
+                    x: $canvasMatrix.x + e.movementX,
+                    y: $canvasMatrix.y + e.movementY,
                 }));
             }
             const stop = () => {
@@ -63,6 +59,22 @@
             }
         };
     });
+    // onMount(() => {
+    //     console.log('Canvas mounted:');
+    //     return () => {
+    //         console.log('Canvas unmounted:');
+    //     };
+    // });
+    // onDestroy(() => {
+    //     console.log('Canvas destroyed');
+    // });
+    // $effect.pre(() => {
+    //     console.log('Canvas component is about to update');
+    //     tick().then(() => {
+    //         console.log('Canvas component just updated');
+    //     });
+    // });
+
 </script>
 
 <div bind:this={mainBoxRef}
@@ -73,9 +85,9 @@
 >
     <CanvasBackground/>
     <CanvasElements/>
-    <!--    <span>CanvasLines</span>-->
-    <!--    <span>CanvasElements</span>-->
-    <CanvasElementsControl {mainBoxRef}/>
+
+    <!--    <CanvasLines/>-->
+    <!--    <CanvasElementsControl {mainBoxRef}/>-->
     <CanvasZoomControl/>
+    <!--<span>DebugInfo v-if="store.debug"</span>-->
 </div>
-<!--<span>DebugInfo v-if="store.debug"</span>-->

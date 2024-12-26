@@ -12,8 +12,10 @@ const store = useStore();
                  :y="store.canvasMatrix.y"
                  :width="BG_CELL_SIZE * store.canvasMatrix.scale"
                  :height="BG_CELL_SIZE * store.canvasMatrix.scale">
-            <line :opacity="Math.min(store.canvasMatrix.scale, 1)" class="stroke-gray-200 dark:stroke-gray-700" x1="0" y1="0" x2="100" y2="0"></line>
-            <line :opacity="Math.min(store.canvasMatrix.scale, 1)" class="stroke-gray-200 dark:stroke-gray-700" x1="0" y1="0" x2="0" y2="100"></line>
+            <line :opacity="Math.min(store.canvasMatrix.scale, 1)" class="stroke-gray-200 dark:stroke-gray-700" x1="0"
+                  y1="0" x2="100" y2="0"></line>
+            <line :opacity="Math.min(store.canvasMatrix.scale, 1)" class="stroke-gray-200 dark:stroke-gray-700" x1="0"
+                  y1="0" x2="0" y2="100"></line>
         </pattern>
         <rect fill="url(#grid-pattern)" width="100%" height="100%"></rect>
     </svg>
