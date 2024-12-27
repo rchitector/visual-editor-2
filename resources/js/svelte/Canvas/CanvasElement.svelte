@@ -1,6 +1,6 @@
 <script lang="ts">
     import DebugDot from "@/js/svelte/Debug/DebugDot";
-    import {DebugColor} from "@/js/components/Debug/DebugEnums";
+    import {DebugColor} from "@/js/stores/DebugEnums";
     import BaseElement from "@/js/svelte/Elements/BaseElement.svelte";
     import Port from "@/js/svelte/Elements/Ports/Port.svelte";
     import {ColorName, ElementTypeColor, PortType} from "@/js/stores/constants";

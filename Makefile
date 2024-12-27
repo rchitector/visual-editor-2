@@ -4,19 +4,15 @@ sail-restart:
 	./vendor/bin/sail up
 
 pnpm-run-dev:
-	./vendor/bin/sail pnpm install  --verbose
-	./vendor/bin/sail pnpm run dev -- --force
+	./vendor/bin/sail npm install
+	./vendor/bin/sail npm run dev
 
 sail-down:
 	./vendor/bin/sail down
 
 pnpm-install:
-	#./vendor/bin/sail pnpm install --verbose
-	#./vendor/bin/sail pnpm i @vueuse/core @vueuse/components
-	#./vendor/bin/sail pnpm i tailwindcss
-	#./vendor/bin/sail pnpm install pnpm@latest
-	#./vendor/bin/sail pnpm clean
-	./vendor/bin/sail pnpm i flowbite flowbite-svelte tailwind-merge @popperjs/core
+	./vendor/bin/sail npm install
+	./vendor/bin/sail npm install @svelte/runes
 
 
 vue-tsc:

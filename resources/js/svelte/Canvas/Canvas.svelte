@@ -1,9 +1,7 @@
 <script lang="ts">
     import {canvasMatrix, mainBoxRect, updateMainBoxRect, zoomIn, zoomOut} from '@/js/svelte/Store/store.ts';
     import {onMount} from "svelte";
-    import CanvasElements from "@/js/svelte/Canvas/CanvasElements.svelte";
-    import CanvasBackground from "@/js/svelte/Canvas/CanvasBackground.svelte";
-    import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
+    import ParentElement from "@/js/svelte/ParentElement.svelte";
 
     let mainBoxRef;
     let resizeObserver;
@@ -83,11 +81,11 @@
      on:mousedown={startDragging}
      on:wheel={onWheel}
 >
-    <CanvasBackground/>
-    <CanvasElements/>
-
+    <ParentElement/>
+    <!--    <CanvasBackground/>-->
+    <!--    <CanvasElements/>-->
     <!--    <CanvasLines/>-->
     <!--    <CanvasElementsControl {mainBoxRef}/>-->
-    <CanvasZoomControl/>
+    <!--    <CanvasZoomControl/>-->
     <!--<span>DebugInfo v-if="store.debug"</span>-->
 </div>

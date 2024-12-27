@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {DebugColor} from "@/js/components/Debug/DebugEnums";
+    import {DebugColor} from "@/js/stores/DebugEnums";
     import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
     import {ButtonGroup} from "flowbite-svelte";
     import ElementHeader from "@/js/svelte/Elements/ElementHeader.svelte";

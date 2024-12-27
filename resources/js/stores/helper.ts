@@ -1,5 +1,5 @@
 import {ItemTypes} from "@/js/stores/constants";
-import {DebugColor} from "@/js/components/Debug/DebugEnums";
+import {DebugColor} from "@/js/stores/DebugEnums";
 
 export const getRandomIntInclusive = (min: number, max: number) => {
     min = Math.ceil(min);
