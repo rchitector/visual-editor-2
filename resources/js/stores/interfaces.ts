@@ -33,7 +33,16 @@ export interface Element {
     h: number;
     onTop: boolean;
     type: ItemTypes;
-    ports: [portId: string];
+    ports: {
+        action: {
+            inputs: [portId: string],
+            outputs: [portId: string],
+        },
+        data: {
+            inputs: [portId: string],
+            outputs: [portId: string],
+        },
+    }
 }
 
 export interface Line {

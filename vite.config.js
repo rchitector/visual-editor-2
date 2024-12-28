@@ -4,10 +4,10 @@ import path from 'path';
 import {svelte} from '@sveltejs/vite-plugin-svelte';
 
 export default defineConfig({
-    server: {
-        hmr: true, // Включение HMR
-        // hmr: false, // Отключение HMR
-    },
+    // server: {
+    //     hmr: true, // Включение HMR
+    //     // hmr: false, // Отключение HMR
+    // },
     plugins: [
         laravel({
             input: ['resources/css/svelte/app.css', 'resources/js/svelte/main.ts'],

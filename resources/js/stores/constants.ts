@@ -19,10 +19,10 @@ export enum DraggingTypes {
 }
 
 export enum PortType {
-    ActionOutput = 'output-action-port',
-    ActionInput = 'input-action-port',
-    DataOutput = 'output-data-port',
-    DataInput = 'input-data-port',
+    ActionOutput = 'action-output-port',
+    ActionInput = 'action-input-port',
+    DataOutput = 'data-output-port',
+    DataInput = 'data-input-port',
 }
 
 export enum ColorName {
@@ -55,6 +55,13 @@ export enum ElementTypeColor {
     'finish' = ColorName.green,
     'action1' = ColorName.blue,
     'action2' = ColorName.fuchsia,
+}
+
+export enum PortTypeColor {
+    'action-output-port' = ColorName.orange,
+    'action-input-port' = ColorName.green,
+    'data-output-port' = ColorName.blue,
+    'data-input-port' = ColorName.fuchsia,
 }
 
 export enum ColorRGB {

@@ -1,11 +1,13 @@
 <script lang="ts">
-    import {documentPointToRelatedToCanvasZeroPoint, elementsStore} from "@/js/svelte/Store/store";
+    import {documentPointToRelatedToCanvasZeroPoint} from "@/js/svelte/Store/store";
     import {ColorName, ElementTypeColor} from "@/js/stores/constants";
     import {writable} from "svelte/store";
+    import {getElementStore} from "@/js/stores/elementsStore";
 
     let {title, element} = $props();
     let thisRef;
     let dragging = writable(false);
+
     const startDragging = (event) => {
         const {x: relatedX, y: relatedY} = documentPointToRelatedToCanvasZeroPoint(event.clientX, event.clientY);
         const offsetX = relatedX - element.x;
@@ -14,12 +16,9 @@
         const move = (e) => {
             if ($dragging) {
                 const {x: relatedX, y: relatedY} = documentPointToRelatedToCanvasZeroPoint(e.clientX, e.clientY);
-                elementsStore.update(state => {
-                    state[element.id] = {
-                        ...element,
-                        x: relatedX - offsetX,
-                        y: relatedY - offsetY,
-                    };
+                getElementStore(element.id).update((state) => {
+                    state.x = relatedX - offsetX;
+                    state.y = relatedY - offsetY;
                     return state;
                 });
             }
@@ -34,22 +33,6 @@
         window.addEventListener('mouseup', stop);
         dragging.set(true);
     };
-
-    // onMount(() => {
-    //     console.log('ElementHeader mounted:');
-    //     return () => {
-    //         console.log('ElementHeader unmounted:');
-    //     };
-    // });
-    // onDestroy(() => {
-    //     console.log('ElementHeader destroyed');
-    // });
-    // $effect.pre(() => {
-    //     console.log('ElementHeader component is about to update');
-    //     tick().then(() => {
-    //         console.log('ElementHeader component just updated');
-    //     });
-    // });
 </script>
 
 <div

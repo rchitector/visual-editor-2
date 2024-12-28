@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia';
 import {v4 as uuidv4} from "uuid";
-import {Element, GlobalState, Point} from '@/js/interfaces'
+import {Element, GlobalState, Point} from '@/js/stores/interfaces'
 import {
     ITEMS_RECTANGLE_PADDING,
     ItemTypes,

@@ -1,16 +1,16 @@
 <script lang="ts">
-    import {PortType} from "@/js/stores/constants";
+    import {ColorName, PortType, PortTypeColor} from "@/js/stores/constants";
     import PortIcon from "@/js/svelte/Icons/PortIcon.svelte";
 
-    let {port, baseColor, index} = $props();
+    let {port} = $props();
 </script>
 
 <div class="relative port whitespace-nowrap relative">
-    <div>{ port.title }</div>
+    <div>{ $port.title }</div>
     <div
-        class:-left-7={port.type === PortType.ActionInput || port.type === PortType.DataInput}
-        class:-right-7={port.type === PortType.ActionOutput || port.type === PortType.DataOutput}
+        class:-left-7={$port.type === PortType.ActionInput || $port.type === PortType.DataInput}
+        class:-right-7={$port.type === PortType.ActionOutput || $port.type === PortType.DataOutput}
         class="absolute top-1 pointer-events-auto">
-        <PortIcon port={port} baseColor={baseColor}/>
+        <PortIcon port={$port} baseColor={ColorName[PortTypeColor[$port.type]]}/>
     </div>
 </div>

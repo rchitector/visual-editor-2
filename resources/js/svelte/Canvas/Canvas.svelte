@@ -1,7 +1,24 @@
 <script lang="ts">
-    import {canvasMatrix, mainBoxRect, updateMainBoxRect, zoomIn, zoomOut} from '@/js/svelte/Store/store.ts';
+    import {
+        canvasMatrix,
+        createElementRelated,
+        mainBoxRect,
+        updateMainBoxRect,
+        zoomIn,
+        zoomOut
+    } from '@/js/svelte/Store/store';
     import {onMount} from "svelte";
-    import ParentElement from "@/js/svelte/ParentElement.svelte";
+    import {ItemTypes} from "@/js/stores/constants";
+    import CanvasBackground from "@/js/svelte/Canvas/CanvasBackground";
+    import CanvasElements from "@/js/svelte/Canvas/CanvasElements";
+    import CanvasElementsControl from "@/js/svelte/Controls/CanvasElementsControl.svelte";
+    import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
+
+    onMount(() => {
+        createElementRelated(100, 200, ItemTypes.Start);
+        // createElementRelated(400, 200, ItemTypes.Action1);
+        createElementRelated(700, 200, ItemTypes.Finish);
+    });
 
     let mainBoxRef;
     let resizeObserver;
@@ -57,22 +74,6 @@
             }
         };
     });
-    // onMount(() => {
-    //     console.log('Canvas mounted:');
-    //     return () => {
-    //         console.log('Canvas unmounted:');
-    //     };
-    // });
-    // onDestroy(() => {
-    //     console.log('Canvas destroyed');
-    // });
-    // $effect.pre(() => {
-    //     console.log('Canvas component is about to update');
-    //     tick().then(() => {
-    //         console.log('Canvas component just updated');
-    //     });
-    // });
-
 </script>
 
 <div bind:this={mainBoxRef}
@@ -81,11 +82,11 @@
      on:mousedown={startDragging}
      on:wheel={onWheel}
 >
-    <ParentElement/>
-    <!--    <CanvasBackground/>-->
-    <!--    <CanvasElements/>-->
+    <CanvasBackground/>
+    <CanvasElements/>
+    <!--    <ParentElement/>-->
     <!--    <CanvasLines/>-->
-    <!--    <CanvasElementsControl {mainBoxRef}/>-->
-    <!--    <CanvasZoomControl/>-->
+    <CanvasElementsControl {mainBoxRef}/>
+    <CanvasZoomControl/>
     <!--<span>DebugInfo v-if="store.debug"</span>-->
 </div>

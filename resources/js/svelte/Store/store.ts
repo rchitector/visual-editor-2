@@ -8,8 +8,10 @@ import {
     ZOOM_LEVEL_MIN,
     ZOOM_MANUAL_LEVELS
 } from '@/js/stores/constants'
-import {Element, Line, Point, Port} from "@/js/interfaces";
+import {Element, Line, Point, Port} from "@/js/stores/interfaces";
 import {v4 as uuidv4} from "uuid";
+import {addElement} from "@/js/stores/elementsStore";
+import {addPort} from "@/js/stores/portsStore";
 //////////////////////////////////////////////////////////////////////
 export const debugStore = writable<boolean>(false);
 export const toggleDebug = () => {
@@ -189,7 +191,16 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         h: 0,
         onTop: true,
         type: elementType,
-        ports: []
+        ports: {
+            action: {
+                inputs: [],
+                outputs: [],
+            },
+            data: {
+                inputs: [],
+                outputs: [],
+            },
+        }
     };
 
     let portIndex = 0;
@@ -197,7 +208,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Input',
+            title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
             active: true,
             disabled: true
@@ -205,7 +216,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Input',
+            title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
             active: true,
             disabled: false
@@ -213,7 +224,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Input',
+            title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
             active: false,
             disabled: true
@@ -221,7 +232,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Input',
+            title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
             active: false,
             disabled: false
@@ -229,7 +240,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Output',
+            title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
             active: true,
             disabled: true
@@ -237,7 +248,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Output',
+            title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
             active: true,
             disabled: false
@@ -245,7 +256,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Output',
+            title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
             active: false,
             disabled: true
@@ -253,7 +264,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Action Output',
+            title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
             active: false,
             disabled: false
@@ -261,7 +272,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Input',
+            title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
             active: true,
             disabled: true
@@ -269,7 +280,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Input',
+            title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
             active: true,
             disabled: false
@@ -277,7 +288,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Input',
+            title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
             active: false,
             disabled: true
@@ -285,7 +296,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Input',
+            title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
             active: false,
             disabled: false
@@ -293,7 +304,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Output',
+            title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
             active: true,
             disabled: true
@@ -301,7 +312,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Output',
+            title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
             active: true,
             disabled: false
@@ -309,7 +320,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Output',
+            title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
             active: false,
             disabled: true
@@ -317,51 +328,37 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         {
             id: uuidv4(),
             index: portIndex++,
-            titlePrefix: 'Data Output',
+            title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
             active: false,
             disabled: false
         },
     ];
     ports.forEach(port => {
-        baseElement.ports.push(port.id);
-        portsStore.update(state => {
-            state[port.id] = {
-                elementId: baseElement.id,
-                id: port.id,
-                type: port.type,
-                title: `${port.titlePrefix} ${port.index}`,
-                active: port.active,
-                disabled: port.disabled,
-                connection: {x: 0, y: 0},
-            };
-            return state;
+        switch (port.type) {
+            case PortType.ActionInput:
+                baseElement.ports.action.inputs.push(port.id);
+                break;
+            case PortType.ActionOutput:
+                baseElement.ports.action.outputs.push(port.id);
+                break;
+            case PortType.DataInput:
+                baseElement.ports.data.inputs.push(port.id);
+                break;
+            case PortType.DataOutput:
+                baseElement.ports.data.outputs.push(port.id);
+                break
+        }
+
+        addPort({
+            elementId: baseElement.id,
+            id: port.id,
+            type: port.type,
+            title: port.title,
+            active: port.active,
+            disabled: port.disabled,
+            connection: {x: 0, y: 0},
         });
     });
-
-    elementsStore.update(state => {
-        state[baseElement.id] = baseElement;
-        return state;
-    });
-
-    return baseElement;
+    addElement(baseElement);
 };
-
-// export function getDerivedElementRectById(elementId) {
-//     return derived(
-//         store,
-//         ($store) => {
-//             const element = $store.elements[elementId];
-//             if (!element) {
-//                 return {x: null, y: null, w: null, h: null};
-//             }
-//             return {
-//                 x: element.x,
-//                 y: element.y,
-//                 w: element.w,
-//                 h: element.h,
-//             };
-//         }
-//     );
-// }
-

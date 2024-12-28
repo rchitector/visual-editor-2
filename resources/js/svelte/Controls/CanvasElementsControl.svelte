@@ -1,9 +1,8 @@
 <script lang="ts">
     import {ColorName, ElementTypeColor, ItemTypes} from "@/js/stores/constants";
-    import {createElementGlobal, mainBoxRect, store} from "@/js/svelte/Store/store";
+    import {canvasMatrix, createElementGlobal, mainBoxRect} from "@/js/svelte/Store/store";
     import {writable} from "svelte/store";
     import {Button, ButtonGroup} from 'flowbite-svelte';
-    import {onDestroy, onMount, tick} from "svelte";
 
     let {mainBoxRef} = $props();
     let pointCoordinates = $state({x: 0, y: 0});
@@ -36,47 +35,17 @@
     }
 
     const temp = () => {
-        for (const [key, element] of Object.entries($store.elements)) {
-            store.update(state => ({
-                ...state,
-                elements: {
-                    ...state.elements,
-                    [element.id]: {
-                        ...element,
-                        w: element.w + 1,
-                        h: element.h + 1,
-                    },
-                },
-            }));
-            return;
-        }
+        console.log('temp');
     };
-
-    onMount(() => {
-        console.log('CanvasElementsControl mounted:');
-        return () => {
-            console.log('CanvasElementsControl unmounted:');
-        };
-    });
-    onDestroy(() => {
-        console.log('CanvasElementsControl destroyed');
-    });
-    $effect.pre(() => {
-        console.log('CanvasElementsControl component is about to update');
-        tick().then(() => {
-            console.log('CanvasElementsControl component just updated');
-        });
-    });
-
 </script>
 <svelte:body onmousemove={handleMouseMove} onmousedown={handleMouseDown} onkeydown={onKeyDown}/>
 {#if $activeTool}
     <div
-        style:transform={`matrix(${$store.canvasMatrix.scale}, 0, 0, ${$store.canvasMatrix.scale}, ${pointCoordinates.x}, ${pointCoordinates.y})`}
+        style:transform={`matrix(${$canvasMatrix.scale}, 0, 0, ${$canvasMatrix.scale}, ${pointCoordinates.x}, ${pointCoordinates.y})`}
         class={`text-${ElementTypeColor[$activeTool]}-500 pointer-events-none absolute left-0 top-0 w-0 h-0`}>
         <div
             class="pointer-events-none absolute rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
-            <div>{ pointCoordinates.x }:{ pointCoordinates.y }:{$store.canvasMatrix.scale}</div>
+            <div>{ pointCoordinates.x }:{ pointCoordinates.y }:{$canvasMatrix.scale}</div>
         </div>
     </div>
 {/if}
