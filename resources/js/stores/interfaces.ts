@@ -1,5 +1,4 @@
 import {DraggingTypes, ItemTypes, PortType} from "@/js/stores/constants";
-import {Ref} from 'vue';
 
 export interface Point {
     x: number;
@@ -19,6 +18,7 @@ export interface Port {
     title: string;
     active: boolean;
     disabled: boolean;
+    ref: HTMLElement | null;
     connection: {
         x: number;
         y: number;
@@ -27,8 +27,8 @@ export interface Port {
 
 export interface Element {
     id: string;
-    x: Ref<number>;
-    y: Ref<number>;
+    x: number;
+    y: number;
     w: number;
     h: number;
     onTop: boolean;
@@ -50,14 +50,14 @@ export interface Line {
     start: {
         elementId: string;
         portId: string;
-        x: Ref<number>;
-        y: Ref<number>;
+        x: number;
+        y: number;
     }
     end: {
         elementId: string;
         portId: string;
-        x: Ref<number>;
-        y: Ref<number>;
+        x: number;
+        y: number;
     }
 }
 

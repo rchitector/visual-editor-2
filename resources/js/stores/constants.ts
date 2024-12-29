@@ -58,7 +58,7 @@ export enum ElementTypeColor {
 }
 
 export enum PortTypeColor {
-    'action-output-port' = ColorName.orange,
+    'action-output-port' = ColorName.green,
     'action-input-port' = ColorName.green,
     'data-output-port' = ColorName.blue,
     'data-input-port' = ColorName.fuchsia,

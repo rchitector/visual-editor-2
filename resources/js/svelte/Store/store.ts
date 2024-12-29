@@ -357,8 +357,10 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             title: port.title,
             active: port.active,
             disabled: port.disabled,
-            connection: {x: 0, y: 0},
         });
     });
+
     addElement(baseElement);
+
+    return baseElement;
 };

@@ -1,37 +1,16 @@
 <script lang="ts">
-    import {PortType, TailwindColorHEX} from "@/js/stores/constants";
-    import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
+    import {PortType} from "@/js/stores/constants";
+    import {getPortStore} from "@/js/stores/portsStore";
+    import {onMount} from "svelte";
+    import {documentPointToRelatedToCanvasZeroPoint} from "@/js/svelte/Store/store";
 
-    const {port, baseColor} = $props();
-
-    let portIcon;
-
-    // if (portIcon) {
-    //     console.log('Текущее значение elementById:', elementById);
-    //     const rect = portIcon.getBoundingClientRect();
-    //     console.log('rect:', rect);
-    //     const connection = documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
-    //     console.log('connection:', connection);
-    //     // store.update(currentState => {
-    //     //     currentState.elements[elementById.id].ports[port.id] = {
-    //     //         ...port,
-    //     //         connection: {...connection},
-    //     //     };
-    //     //     return currentState;
-    //     // });
-    //
-    //     // store.update(current => {
-    //     //     current.level1.level2.level3 = 'changed';
-    //     //     return current;
-    //     // });
-    // }
-    // const rect = iconRef.value.getBoundingClientRect();
-    // props.port.connection = store.documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
+    const {id, baseColor} = $props();
+    const port = getPortStore(id);
 
     const dynamicClass = $derived.by(() => {
         let classes = 'stroke-current';
-        if (port?.active) {
-            if (port?.disabled) {
+        if ($port?.active) {
+            if ($port?.disabled) {
                 classes += ` text-gray-400 hover:text-gray-400 dark:text-gray-600 dark:hover:text-gray-600`;
                 classes += ` fill-gray-400 hover:fill-gray-400 dark:fill-gray-600 dark:hover:fill-gray-600`;
             } else {
@@ -40,7 +19,7 @@
                 classes += ` cursor-pointer`;
             }
         } else {
-            if (port?.disabled) {
+            if ($port?.disabled) {
                 classes += ` text-gray-400 hover:text-gray-400 dark:text-gray-600 dark:hover:text-gray-600`;
                 classes += ` fill-none`;
             } else {
@@ -51,18 +30,28 @@
         }
         return classes;
     });
+
+    let portIconRef;
+    onMount(() => {
+        getPortStore(id).update((state) => {
+            state.ref = portIconRef;
+            const rect = state.ref.getBoundingClientRect();
+            state.connection = documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
+            return state;
+        });
+    });
 </script>
 
 <div class="relative">
     <div class="absolute w-0 h-0 top-1/2"
-         bind:this={portIcon}
-         class:left-0={port.type === PortType.ActionInput || port.type === PortType.DataInput}
-         class:right-0={port.type === PortType.ActionOutput || port.type === PortType.DataOutput}
+         bind:this={portIconRef}
+         style:left={$port.type === PortType.ActionInput || $port.type === PortType.DataInput ? '7px' : 'unset'}
+         style:right={$port.type === PortType.ActionOutput || $port.type === PortType.DataOutput ? '7px' : 'unset'}
     >
-        <DebugDot color={TailwindColorHEX.green["200"]} size="2"/>
-        <DebugDot color={TailwindColorHEX.green["800"]} size="1"/>
+        <!--        <DebugDot color={TailwindColorHEX.green["200"]} size="2"/>-->
+        <!--        <DebugDot color={TailwindColorHEX.green["800"]} size="1"/>-->
     </div>
-    {#if port.type === PortType.ActionInput || port.type === PortType.ActionOutput}
+    {#if $port.type === PortType.ActionInput || $port.type === PortType.ActionOutput}
         <svg xmlns="http://www.w3.org/2000/svg"
              viewBox="4 3.5 16 17"
              stroke-width="2"
@@ -72,7 +61,7 @@
                   d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
         </svg>
     {/if}
-    {#if port.type === PortType.DataInput || port.type === PortType.DataOutput}
+    {#if $port.type === PortType.DataInput || $port.type === PortType.DataOutput}
         <svg xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 14 14"
              stroke-width="2"

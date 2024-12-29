@@ -1,119 +1,79 @@
 <script lang="ts">
+    import {getLineStore} from "@/js/stores/linesStore";
+    import {getPortStore} from "@/js/stores/portsStore.js";
+    import {PortTypeColor, TailwindColorHEX} from "@/js/stores/constants";
 
-    import {derived} from "svelte/store";
+    const strokeWidth = 3;
+    const strokePadding = 150;
 
-    let {line} = $props();
+    let {id} = $props();
+    const lineStore = getLineStore(id);
 
-    let startX = derived(line.startX);
-    let endX = derived(line.endX);
-    let startY = derived(line.startY);
-    let endY = derived(line.endY);
+    const startPort = getPortStore($lineStore.start.portId);
+    const endPort = getPortStore($lineStore.end.portId);
 
-    // onMounted(() => {
-    //     document.addEventListener('mousedown', mouseDownHandler);
-    // });
-    //
-    // onUnmounted(() => {
-    //     document.removeEventListener('mousedown', mouseDownHandler);
-    // });
-    //
-    // const mouseDownHandler = (event: MouseEvent | TouchEvent) => {
-    //     // const point = 'touches' in event ? event.touches[0] : event;
-    //     // console.log('event:', point.clientX, point.clientY);
-    //     // startX.value = (store.canvasPointMatrix.x - store.canvasMatrix.x) / store.canvasMatrix.scale;
-    //     // startY.value = (store.canvasPointMatrix.y - store.canvasMatrix.y) / store.canvasMatrix.scale;
-    //     // document.addEventListener('mousemove', mouseMoveHandler);
-    //     // document.addEventListener('mouseup', mouseUpHandler);
-    // };
-    // const mouseUpHandler = (event: MouseEvent | TouchEvent) => {
-    //     // document.removeEventListener('mousemove', mouseMoveHandler);
-    //     // document.removeEventListener('mouseup', mouseUpHandler);
-    // };
-    // const mouseMoveHandler = (event: MouseEvent | TouchEvent) => {
-    //     // endX.value = (store.canvasPointMatrix.x - store.canvasMatrix.x) / store.canvasMatrix.scale;
-    //     // endY.value = (store.canvasPointMatrix.y - store.canvasMatrix.y) / store.canvasMatrix.scale;
+    let start = $state(null);
+    let end = $state(null);
+
+    $effect(() => {
+        if ($startPort?.connection && $endPort?.connection) {
+            start = $startPort?.connection;
+            end = $endPort?.connection;
+
+            console.log('startPort:', $startPort.type);
+        }
+    });
+
+    // const diffX = (start, end) => start.x < end.x;
+    // const diffY = (start, end) => start.y < end.y;
+    // const absX = (start, end) => Math.abs(end.x - start.x);
+    // const absY = (start, end) => Math.abs(end.y - start.y);
+    // const m1 = (start, end) => diffX(start, end) ? 0 : absX(start, end);
+    // const m2 = (start, end) => diffY(start, end) ? 0 : absY(start, end);
+    // const c1 = (start, end) => diffX(start, end) ? absX(start, end) * 0.45 : absX(start, end) * 1.5;
+    // const c2 = (start, end) => diffY(start, end) ? absY(start, end) * 0.05 : absY(start, end) * 0.95;
+    // const c3 = (start, end) => diffX(start, end) ? absX(start, end) * 0.55 : absX(start, end) * -0.5;
+    // const c4 = (start, end) => diffY(start, end) ? absY(start, end) * 0.95 : absY(start, end) * 0.05;
+    // const c5 = (start, end) => diffX(start, end) ? absX(start, end) : 0;
+    // const c6 = (start, end) => diffY(start, end) ? absY(start, end) : 0;
+    // const bezierLine = (start, end) => {
+    //     return `M ${m1(start, end)}, ${m2(start, end)} C ${c1(start, end)}, ${c2(start, end)}, ${c3(start, end)}, ${c4(start, end)}, ${c5(start, end)}, ${c6(start, end)}`;
     // }
 
-    const strokeWidth = 4;
-    const strokePadding = 2;
-    const padding = 10;
-    const width = derived(() => Math.abs(endX.value - startX.value));
-    const height = derived(() => Math.abs(endY.value - startY.value));
+    const sxLTex = (start, end) => start.x < end.x;
+    const syLTey = (start, end) => start.y < end.y;
+    const absDiffX = (start, end) => Math.abs(end.x - start.x);
+    const absDiffY = (start, end) => Math.abs(end.y - start.y);
+    const m1 = (start, end) => sxLTex(start, end) ? 0 : absDiffX(start, end);
+    const m2 = (start, end) => syLTey(start, end) ? 0 : absDiffY(start, end);
+    const c1 = (start, end) => sxLTex(start, end) ? m1(start, end) + 150 : m1(start, end) + 150 + absDiffX(start, end) * 0.2;
+    const c2 = (start, end) => m2(start, end);
+    const c5 = (start, end) => sxLTex(start, end) ? absDiffX(start, end) : 0;
+    const c6 = (start, end) => syLTey(start, end) ? absDiffY(start, end) : 0;
+    const c3 = (start, end) => sxLTex(start, end) ? c5(start, end) - 150 : c5(start, end) - 150 - absDiffX(start, end) * 0.2;
+    const c4 = (start, end) => c6(start, end);
 
-    const cx1 = derived(() => {
-        if (startX.value > endX.value) {
-            return Math.abs(endX.value - startX.value);
-        }
-        return 0;
-    });
-    const cy1 = derived(() => {
-
-        if (startY.value > endY.value) {
-            return Math.abs(endY.value - startY.value);
-        }
-        return 0;
-    });
-    const cx2 = derived(() => {
-        if (startX.value > endX.value) {
-            return 0;
-        }
-        return Math.abs(endX.value - startX.value);
-    });
-    const cy2 = derived(() => {
-        if (startY.value > endY.value) {
-            return 0;
-        }
-        return Math.abs(endY.value - startY.value)
-    });
-    const lineStyle = derived(() => {
-        return {
-            transform: `matrix(1,0,0,1,${Math.min(startX.value, endX.value)},${Math.min(startY.value, endY.value)})`,
-            marginTop: `-${strokePadding}px`,
-            marginRight: `-${strokePadding}px`,
-            marginBottom: `-${strokePadding}px`,
-            marginLeft: `-${strokePadding}px`,
-        };
-    });
+    const bezierLine = (start, end) => {
+        return `M ${m1(start, end)}, ${m2(start, end)} C ${c1(start, end)}, ${c2(start, end)}, ${c3(start, end)}, ${c4(start, end)}, ${c5(start, end)}, ${c6(start, end)}`;
+    }
 </script>
 
-<!--    <DebugDot color={DebugColor.Blue} size="2" x={line.port1.connection.x} y={line.port1.connection.y}/>-->
-<!--    <DebugDot color={DebugColor.Red} size="2" x={port2.connection.x} y={port2.connection.y}/>-->
-<div class="line-box absolute left-0 top-0 pointer-events-all">
-    <svg height={padding*2}
-         style:transform={`matrix(1, 0, 0, 1, ${startX - padding}, ${startY - padding})`}
-         viewBox={`0 0 ${padding*2} ${padding*2}`}
-         width={padding*2}
-         class="line-start-point absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2"
-         data-is-draggable="true"
-         data-type="line-start-point"
-         xmlns="http://www.w3.org/2000/svg"
-    >
-        <circle cx={padding} cy={padding} r={padding} fill="#3b82f6"/>
-    </svg>
-    <svg height={padding*2}
-         style:transform={`matrix(1, 0, 0, 1, ${endX - padding}, ${endY - padding})`}
-         viewBox={`0 0 ${padding*2} ${padding*2}`}
-         width={padding*2}
-         class="line-end-point absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2"
-         data-is-draggable="true"
-         data-type="line-end-point"
-         xmlns="http://www.w3.org/2000/svg"
-    >
-        <circle cx={padding} cy={padding} r={padding} fill="#3b82f6"/>
-    </svg>
-    <svg height={height + strokePadding*2}
-         style={lineStyle}
-         viewBox={`-${strokePadding} -${strokePadding} ${width + strokePadding*2} ${height + strokePadding*2}`}
-         width={width + strokePadding*2}
-         xmlns="http://www.w3.org/2000/svg"
-    >
-        <rect height={height} width={width} fill="#ef444433"/>
-        <line stroke-width={strokeWidth}
-              x1={cx1}
-              x2={cx2}
-              y1={cy1}
-              y2={cy2}
-              stroke="white"
-              stroke-linecap="round"/>
-    </svg>
-</div>
+{#if start && end}
+    <div class="absolute left-0 top-0 pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="pointer-events-none"
+             style:transform={`matrix(1,0,0,1,${Math.min(start.x, end.x)},${Math.min(start.y, end.y)})`}
+             style:margin-top={`-${strokePadding}px`}
+             style:margin-right={`-${strokePadding}px`}
+             style:margin-bottom={`-${strokePadding}px`}
+             style:margin-left={`-${strokePadding}px`}
+             viewBox={`-${strokePadding} -${strokePadding} ${Math.abs(end.x - start.x) + strokePadding*2} ${Math.abs(end.y - start.y) + strokePadding*2}`}
+             width={Math.abs(end.x - start.x) + strokePadding*2}
+             height={Math.abs(end.y - start.y) + strokePadding*2}
+        >
+            <path stroke-width={strokeWidth} class="pointer-events-auto" d={bezierLine(start, end)}
+                  stroke={TailwindColorHEX[PortTypeColor[$startPort.type]]["500"]} fill="none"/>
+        </svg>
+    </div>
+{/if}
+

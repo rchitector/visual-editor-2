@@ -10,10 +10,6 @@
     const elementStore = getElementStore(id);
     let elementRef;
 
-    // $inspect($elementStore).with((event, value) => {
-    //     console.log('BaseElement $elementStore:', event, value);
-    // });
-
     let observer;
     onMount(() => {
         if (elementRef) {
@@ -36,6 +32,14 @@
             }
         };
     });
+
+    const centerElement = () => {
+        getElementStore(id).update((state) => {
+            state.x = 0;
+            state.y = 0;
+            return state;
+        });
+    };
 </script>
 
 <div bind:this={elementRef} class="absolute box-border top-0 left-0 select-none">
@@ -68,12 +72,13 @@
         </div>
         <div class="p-2 w-full flex justify-end">
             <ButtonGroup>
-                <!--                <Button onclick={centerElement} size="xs"-->
-                <!--                        class="focus:ring-0 focus:outline-none bg-gray-200 text-primary-700 dark:text-white dark:border-gray-500 dark:bg-gray-500">-->
-                <!--                    Center-->
-                <!--                </Button>-->
+                <Button onclick={centerElement} size="xs"
+                        class="focus:ring-0 focus:outline-none bg-gray-200 text-primary-700 dark:text-white dark:border-gray-500 dark:bg-gray-500"
+                >Center
+                </Button>
                 <Button onclick={()=>removeElement($elementStore.id)} color="red" size="xs"
-                        class="focus:ring-0 focus:outline-none">Delete
+                        class="focus:ring-0 focus:outline-none"
+                >Delete
                 </Button>
             </ButtonGroup>
         </div>
