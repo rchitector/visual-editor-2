@@ -8,10 +8,18 @@ import {
     ZOOM_LEVEL_MIN,
     ZOOM_MANUAL_LEVELS
 } from '@/js/stores/constants'
-import {Element, Line, Point, Port} from "@/js/stores/interfaces";
+import {Element, Point} from "@/js/stores/interfaces";
 import {v4 as uuidv4} from "uuid";
 import {addElement} from "@/js/stores/elementsStore";
 import {addPort} from "@/js/stores/portsStore";
+//////////////////////////////////////////////////////////////////////
+export const newLineStartPort = writable({
+    id: null,
+    end: {
+        x: null,
+        y: null,
+    }
+});
 //////////////////////////////////////////////////////////////////////
 export const debugStore = writable<boolean>(false);
 export const toggleDebug = () => {
@@ -25,53 +33,6 @@ export const updateMainBoxRect = (rect: DOMRect): void => {
 //////////////////////////////////////////////////////////////////////
 export const elementsStore = writable<{ [id: string]: Element }>({});
 //////////////////////////////////////////////////////////////////////
-export const portsStore = writable<{ [id: string]: Port }>({});
-
-export function filterAndGroupPortsByType(
-    ports: { [uuid: string]: Port },
-    uuids: string[]
-): {
-    actionOutputs: { [uuid: string]: Port };
-    actionInputs: { [uuid: string]: Port };
-    dataOutputs: { [uuid: string]: Port };
-    dataInputs: { [uuid: string]: Port };
-} {
-    const actionOutputs: { [uuid: string]: Port } = {};
-    const actionInputs: { [uuid: string]: Port } = {};
-    const dataOutputs: { [uuid: string]: Port } = {};
-    const dataInputs: { [uuid: string]: Port } = {};
-
-    // Фильтрация и разделение
-    Object.entries(ports)
-        .filter(([uuid]) => uuids.includes(uuid))
-        .forEach(([uuid, port]) => {
-            switch (port.type) {
-                case PortType.ActionOutput:
-                    actionOutputs[uuid] = port;
-                    break;
-                case PortType.ActionInput:
-                    actionInputs[uuid] = port;
-                    break;
-                case PortType.DataOutput:
-                    dataOutputs[uuid] = port;
-                    break;
-                case PortType.DataInput:
-                    dataInputs[uuid] = port;
-                    break;
-            }
-        });
-
-    return {
-        actionOutputs,
-        actionInputs,
-        dataOutputs,
-        dataInputs,
-    };
-}
-
-//////////////////////////////////////////////////////////////////////
-export const linesStore = writable<{ [id: string]: Line }>({});
-//////////////////////////////////////////////////////////////////////
 export const canvasMatrix = writable({x: 0, y: 0, scale: 1});
 //////////////////////////////////////////////////////////////////////
 export const zoom = writable({previous: ZOOM_LEVEL_DEFAULT, value: ZOOM_LEVEL_DEFAULT});
@@ -84,7 +45,6 @@ export const previousZoomManualLevel = (currentZoomValue) => {
     const filtered = ZOOM_MANUAL_LEVELS.filter(num => num < currentZoomValue)
     return filtered.length ? Math.max(...filtered) : ZOOM_LEVEL_MIN;
 };
-
 export const allElementsRect = () => {
     let elementsRect = {x: 0, y: 0, width: 0, height: 0, center: {x: 0, y: 0}};
     const elements = get(elementsStore);
@@ -116,7 +76,6 @@ export const allElementsRect = () => {
     }
     return elementsRect;
 }
-
 export const zoomFit = (): void => {
     const rect = get(mainBoxRect);
     const itemsRect = allElementsRect();
@@ -134,7 +93,6 @@ export const zoomFit = (): void => {
         y: (0 - itemsRect.center.y * newZoomValue / 100 + (rect.height / 2)),
     });
 };
-
 export const zoomIn = (scaleRelatedX: number | null = null, scaleRelatedY: number | null = null): void => {
     const currentZoom = get(zoom).value;
     const newZoomLevel = nextZoomManualLevel(currentZoom);
@@ -166,7 +124,6 @@ export const setZoom = (newZoomLevel: number, scaleRelatedX: number | null = nul
         }
     });
 };
-
 export const documentPointToRelatedToCanvasZeroPoint = (documentPointX, documentPointY): Point => {
     const mbr = get(mainBoxRect);
     const cm = get(canvasMatrix);
@@ -175,12 +132,10 @@ export const documentPointToRelatedToCanvasZeroPoint = (documentPointX, document
         y: (documentPointY - mbr.y - cm.y) / cm.scale,
     };
 };
-
 export const createElementGlobal = (documentX: number, documentY: number, elementType: ItemTypes) => {
     const newElementPosition = documentPointToRelatedToCanvasZeroPoint(documentX, documentY);
     createElementRelated(newElementPosition.x, newElementPosition.y, elementType);
 };
-
 export const createElementRelated = (relatedX: number, relatedY: number, elementType: ItemTypes) => {
 
     const baseElement = {

@@ -19,8 +19,6 @@
         if ($startPort?.connection && $endPort?.connection) {
             start = $startPort?.connection;
             end = $endPort?.connection;
-
-            console.log('startPort:', $startPort.type);
         }
     });
 

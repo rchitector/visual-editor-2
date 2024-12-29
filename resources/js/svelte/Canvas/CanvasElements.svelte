@@ -5,6 +5,7 @@
     import {lineIds} from "@/js/stores/linesStore";
     import Line from "@/js/svelte/Elements/Line.svelte";
     import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
+    import DraggingLine from "@/js/svelte/Elements/DraggingLine.svelte";
 
     const elementKeys = $derived($elementIds);
     const linesKeys = $derived($lineIds);
@@ -18,6 +19,7 @@
             <Line id={lineKey}/>
         {/if}
     {/each}
+    <DraggingLine/>
     {#each elementKeys as key (key)}
         {#if key}
             <CanvasElement id={key}/>
