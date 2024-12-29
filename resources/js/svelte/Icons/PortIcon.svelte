@@ -8,7 +8,7 @@
     const port = getPortStore(id);
 
     const dynamicClass = $derived.by(() => {
-        let classes = 'stroke-current';
+        let classes = 'stroke-current pointer-events-auto';
         if ($port?.active) {
             if ($port?.disabled) {
                 classes += ` text-gray-400 hover:text-gray-400 dark:text-gray-600 dark:hover:text-gray-600`;
@@ -21,10 +21,10 @@
         } else {
             if ($port?.disabled) {
                 classes += ` text-gray-400 hover:text-gray-400 dark:text-gray-600 dark:hover:text-gray-600`;
-                classes += ` fill-none`;
+                classes += ` fill-transparent`;
             } else {
                 classes += ` text-${baseColor}-400 hover:text-${baseColor}-500 dark:text-${baseColor}-500 dark:hover:text-${baseColor}-700`;
-                classes += ` fill-none`;
+                classes += ` fill-transparent`;
                 classes += ` cursor-pointer`;
             }
         }
@@ -55,9 +55,8 @@
         <svg xmlns="http://www.w3.org/2000/svg"
              viewBox="4 3.5 16 17"
              stroke-width="2"
-             style="width: 13px;height: 14px;"
-             class={dynamicClass}>
-            <path stroke-linecap="round" stroke-linejoin="round"
+             style="width: 13px;height: 14px;">
+            <path stroke-linecap="round" stroke-linejoin="round" class={dynamicClass}
                   d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
         </svg>
     {/if}
@@ -65,9 +64,8 @@
         <svg xmlns="http://www.w3.org/2000/svg"
              viewBox="0 0 14 14"
              stroke-width="2"
-             style="width:14px;height:14px;"
-             class={dynamicClass}>
-            <circle cx="7" cy="7" r="5.5"/>
+             style="width:14px;height:14px;">
+            <circle cx="7" cy="7" r="5.5" class={dynamicClass}/>
         </svg>
     {/if}
 </div>
