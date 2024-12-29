@@ -34,6 +34,7 @@
     });
 
     let portIconRef;
+
     onMount(() => {
         getPortStore(id).update((state) => {
             state.ref = portIconRef;
@@ -42,6 +43,7 @@
             return state;
         });
     });
+
     const startConnection = (event) => {
         if ($port.type === PortType.ActionOutput || $port.type === PortType.DataOutput) {
             newLineStartPort.update(state => {
@@ -77,9 +79,7 @@
                             // && e.target.getAttribute('data-port-active') === 'false'
                             if ($port.type === PortType.ActionOutput && e.target.getAttribute('data-port-action') === 'true') {
                                 const targetPortId = e.target.getAttribute('data-port-id');
-                                console.log('ACTION INPUT targetPortId:', targetPortId);
                                 getPortStore(targetPortId).subscribe((targetPortData) => {
-                                    console.log('targetPort:', targetPortData);
                                     addLine({
                                         id: uuidv4(),
                                         start: {elementId: $port.elementId, portId: $port.id},
@@ -90,9 +90,7 @@
                             }
                             if ($port.type === PortType.DataOutput && e.target.getAttribute('data-port-data') === 'true') {
                                 const targetPortId = e.target.getAttribute('data-port-id');
-                                console.log('DATA INPUT targetPortId:', targetPortId);
                                 getPortStore(targetPortId).subscribe((targetPortData) => {
-                                    console.log('targetPort:', targetPortData);
                                     addLine({
                                         id: uuidv4(),
                                         start: {elementId: $port.elementId, portId: $port.id},
@@ -117,21 +115,22 @@
             document.addEventListener('keydown', onKeyDown)
         }
     };
+
+    // $inspect($port).with((event, value) => {
+    //     if ('Data Output 16' == value.title) {
+    //         console.log('PortIcon', event, value);
+    //     }
+    // });
 </script>
 
 <div class="relative">
-    <div class="absolute w-0 h-0 top-1/2"
+    <div class="absolute w-0 h-0 top-1/2 left-1/2"
          bind:this={portIconRef}
          style:left={$port.type === PortType.ActionInput || $port.type === PortType.DataInput ? '7px' : 'unset'}
          style:right={$port.type === PortType.ActionOutput || $port.type === PortType.DataOutput ? '7px' : 'unset'}
     ><!--ICON CENTER ANCHOR--></div>
     {#if $port.type === PortType.ActionInput || $port.type === PortType.ActionOutput}
-        <svg xmlns="http://www.w3.org/2000/svg"
-             viewBox="4 3.5 16 17"
-             stroke-width="2"
-             width="13px"
-             height="14px"
-        >
+        <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="14px" height="14px" viewBox="4 3.5 16 17">
             <path stroke-linecap="round" stroke-linejoin="round" class={dynamicClass}
                   data-port-id={$port.id}
                   data-port-active={$port.active}
@@ -144,11 +143,7 @@
         </svg>
     {/if}
     {#if $port.type === PortType.DataInput || $port.type === PortType.DataOutput}
-        <svg xmlns="http://www.w3.org/2000/svg"
-             viewBox="0 0 14 14"
-             stroke-width="2"
-             width="14px"
-             height="14px">
+        <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="14px" height="14px" viewBox="0 0 14 14">
             <circle cx="7" cy="7" r="5.5"
                     data-port-id={$port.id}
                     data-port-active={$port.active}

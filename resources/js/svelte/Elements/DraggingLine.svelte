@@ -39,9 +39,7 @@
     }
 
     // $inspect($newLineStartPort).with((event, value) => {
-    //     // console.log('DraggingLine newLineStartPort', event, value);
-    //     // console.log('start, end, type:', start, end, type);
-    //     console.log('end:', end);
+    //     console.log('DraggingLine', event, value);
     // });
 </script>
 

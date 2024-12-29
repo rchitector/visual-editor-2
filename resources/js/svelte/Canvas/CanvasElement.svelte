@@ -17,6 +17,7 @@
     // });
 
     $effect(() => {
+        // console.log('id:', id);
         for (const portId of $elementStore.ports.action.inputs) {
             getPortStore(portId).update((state) => {
                 if (state.ref) {
