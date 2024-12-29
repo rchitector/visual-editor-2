@@ -5,6 +5,7 @@
     import {documentPointToRelatedToCanvasZeroPoint, newLineStartPort} from "@/js/svelte/Store/store";
     import {addLine} from "@/js/stores/linesStore";
     import {v4 as uuidv4} from "uuid";
+    import {DebugColor} from "@/js/stores/DebugEnums";
 
     const {id, baseColor} = $props();
     const port = getPortStore(id);
@@ -60,7 +61,7 @@
                 window.removeEventListener('mouseup', up)
                 document.removeEventListener('keydown', onKeyDown)
                 newLineStartPort.update(state => {
-                    return {id: null, end: {x: null, y: null,}};
+                    return {id: null, end: {portId: null, x: null, y: null,}};
                 });
             };
             const down = (e) => {
@@ -68,13 +69,23 @@
                 startDragPoint.y = e.clientY;
             }
             const move = (e) => {
-                newLineStartPort.update(state => {
-                    return {...state, end: documentPointToRelatedToCanvasZeroPoint(e.clientX, e.clientY)};
-                });
+                if (!$newLineStartPort.end.portId) {
+                    newLineStartPort.update(state => {
+                        return {...state, end: documentPointToRelatedToCanvasZeroPoint(e.clientX, e.clientY)};
+                    });
+                }
             }
             const up = (e) => {
                 if (Math.abs(startDragPoint.x - e.clientX) < 5 && Math.abs(startDragPoint.y - e.clientY) < 5) {
-                    if (e.target.hasAttribute('data-port-id')) {
+                    if ($newLineStartPort.end.portId) {
+                        getPortStore($newLineStartPort.end.portId).subscribe((targetPortData) => {
+                            addLine({
+                                id: uuidv4(),
+                                start: {elementId: $port.elementId, portId: $port.id},
+                                end: {elementId: targetPortData.elementId, portId: targetPortData.id},
+                            });
+                        })();
+                    } else if (e.target.hasAttribute('data-port-id')) {
                         if (e.target.getAttribute('data-port-input') === 'true' && e.target.getAttribute('data-port-disabled') === 'false') {
                             // && e.target.getAttribute('data-port-active') === 'false'
                             if ($port.type === PortType.ActionOutput && e.target.getAttribute('data-port-action') === 'true') {
@@ -121,6 +132,17 @@
     //         console.log('PortIcon', event, value);
     //     }
     // });
+
+    const onMouseOver = (portId, connection) => {
+        newLineStartPort.update(state => {
+            return {...state, end: {...state.end, ...connection, portId: portId}};
+        });
+    };
+    const onMouseOut = () => {
+        newLineStartPort.update(state => {
+            return {...state, end: {...state.end, portId: null}};
+        });
+    };
 </script>
 
 <div class="relative">
@@ -129,6 +151,18 @@
          style:left={$port.type === PortType.ActionInput || $port.type === PortType.DataInput ? '7px' : 'unset'}
          style:right={$port.type === PortType.ActionOutput || $port.type === PortType.DataOutput ? '7px' : 'unset'}
     ><!--ICON CENTER ANCHOR--></div>
+    {#if (($port.type === PortType.ActionInput || $port.type === PortType.DataInput) && !$port.disabled)}
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="absolute top-0 left-0"
+             style:transform={`translate(-5px, -5px)`}
+             style:opacity={'0'}
+             width="24px" height="24px" viewBox="0 0 20 20"
+        >
+            <circle cx="10" cy="10" r="10" fill={DebugColor.Red}
+                    onmouseover={()=>onMouseOver($port.id, $port.connection)}
+                    onmouseout={onMouseOut}/>
+        </svg>
+    {/if}
     {#if $port.type === PortType.ActionInput || $port.type === PortType.ActionOutput}
         <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="14px" height="14px" viewBox="4 3.5 16 17">
             <path stroke-linecap="round" stroke-linejoin="round" class={dynamicClass}

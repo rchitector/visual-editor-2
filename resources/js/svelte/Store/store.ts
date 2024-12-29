@@ -16,6 +16,7 @@ import {addPort} from "@/js/stores/portsStore";
 export const newLineStartPort = writable({
     id: null,
     end: {
+        portId: null,
         x: null,
         y: null,
     }
