@@ -5,6 +5,7 @@
     import ElementHeader from "@/js/svelte/Elements/ElementHeader.svelte";
     import {onMount} from "svelte";
     import {getElementStore, removeElement} from "@/js/stores/elementsStore";
+    import Port from "@/js/svelte/Elements/Ports/Port.svelte";
 
     const {id} = $props();
     const elementStore = getElementStore(id);
@@ -45,22 +46,30 @@
 <div bind:this={elementRef} class="absolute box-border top-0 left-0 select-none">
     <DebugDot color={DebugColor.Green} size="1"/>
     <div
-        class="border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
+        class="bg-opacity-90 dark:bg-opacity-90 border rounded-lg bg-white border-gray-200 dark:bg-gray-700 dark:border-gray-600 shadow shadow-lg">
         <ElementHeader element={$elementStore} title={$elementStore.type}/>
         <div class="p-2 flex flex-row justify-between gap-2 border-b border-gray-200 dark:border-gray-600">
             <div class="input-action-ports">
-                <slot name="inputActionPorts"></slot>
+                {#each $elementStore.ports.action.inputs as portId}
+                    <Port id={portId}/>
+                {/each}
             </div>
             <div class="output-action-ports">
-                <slot name="outputActionPorts"></slot>
+                {#each $elementStore.ports.action.outputs as portId}
+                    <Port id={portId}/>
+                {/each}
             </div>
         </div>
         <div class="p-2 flex flex-row justify-between gap-2 border-b border-gray-200 dark:border-gray-600">
             <div class="input-data-ports">
-                <slot name="inputDataPorts"></slot>
+                {#each $elementStore.ports.data.inputs as portId}
+                    <Port id={portId}/>
+                {/each}
             </div>
             <div class="output-data-ports">
-                <slot name="outputDataPorts"></slot>
+                {#each $elementStore.ports.data.outputs as portId}
+                    <Port id={portId}/>
+                {/each}
             </div>
         </div>
         <div class="border-gray-200 dark:border-gray-700 p-1.5">

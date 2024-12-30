@@ -2,66 +2,18 @@
     import {newLineStartPort} from "@/js/svelte/Store/store";
     import {getPortStore} from "@/js/stores/portsStore";
     import {PortType, PortTypeColor, TailwindColorHEX} from "@/js/stores/constants";
-
-    const strokeWidth = 3;
-    const strokePadding = 150;
+    import BaseLine from "@/js/svelte/Elements/BaseLine.svelte";
 
     const startPort = $derived(getPortStore($newLineStartPort.id));
-
-    let start = $derived.by(() => {
-        return {
-            x: $startPort?.connection?.x,
-            y: $startPort?.connection?.y
-        }
-    });
-    let end = $derived.by(() => {
-        return $newLineStartPort.end;
-    });
-    let type = $derived.by(() => {
-        return $startPort?.type;
-    });
-
-    const sxLTex = (start, end) => start.x < end.x;
-    const syLTey = (start, end) => start.y < end.y;
-    const absDiffX = (start, end) => Math.abs(end.x - start.x);
-    const absDiffY = (start, end) => Math.abs(end.y - start.y);
-    const m1 = (start, end) => sxLTex(start, end) ? 0 : absDiffX(start, end);
-    const m2 = (start, end) => syLTey(start, end) ? 0 : absDiffY(start, end);
-    const c1 = (start, end) => sxLTex(start, end) ? m1(start, end) + 150 : m1(start, end) + 150 + absDiffX(start, end) * 0.2;
-    const c2 = (start, end) => m2(start, end);
-    const c5 = (start, end) => sxLTex(start, end) ? absDiffX(start, end) : 0;
-    const c6 = (start, end) => syLTey(start, end) ? absDiffY(start, end) : 0;
-    const c3 = (start, end) => sxLTex(start, end) ? c5(start, end) - 150 : c5(start, end) - 150 - absDiffX(start, end) * 0.2;
-    const c4 = (start, end) => c6(start, end);
-
-    const bezierLine = (start, end) => {
-        return `M ${m1(start, end)}, ${m2(start, end)} C ${c1(start, end)}, ${c2(start, end)}, ${c3(start, end)}, ${c4(start, end)}, ${c5(start, end)}, ${c6(start, end)}`;
-    }
-
-    // $inspect($newLineStartPort).with((event, value) => {
-    //     console.log('DraggingLine', event, value);
-    // });
+    const start = $derived($startPort?.connection ?? null);
+    const end = $derived($newLineStartPort.end ?? null);
+    const type = $derived($startPort?.type);
 </script>
 
-{#if start && end && type}
-    <div class="absolute left-0 top-0 pointer-events-none">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="pointer-events-none"
-             style:transform={`matrix(1,0,0,1,${Math.min(start.x, end.x)},${Math.min(start.y, end.y)})`}
-             style:margin-top={`-${strokePadding}px`}
-             style:margin-right={`-${strokePadding}px`}
-             style:margin-bottom={`-${strokePadding}px`}
-             style:margin-left={`-${strokePadding}px`}
-             viewBox={`-${strokePadding} -${strokePadding} ${Math.abs(end.x - start.x) + strokePadding*2} ${Math.abs(end.y - start.y) + strokePadding*2}`}
-             width={Math.abs(end.x - start.x) + strokePadding*2}
-             height={Math.abs(end.y - start.y) + strokePadding*2}
-        >
-            <path stroke-width={strokeWidth} class="pointer-events-none" d={bezierLine(start, end)}
-                  stroke={TailwindColorHEX[PortTypeColor[type]]["500"]}
-                  fill="none"/>
-        </svg>
-    </div>
-    <div class="absolute left-0 top-0 pointer-events-none" id="end-point-icon"
+<BaseLine type={type} start={start} end={end}/>
+
+{#if start !== null && end !== null}
+    <div class="absolute left-0 top-0 pointer-events-none"
          style:transform={`matrix(1,0,0,1,${end.x - 7}, ${end.y - 7})`}>
         {#if type === PortType.ActionInput || type === PortType.ActionOutput}
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -93,4 +45,3 @@
         {/if}
     </div>
 {/if}
-

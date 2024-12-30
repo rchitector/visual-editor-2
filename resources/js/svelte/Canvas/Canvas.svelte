@@ -24,21 +24,21 @@
         //     start: {elementId: element1.id, portId: element1.ports.action.outputs[0]},
         //     end: {elementId: element3.id, portId: element3.ports.data.inputs[0]},
         // });
-        // addLine({
-        //     id: uuidv4(),
-        //     start: {elementId: element1.id, portId: element1.ports.action.outputs[1]},
-        //     end: {elementId: element3.id, portId: element3.ports.action.inputs[1]},
-        // });
+        addLine({
+            id: uuidv4(),
+            start: {elementId: element1.id, portId: element1.ports.action.outputs[1]},
+            end: {elementId: element3.id, portId: element3.ports.action.inputs[3]},
+        });
         // addLine({
         //     id: uuidv4(),
         //     start: {elementId: element1.id, portId: element1.ports.action.outputs[2]},
         //     end: {elementId: element3.id, portId: element3.ports.data.inputs[2]},
         // });
-        // addLine({
-        //     id: uuidv4(),
-        //     start: {elementId: element1.id, portId: element1.ports.action.outputs[3]},
-        //     end: {elementId: element3.id, portId: element3.ports.data.inputs[3]},
-        // });
+        addLine({
+            id: uuidv4(),
+            start: {elementId: element1.id, portId: element1.ports.action.outputs[3]},
+            end: {elementId: element3.id, portId: element3.ports.action.inputs[1]},
+        });
 
         // addLine({
         //     id: uuidv4(),
