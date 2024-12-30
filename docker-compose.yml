@@ -1,5 +1,5 @@
 services:
-    laravel.test:
+    visual-editor-laravel-service:
         build:
             context: './vendor/laravel/sail/runtimes/8.3'
             dockerfile: Dockerfile
@@ -21,7 +21,7 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
-        depends_on: {  }
+        depends_on: { }
 networks:
     sail:
         driver: bridge
