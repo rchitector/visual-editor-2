@@ -57,3 +57,12 @@ export function removeElement(uuid: string): void {
         elementStores.delete(uuid);
     }
 }
+
+export function toggleOnTop(portId: string): void {
+    for (let value of elementStores.values()) {
+        value.update(store => {
+            store.onTop = store.id === portId;
+            return store;
+        });
+    }
+}

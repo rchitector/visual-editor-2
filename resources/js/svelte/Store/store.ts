@@ -145,7 +145,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
         y: relatedY,
         w: 0,
         h: 0,
-        onTop: true,
+        onTop: false,
         type: elementType,
         ports: {
             action: {

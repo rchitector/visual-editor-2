@@ -2,7 +2,7 @@
     import DebugDot from "@/js/svelte/Debug/DebugDot";
     import {DebugColor} from "@/js/stores/DebugEnums";
     import BaseElement from "@/js/svelte/Elements/BaseElement.svelte";
-    import {getElementStore} from "@/js/stores/elementsStore";
+    import {getElementStore, toggleOnTop} from "@/js/stores/elementsStore";
     import {getPortStore} from "@/js/stores/portsStore";
     import {documentPointToRelatedToCanvasZeroPoint} from "@/js/svelte/Store/store";
     import {findByPortId} from "@/js/stores/linesStore";
@@ -32,7 +32,8 @@
 </script>
 
 {#if $elementStore}
-    <div class="absolute left-0 top-0 border rounded-lg"
+    <div class={`absolute left-0 top-0 border rounded-lg ${$elementStore.onTop ? 'z-10' : ''}`}
+         onmousedown={() => toggleOnTop(id)}
          style:transform={`matrix(1,0,0,1,${$elementStore.x},${$elementStore.y})`}
     >
         <DebugDot size="1" color={DebugColor.Green}/>
