@@ -5,7 +5,7 @@ export const portsStore: Writable<Record<string, Port>> = writable({});
 
 export const portIds: Writable<string[]> = writable([]);
 
-const portStores: Map<string, Writable<Port | null>> = new Map();
+export const portStores: Map<string, Writable<Port | null>> = new Map();
 
 export function getPortStore(uuid: string): Writable<Port | null> {
     if (!portStores.has(uuid)) {

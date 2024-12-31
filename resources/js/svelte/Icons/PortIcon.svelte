@@ -4,7 +4,7 @@
     import {onMount} from "svelte";
     import {documentPointToRelatedToCanvasZeroPoint, newLineStartPort} from "@/js/svelte/Store/store";
     import {addLine, findByPortId} from "@/js/svelte/Store/linesStore";
-    import {v4 as uuidv4} from "uuid";
+    import {v4 as uuidV4} from "uuid";
     import {DebugColor} from "@/js/svelte/Store/DebugEnums";
 
     const {id, baseColor} = $props();
@@ -51,7 +51,7 @@
         const endPort = getPortStore(endPortId);
         endPort.subscribe((targetPortData) => {
             addLine({
-                id: uuidv4(),
+                id: uuidV4(),
                 start: {elementId: startPort.elementId, portId: startPort.id},
                 end: {elementId: targetPortData.elementId, portId: targetPortData.id},
             });

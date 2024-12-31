@@ -9,7 +9,7 @@ import {
     ZOOM_MANUAL_LEVELS
 } from '@/js/svelte/Store/constants'
 import {Element, Point} from "@/js/svelte/Store/interfaces";
-import {v4 as uuidv4} from "uuid";
+import {v4 as uuidV4} from "uuid";
 import {addElement} from "@/js/svelte/Store/elementsStore";
 import {addPort} from "@/js/svelte/Store/portsStore";
 //////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@ export const createElementGlobal = (documentX: number, documentY: number, elemen
 export const createElementRelated = (relatedX: number, relatedY: number, elementType: ItemTypes) => {
 
     const baseElement = {
-        id: uuidv4(),
+        id: uuidV4(),
         x: relatedX,
         y: relatedY,
         w: 0,
@@ -162,7 +162,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
     let portIndex = 0;
     const ports = [
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
@@ -170,7 +170,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
@@ -178,7 +178,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
@@ -186,7 +186,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Input ${portIndex}`,
             type: PortType.ActionInput,
@@ -194,7 +194,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
@@ -202,7 +202,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
@@ -210,7 +210,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
@@ -218,7 +218,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Action Output ${portIndex}`,
             type: PortType.ActionOutput,
@@ -226,7 +226,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
@@ -234,7 +234,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
@@ -242,7 +242,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
@@ -250,7 +250,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Input ${portIndex}`,
             type: PortType.DataInput,
@@ -258,7 +258,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
@@ -266,7 +266,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
@@ -274,7 +274,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,
@@ -282,7 +282,7 @@ export const createElementRelated = (relatedX: number, relatedY: number, element
             disabled: false
         },
         {
-            id: uuidv4(),
+            id: uuidV4(),
             index: portIndex++,
             title: `Data Output ${portIndex}`,
             type: PortType.DataOutput,

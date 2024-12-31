@@ -1,5 +1,5 @@
 import {writable, Writable} from "svelte/store";
-import {Element} from "./interfaces";
+import {Element} from "@/js/svelte/Store/interfaces";
 
 // Хранилище для всех элементов
 export const elementsStore: Writable<Record<string, Element>> = writable({});
@@ -8,7 +8,7 @@ export const elementsStore: Writable<Record<string, Element>> = writable({});
 export const elementIds: Writable<string[]> = writable([]);
 
 // Используем Map для хранения writable хранилищ
-const elementStores: Map<string, Writable<Element | null>> = new Map();
+export const elementStores: Map<string, Writable<Element | null>> = new Map();
 
 export function getElementStore(uuid: string): Writable<Element | null> {
     if (!elementStores.has(uuid)) {
@@ -56,6 +56,15 @@ export function removeElement(uuid: string): void {
         elementStore.set(null); // Устанавливаем значение null при удалении
         elementStores.delete(uuid);
     }
+
+    // // Remove all lines connected to this element
+    // for (let value of lineStores.values()) {
+    //     value.subscribe((current) => {
+    //         if (current.start.elementId === uuid || current.end.elementId === uuid) {
+    //             removeLine(current.id);
+    //         }
+    //     });
+    // }
 }
 
 export function toggleOnTop(portId: string): void {

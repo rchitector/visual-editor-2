@@ -5,7 +5,7 @@ export const linesStore: Writable<Record<string, Line>> = writable({});
 
 export const lineIds: Writable<string[]> = writable([]);
 
-const lineStores: Map<string, Writable<Line | null>> = new Map();
+export const lineStores: Map<string, Writable<Line | null>> = new Map();
 
 export function getLineStore(uuid: string): Writable<Line | null> {
     if (!lineStores.has(uuid)) {
