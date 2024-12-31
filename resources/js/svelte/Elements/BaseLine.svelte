@@ -62,12 +62,11 @@
              height={Math.abs(end.y - start.y) + strokePadding*2}
         >
             {#if (sx !== null && sy !== null && c1x !== null && c1y !== null && c2x !== null && c2y !== null && ex !== null && ey !== null)}
-                <path stroke-width={strokeWidth + 15}
+                <path stroke-width={strokeWidth + 5}
                       class={interactive ? 'pointer-events-auto' : 'pointer-events-none'}
-                      onmouseover="{() => { hovered = true; }}"
-                      onmouseout="{() => { hovered = false;}}"
+                      onmouseover="{() => hovered = true}"
+                      onmouseout="{() => hovered = false}"
                       d={`M${sx},${sy} C${c1x},${c1y} ${c2x},${c2y} ${ex},${ey}`}
-                      stroke="transparent"
                       fill="none"
                 />
                 <path stroke-width={strokeWidth}
@@ -115,7 +114,5 @@
                 </g>
             {/if}
         </svg>
-
-
     </div>
 {/if}

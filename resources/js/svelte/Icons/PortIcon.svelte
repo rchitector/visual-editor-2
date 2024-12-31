@@ -14,20 +14,21 @@
         let classes = 'stroke-current pointer-events-auto';
         if ($port?.active) {
             if ($port?.disabled) {
-                classes += ` text-gray-400 hover:text-gray-400 dark:text-gray-600 dark:hover:text-gray-600`;
-                classes += ` fill-gray-400 hover:fill-gray-400 dark:fill-gray-600 dark:hover:fill-gray-600`;
+                classes += ` text-gray-500 dark:text-gray-500`;
+                classes += ` fill-gray-500 dark:fill-gray-500`;
             } else {
-                classes += ` text-${baseColor}-400 hover:text-${baseColor}-500 dark:text-${baseColor}-500 dark:hover:text-${baseColor}-700`;
-                classes += ` fill-${baseColor}-400 hover:fill-${baseColor}-500 dark:fill-${baseColor}-500 dark:hover:fill-${baseColor}-700`;
+                classes += ` text-${baseColor}-500 dark:text-${baseColor}-500`;
+                classes += ` fill-${baseColor}-500 dark:fill-${baseColor}-500`;
                 classes += ` cursor-pointer`;
             }
         } else {
             if ($port?.disabled) {
-                classes += ` text-gray-400 hover:text-gray-400 dark:text-gray-600 dark:hover:text-gray-600`;
+                classes += ` text-gray-500 dark:text-gray-500`;
                 classes += ` fill-transparent`;
             } else {
-                classes += ` text-${baseColor}-400 hover:text-${baseColor}-500 dark:text-${baseColor}-500 dark:hover:text-${baseColor}-700`;
+                classes += ` text-${baseColor}-500 dark:text-${baseColor}-500`;
                 classes += ` fill-transparent`;
+                classes += ` hover:fill-${baseColor}-500 hover:dark:fill-${baseColor}-500`;
                 classes += ` cursor-pointer`;
             }
         }
