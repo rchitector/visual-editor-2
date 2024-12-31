@@ -49,7 +49,8 @@
         </div>
     </div>
 {/if}
-<div class="absolute left-5 top-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+<div
+    class="shadow-lg shadow-gray-800 absolute left-5 top-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
     <!--    <div class="gap-1 flex items-center p-3">-->
     <!--        <button-->
     <!--                class={`text-${ColorName[ElementTypeColor.start]}-500 p-2 rounded-md bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 group`}-->

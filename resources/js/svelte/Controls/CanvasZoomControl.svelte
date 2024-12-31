@@ -4,7 +4,7 @@
 </script>
 
 <div
-    class="absolute right-5 bottom-5 rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
+    class="shadow-lg shadow-gray-800 absolute right-5 bottom-5 rounded-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-800">
 
     <div class="gap-1 flex items-center">
         <button onclick={()=>zoomOut()}
