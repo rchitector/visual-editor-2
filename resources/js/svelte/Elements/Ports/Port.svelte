@@ -7,7 +7,8 @@
     const port = getPortStore(id);
 </script>
 
-<div class="relative port whitespace-nowrap relative">
+<div class="relative port whitespace-nowrap relative min-h-[24px]">
+    <div>{ $port.title }</div>
     <div>{ $port.title }</div>
     <div
         class:-left-7={$port.type === PortType.ActionInput || $port.type === PortType.DataInput}

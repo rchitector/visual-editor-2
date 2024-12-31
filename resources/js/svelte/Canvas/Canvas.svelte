@@ -141,7 +141,7 @@
 </script>
 
 <div bind:this={mainBoxRef}
-     class="relative w-full h-full overflow-hidden border-0 box-border bg-gray-50 dark:bg-gray-800"
+     class="text-xs relative w-full h-full overflow-hidden border-0 box-border bg-gray-50 dark:bg-gray-800"
      on:contextmenu={onMainBoxContextMenu}
      on:mousedown={startDragging}
      on:wheel={onWheel}
