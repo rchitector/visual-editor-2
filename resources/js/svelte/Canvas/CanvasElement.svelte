@@ -5,6 +5,7 @@
     import {getElementStore} from "@/js/stores/elementsStore";
     import {getPortStore} from "@/js/stores/portsStore";
     import {documentPointToRelatedToCanvasZeroPoint} from "@/js/svelte/Store/store";
+    import {findByPortId} from "@/js/stores/linesStore";
 
     const {id} = $props();
 
@@ -22,6 +23,7 @@
                 if (state.ref) {
                     const rect = state.ref.getBoundingClientRect();
                     state.connection = documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
+                    state.active = findByPortId(portId).length > 0;
                 }
                 return state;
             });

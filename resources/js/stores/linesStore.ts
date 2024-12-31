@@ -1,4 +1,4 @@
-import {writable, Writable} from "svelte/store";
+import {fromStore, writable, Writable} from "svelte/store";
 import {Line} from "./interfaces";
 
 export const linesStore: Writable<Record<string, Line>> = writable({});
@@ -48,4 +48,15 @@ export function removeLine(uuid: string): void {
         lineStore.set(null);
         lineStores.delete(uuid);
     }
+}
+
+export function findByPortId(portId: string): Line[] {
+    const lines = [];
+    for (let value of lineStores.values()) {
+        const current = fromStore(value).current;
+        if (current.start.portId === portId || current.end.portId === portId) {
+            lines.push(value);
+        }
+    }
+    return lines;
 }
