@@ -1,10 +1,10 @@
 <script lang="ts">
-    import {DebugColor} from "@/js/stores/DebugEnums";
+    import {DebugColor} from "@/js/svelte/Store/DebugEnums";
     import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
     import {Button, ButtonGroup} from "flowbite-svelte";
     import ElementHeader from "@/js/svelte/Elements/ElementHeader.svelte";
     import {onMount} from "svelte";
-    import {getElementStore, removeElement} from "@/js/stores/elementsStore";
+    import {getElementStore, removeElement} from "@/js/svelte/Store/elementsStore";
     import Port from "@/js/svelte/Elements/Ports/Port.svelte";
 
     const {id} = $props();

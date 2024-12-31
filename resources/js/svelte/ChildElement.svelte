@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {getElementStore, removeElement} from "@/js/stores/temporaryStore";
+    import {getElementStore, removeElement} from "@/js/svelte/Store/temporaryStore";
 
     const {id} = $props();
 

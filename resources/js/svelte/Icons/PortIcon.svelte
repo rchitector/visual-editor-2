@@ -1,11 +1,11 @@
 <script lang="ts">
-    import {PortType} from "@/js/stores/constants";
-    import {getPortStore} from "@/js/stores/portsStore";
+    import {PortType} from "@/js/svelte/Store/constants";
+    import {getPortStore} from "@/js/svelte/Store/portsStore";
     import {onMount} from "svelte";
     import {documentPointToRelatedToCanvasZeroPoint, newLineStartPort} from "@/js/svelte/Store/store";
-    import {addLine} from "@/js/stores/linesStore";
+    import {addLine} from "@/js/svelte/Store/linesStore";
     import {v4 as uuidv4} from "uuid";
-    import {DebugColor} from "@/js/stores/DebugEnums";
+    import {DebugColor} from "@/js/svelte/Store/DebugEnums";
 
     const {id, baseColor} = $props();
     const port = getPortStore(id);

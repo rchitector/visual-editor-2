@@ -8,12 +8,12 @@
         zoomOut
     } from '@/js/svelte/Store/store';
     import {onMount} from "svelte";
-    import {ItemTypes} from "@/js/stores/constants";
+    import {ItemTypes} from "@/js/svelte/Store/constants";
     import CanvasBackground from "@/js/svelte/Canvas/CanvasBackground";
     import CanvasElements from "@/js/svelte/Canvas/CanvasElements";
     import CanvasElementsControl from "@/js/svelte/Controls/CanvasElementsControl.svelte";
     import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
-    import {addLine} from "@/js/stores/linesStore";
+    import {addLine} from "@/js/svelte/Store/linesStore";
     import {v4 as uuidv4} from "uuid";
 
     onMount(() => {

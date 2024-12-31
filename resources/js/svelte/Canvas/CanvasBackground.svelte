@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {BG_CELL_SIZE} from "@/js/stores/constants";
+    import {BG_CELL_SIZE} from "@/js/svelte/Store/constants";
     import {canvasMatrix} from "@/js/svelte/Store/store";
 </script>
 

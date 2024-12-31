@@ -1,7 +1,7 @@
 <script lang="ts">
     import {newLineStartPort} from "@/js/svelte/Store/store";
-    import {getPortStore} from "@/js/stores/portsStore";
-    import {PortType, PortTypeColor, TailwindColorHEX} from "@/js/stores/constants";
+    import {getPortStore} from "@/js/svelte/Store/portsStore";
+    import {PortType, PortTypeColor, TailwindColorHEX} from "@/js/svelte/Store/constants";
     import BaseLine from "@/js/svelte/Elements/BaseLine.svelte";
 
     const startPort = $derived(getPortStore($newLineStartPort.id));

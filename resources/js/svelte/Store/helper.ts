@@ -1,5 +1,5 @@
-import {ItemTypes} from "@/js/stores/constants";
-import {DebugColor} from "@/js/stores/DebugEnums";
+import {ItemTypes} from "@/js/svelte/Store/constants";
+import {DebugColor} from "@/js/svelte/Store/DebugEnums";
 
 export const getRandomIntInclusive = (min: number, max: number) => {
     min = Math.ceil(min);

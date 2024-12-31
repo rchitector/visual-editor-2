@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {PortTypeColor, TailwindColorHEX} from "@/js/stores/constants";
-    import {removeLine} from "@/js/stores/linesStore";
+    import {PortTypeColor, TailwindColorHEX} from "@/js/svelte/Store/constants";
+    import {removeLine} from "@/js/svelte/Store/linesStore";
 
     const strokeWidth = 2;
     const strokePadding = 150;

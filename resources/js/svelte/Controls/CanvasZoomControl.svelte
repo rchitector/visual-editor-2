@@ -1,6 +1,6 @@
 <script lang="ts">
     import {setZoom, zoom, zoomFit, zoomIn, zoomOut} from '@/js/svelte/Store/store.ts';
-    import {ZOOM_VISIBLE_LEVELS} from "@/js/stores/constants";
+    import {ZOOM_VISIBLE_LEVELS} from "@/js/svelte/Store/constants";
 </script>
 
 <div

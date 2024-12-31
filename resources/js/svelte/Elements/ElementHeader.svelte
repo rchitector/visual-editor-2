@@ -1,8 +1,8 @@
 <script lang="ts">
     import {documentPointToRelatedToCanvasZeroPoint} from "@/js/svelte/Store/store";
-    import {ColorName, ElementTypeColor} from "@/js/stores/constants";
+    import {ColorName, ElementTypeColor} from "@/js/svelte/Store/constants";
     import {writable} from "svelte/store";
-    import {getElementStore} from "@/js/stores/elementsStore";
+    import {getElementStore} from "@/js/svelte/Store/elementsStore";
 
     let {title, element} = $props();
     let thisRef;

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {ColorName, ElementTypeColor, ItemTypes} from "@/js/stores/constants";
+    import {ColorName, ElementTypeColor, ItemTypes} from "@/js/svelte/Store/constants";
     import {canvasMatrix, createElementGlobal, mainBoxRect} from "@/js/svelte/Store/store";
     import {writable} from "svelte/store";
     import {Button, ButtonGroup} from 'flowbite-svelte';

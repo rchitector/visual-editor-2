@@ -1,6 +1,6 @@
 <script lang="ts">
     import Line from "@/js/svelte/Elements/Line.svelte";
-    import {lineIds} from "@/js/stores/linesStore";
+    import {lineIds} from "@/js/svelte/Store/linesStore";
 
     const linesKeys = $derived($lineIds);
 </script>

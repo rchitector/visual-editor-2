@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {DebugColor} from "@/js/stores/DebugEnums";
+    import {DebugColor} from "@/js/svelte/Store/DebugEnums";
 
     let {x = 0, y = 0, size = 2, color = DebugColor.Red} = $props();
 </script>

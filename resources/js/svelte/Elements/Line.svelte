@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {getLineStore} from "@/js/stores/linesStore";
-    import {getPortStore} from "@/js/stores/portsStore.js";
+    import {getLineStore} from "@/js/svelte/Store/linesStore";
+    import {getPortStore} from "@/js/svelte/Store/portsStore";
     import BaseLine from "@/js/svelte/Elements/BaseLine.svelte";
 
     const {id} = $props();

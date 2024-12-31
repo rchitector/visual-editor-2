@@ -1,7 +1,13 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {derived} from "svelte/store";
-    import {addElement, elementIds, elementsStore, getElementStore, removeElement} from "@/js/stores/temporaryStore";
+    import {
+        addElement,
+        elementIds,
+        elementsStore,
+        getElementStore,
+        removeElement
+    } from "@/js/svelte/Store/temporaryStore";
     import ChildElement from "@/js/svelte/ChildElement.svelte";
 
     const defaultElements = {

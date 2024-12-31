@@ -1,8 +1,8 @@
 <script lang="ts">
     import CanvasElement from "@/js/svelte/Canvas/CanvasElement.svelte";
     import {canvasMatrix} from '@/js/svelte/Store/store';
-    import {elementIds} from "@/js/stores/elementsStore";
-    import {lineIds} from "@/js/stores/linesStore";
+    import {elementIds} from "@/js/svelte/Store/elementsStore";
+    import {lineIds} from "@/js/svelte/Store/linesStore";
     import Line from "@/js/svelte/Elements/Line.svelte";
     import DebugDot from "@/js/svelte/Debug/DebugDot.svelte";
     import DraggingLine from "@/js/svelte/Elements/DraggingLine.svelte";

@@ -7,11 +7,11 @@ import {
     ZOOM_LEVEL_MAX,
     ZOOM_LEVEL_MIN,
     ZOOM_MANUAL_LEVELS
-} from '@/js/stores/constants'
-import {Element, Point} from "@/js/stores/interfaces";
+} from '@/js/svelte/Store/constants'
+import {Element, Point} from "@/js/svelte/Store/interfaces";
 import {v4 as uuidv4} from "uuid";
-import {addElement} from "@/js/stores/elementsStore";
-import {addPort} from "@/js/stores/portsStore";
+import {addElement} from "@/js/svelte/Store/elementsStore";
+import {addPort} from "@/js/svelte/Store/portsStore";
 //////////////////////////////////////////////////////////////////////
 export const newLineStartPort = writable({
     id: null,

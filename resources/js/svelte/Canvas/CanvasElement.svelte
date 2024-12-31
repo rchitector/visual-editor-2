@@ -1,11 +1,11 @@
 <script lang="ts">
     import DebugDot from "@/js/svelte/Debug/DebugDot";
-    import {DebugColor} from "@/js/stores/DebugEnums";
+    import {DebugColor} from "@/js/svelte/Store/DebugEnums";
     import BaseElement from "@/js/svelte/Elements/BaseElement.svelte";
-    import {getElementStore, toggleOnTop} from "@/js/stores/elementsStore";
-    import {getPortStore} from "@/js/stores/portsStore";
+    import {getElementStore, toggleOnTop} from "@/js/svelte/Store/elementsStore";
+    import {getPortStore} from "@/js/svelte/Store/portsStore";
     import {documentPointToRelatedToCanvasZeroPoint} from "@/js/svelte/Store/store";
-    import {findByPortId} from "@/js/stores/linesStore";
+    import {findByPortId} from "@/js/svelte/Store/linesStore";
 
     const {id} = $props();
 

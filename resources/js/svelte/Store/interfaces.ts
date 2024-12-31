@@ -1,4 +1,4 @@
-import {DraggingTypes, ItemTypes, PortType} from "@/js/stores/constants";
+import {DraggingTypes, ItemTypes, PortType} from "@/js/svelte/Store/constants";
 
 export interface Point {
     x: number;

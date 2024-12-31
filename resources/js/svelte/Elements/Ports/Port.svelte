@@ -1,7 +1,7 @@
 <script lang="ts">
-    import {ColorName, PortType, PortTypeColor} from "@/js/stores/constants";
+    import {ColorName, PortType, PortTypeColor} from "@/js/svelte/Store/constants";
     import PortIcon from "@/js/svelte/Icons/PortIcon.svelte";
-    import {getPortStore} from "@/js/stores/portsStore";
+    import {getPortStore} from "@/js/svelte/Store/portsStore";
 
     let {id} = $props();
     const port = getPortStore(id);
