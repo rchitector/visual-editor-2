@@ -3,7 +3,7 @@
     import {getPortStore} from "@/js/svelte/Store/portsStore";
     import {onMount} from "svelte";
     import {documentPointToRelatedToCanvasZeroPoint, newLineStartPort} from "@/js/svelte/Store/store";
-    import {addLine} from "@/js/svelte/Store/linesStore";
+    import {addLine, findByPortId} from "@/js/svelte/Store/linesStore";
     import {v4 as uuidv4} from "uuid";
     import {DebugColor} from "@/js/svelte/Store/DebugEnums";
 
@@ -42,9 +42,29 @@
             state.ref = portIconRef;
             const rect = state.ref.getBoundingClientRect();
             state.connection = documentPointToRelatedToCanvasZeroPoint(rect.x, rect.y);
+            state.active = findByPortId(id).length > 0;
             return state;
         });
     });
+
+    const createLineForPorts = (startPortStore, startPort, endPortId) => {
+        const endPort = getPortStore(endPortId);
+        endPort.subscribe((targetPortData) => {
+            addLine({
+                id: uuidv4(),
+                start: {elementId: startPort.elementId, portId: startPort.id},
+                end: {elementId: targetPortData.elementId, portId: targetPortData.id},
+            });
+        })();
+        endPort.update(state => {
+            state.active = true;
+            return state;
+        });
+        startPortStore.update(state => {
+            state.active = true;
+            return state;
+        });
+    };
 
     const startConnection = (event) => {
         if ($port.type === PortType.ActionOutput || $port.type === PortType.DataOutput) {
@@ -79,36 +99,17 @@
             const up = (e) => {
                 if (Math.abs(startDragPoint.x - e.clientX) < 5 && Math.abs(startDragPoint.y - e.clientY) < 5) {
                     if ($newLineStartPort.end.portId) {
-                        getPortStore($newLineStartPort.end.portId).subscribe((targetPortData) => {
-                            addLine({
-                                id: uuidv4(),
-                                start: {elementId: $port.elementId, portId: $port.id},
-                                end: {elementId: targetPortData.elementId, portId: targetPortData.id},
-                            });
-                        })();
+                        createLineForPorts(port, $port, $newLineStartPort.end.portId);
                     } else if (e.target.hasAttribute('data-port-id')) {
                         if (e.target.getAttribute('data-port-input') === 'true' && e.target.getAttribute('data-port-disabled') === 'false') {
                             // && e.target.getAttribute('data-port-active') === 'false'
                             if ($port.type === PortType.ActionOutput && e.target.getAttribute('data-port-action') === 'true') {
                                 const targetPortId = e.target.getAttribute('data-port-id');
-                                getPortStore(targetPortId).subscribe((targetPortData) => {
-                                    addLine({
-                                        id: uuidv4(),
-                                        start: {elementId: $port.elementId, portId: $port.id},
-                                        end: {elementId: targetPortData.elementId, portId: targetPortData.id},
-                                    });
-                                })();
-
+                                createLineForPorts(port, $port, targetPortId);
                             }
                             if ($port.type === PortType.DataOutput && e.target.getAttribute('data-port-data') === 'true') {
                                 const targetPortId = e.target.getAttribute('data-port-id');
-                                getPortStore(targetPortId).subscribe((targetPortData) => {
-                                    addLine({
-                                        id: uuidv4(),
-                                        start: {elementId: $port.elementId, portId: $port.id},
-                                        end: {elementId: targetPortData.elementId, portId: targetPortData.id},
-                                    });
-                                })();
+                                createLineForPorts(port, $port, targetPortId);
                             }
                         }
                     }
