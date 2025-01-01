@@ -13,72 +13,73 @@
     import CanvasElements from "@/js/svelte/Canvas/CanvasElements";
     import CanvasElementsControl from "@/js/svelte/Controls/CanvasElementsControl.svelte";
     import CanvasZoomControl from "@/js/svelte/Controls/CanvasZoomControl.svelte";
-    // import {addLine} from "@/js/svelte/Store/linesStore";
-    // import {v4 as uuidv4} from "uuid";
+    import {addLine} from "@/js/svelte/Store/linesStore";
+    import {v4 as uuidV4} from "uuid";
 
     onMount(() => {
         const element1 = createElementRelated(100, 200, ItemTypes.Start);
         const element3 = createElementRelated(700, 400, ItemTypes.Finish);
+
+        addLine({
+            id: uuidV4(),
+            start: {elementId: element1.id, portId: element1.ports.action.outputs[0]},
+            end: {elementId: element3.id, portId: element3.ports.data.inputs[0]},
+        });
         // addLine({
-        //     id: uuidv4(),
-        //     start: {elementId: element1.id, portId: element1.ports.action.outputs[0]},
-        //     end: {elementId: element3.id, portId: element3.ports.data.inputs[0]},
-        // });
-        // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element1.id, portId: element1.ports.action.outputs[1]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[3]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element1.id, portId: element1.ports.action.outputs[2]},
         //     end: {elementId: element3.id, portId: element3.ports.data.inputs[2]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element1.id, portId: element1.ports.action.outputs[3]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[1]},
         // });
 
+        addLine({
+            id: uuidV4(),
+            start: {elementId: element1.id, portId: element1.ports.data.outputs[0]},
+            end: {elementId: element3.id, portId: element3.ports.action.inputs[0]},
+        });
         // addLine({
-        //     id: uuidv4(),
-        //     start: {elementId: element1.id, portId: element1.ports.data.outputs[0]},
-        //     end: {elementId: element3.id, portId: element3.ports.action.inputs[0]},
-        // });
-        // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element1.id, portId: element1.ports.data.outputs[1]},
         //     end: {elementId: element3.id, portId: element3.ports.data.inputs[1]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element1.id, portId: element1.ports.data.outputs[2]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[2]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element1.id, portId: element1.ports.data.outputs[3]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[3]},
         // });
 
         // const element2 = createElementRelated(400, 200, ItemTypes.Action1);
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element2.id, portId: element2.ports.data.outputs[0]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[0]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element2.id, portId: element2.ports.data.outputs[1]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[1]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element2.id, portId: element2.ports.data.outputs[2]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[2]},
         // });
         // addLine({
-        //     id: uuidv4(),
+        //     id: uuidV4(),
         //     start: {elementId: element2.id, portId: element2.ports.data.outputs[3]},
         //     end: {elementId: element3.id, portId: element3.ports.action.inputs[3]},
         // });
